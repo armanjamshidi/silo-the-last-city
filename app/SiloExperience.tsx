@@ -55,7 +55,7 @@ type Zone = {
   code: string;
   group: "internal" | "below" | "network";
   canon: "SERIES" | "BOOKS" | "RECONSTRUCTION";
-  scene: "civic" | "judicial" | "it" | "medical" | "residential" | "farm" | "industrial" | "mechanical" | "digger" | "gap" | "tunnel" | "mine" | "network";
+  scene: "cafeteria" | "airlock" | "civic" | "judicial" | "it" | "medical" | "residential" | "farm" | "industrial" | "mechanical" | "digger" | "gap" | "tunnel" | "mine" | "network";
   color: string;
   description: string;
   details: Facility[];
@@ -68,29 +68,85 @@ type Zone = {
 
 const ZONES: Zone[] = [
   {
+    id: "cleaning-facility",
+    name: "CLEANING FACILITY",
+    kicker: "One-way surface threshold",
+    levels: "Uppermost structure · exact level undisclosed",
+    level: 1,
+    code: "UP-CL",
+    group: "internal",
+    canon: "SERIES",
+    scene: "airlock",
+    color: "#c66b4e",
+    description:
+      "The controlled route from custody to the surface: a cleaner is prepared and sealed inside, the inner hatch closes, the airlock cycles, and the outer hatch opens onto the sensor ramp.",
+    details: [
+      { name: "Final holding room", note: "The last controlled room before a condemned or voluntary cleaner enters suit preparation.", tag: "INFERRED" },
+      { name: "Suit preparation bay", note: "Technicians fit the white cleaning suit, oxygen pack, gloves, boots and hood.", tag: "ON SCREEN" },
+      { name: "Heat-tape sealing station", note: "Tape closes the vulnerable wrist, ankle and hood interfaces before the cycle begins.", tag: "ON SCREEN" },
+      { name: "Inner pressure hatch", note: "A heavy circular door isolates the silo before the cleaner enters the purge chamber.", tag: "ON SCREEN" },
+      { name: "Airlock / fire purge", note: "The sealed chamber cycles and is burned clean after the outer route has been used.", tag: "ON SCREEN" },
+      { name: "Outer hatch & ramp", note: "The one-way surface exit opens behind the berm and leads toward the sensor mast.", tag: "ON SCREEN" },
+      { name: "Exterior sensor", note: "The lens assembly supplies the cafeteria feed; wool carried by the cleaner is used on its cover.", tag: "ON SCREEN" },
+    ],
+    people: ["Allison Becker", "Holston Becker", "Juliette Nichols", "Bernard Holland", "Cleaning technicians"],
+    telemetry: [{ label: "INNER HATCH", value: "SEALED" }, { label: "PURGE", value: "ARMED" }, { label: "ROUTE", value: "ONE WAY" }],
+    era: "SEASONS 1—2",
+    evidence: "Every major station in this route is established across the series' cleaning sequences. The show does not publish a numbered level for the facility, so its position at the top of this model is spatial—not a claimed canon level.",
+    status: "ONE WAY",
+  },
+  {
+    id: "cafeteria",
+    name: "CAFETERIA & SENSOR GALLERY",
+    kicker: "The silo's public window",
+    levels: "Up Top · exact level undisclosed",
+    level: 4,
+    code: "UP-CF",
+    group: "internal",
+    canon: "SERIES",
+    scene: "cafeteria",
+    color: "#c9aa72",
+    description:
+      "A communal dining hall organized around the giant circular feed from the exterior sensor—the place residents gather to eat, watch a cleaning, and read the outside world through a controlled image.",
+    details: [
+      { name: "Circular exterior display", note: "The dominant wall-sized screen carries the live feed from the sensor above the silo.", tag: "ON SCREEN" },
+      { name: "Communal table field", note: "Dense shared tables turn the room into both a dining hall and an assembly space.", tag: "ON SCREEN" },
+      { name: "Cleaning observation floor", note: "Residents gather here as the outer hatch opens and the cleaner approaches the lens.", tag: "ON SCREEN" },
+      { name: "Serving counter & kitchen", note: "A practical food-service edge supports the cafeteria's daily civic role.", tag: "INFERRED" },
+      { name: "Sensor feed conduit", note: "A protected signal path links the exterior lens to the public display system.", tag: "INFERRED" },
+      { name: "Upper stair landing", note: "The main circulation route spills people directly into the public gallery.", tag: "INFERRED" },
+    ],
+    people: ["Holston Becker", "Allison Becker", "Juliette Nichols", "Mayor Jahns", "Silo 18 residents"],
+    telemetry: [{ label: "DISPLAY", value: "LIVE" }, { label: "SOURCE", value: "EXT. SENSOR" }, { label: "ACCESS", value: "PUBLIC" }],
+    era: "SEASONS 1—2",
+    evidence: "The display, tables and use of the room during cleanings are directly shown. The signal conduit, service edge and exact numbered level are reconstructed because the series withholds a complete upper-level plan.",
+    status: "PUBLIC",
+  },
+  {
     id: "up-top",
-    name: "UP TOP",
-    kicker: "Civic core",
-    levels: "Levels 1—22",
-    level: 7,
-    code: "L-007",
+    name: "UP TOP CIVIC",
+    kicker: "Civic administration",
+    levels: "Upper civic band · exact register partial",
+    level: 10,
+    code: "UP-CV",
     group: "internal",
     canon: "SERIES",
     scene: "civic",
     color: "#d7b26d",
     description:
-      "The visible seat of Silo 18: cafeteria, sensor wall, sheriff, mayor and the rooms where the Pact becomes daily life.",
+      "The visible seat of local government: sheriff, mayor, deputy desks, public records and the controlled rooms where the Pact becomes daily life.",
     details: [
-      { name: "Cafeteria & sensor wall", note: "Circular exterior display, communal tables and the cleaning gallery.", tag: "ON SCREEN" },
       { name: "Sheriff station", note: "Badge desk, clerical bay, interview room and holding cells.", tag: "ON SCREEN" },
-      { name: "Cleaning airlock", note: "Suit prep, inner seal, incinerator and the outer hatch.", tag: "ON SCREEN" },
       { name: "Mayor / deputy offices", note: "The civic chain of command clustered near the upper landings.", tag: "INFERRED" },
+      { name: "Public service counter", note: "Permits, complaints and routine civic administration at a controlled desk line.", tag: "INFERRED" },
+      { name: "Interview & holding", note: "Secure rooms attached to the sheriff's operational floor.", tag: "ON SCREEN" },
+      { name: "Records & Pact notices", note: "Case records, public rulings and the text that governs daily life.", tag: "INFERRED" },
       { name: "Upper stair checkpoint", note: "A controlled landing able to channel crowds and raiders.", tag: "INFERRED" },
     ],
-    people: ["Holston Becker", "Allison Becker", "Mayor Jahns", "Sam Marnes", "Juliette Nichols"],
-    telemetry: [{ label: "SENSOR", value: "EXTERNAL" }, { label: "AIRLOCK", value: "ARMED" }, { label: "ACCESS", value: "CIVIC" }],
+    people: ["Holston Becker", "Mayor Jahns", "Sam Marnes", "Juliette Nichols", "Paul Billings"],
+    telemetry: [{ label: "SHERIFF", value: "ACTIVE" }, { label: "RECORDS", value: "CONTROLLED" }, { label: "ACCESS", value: "CIVIC" }],
     era: "SEASONS 1—2",
-    evidence: "The series repeatedly places civic authority, the cafeteria and cleaning infrastructure Up Top; the exact 1—22 band is a reconstruction.",
+    evidence: "The sheriff's and mayoral functions are series canon. This archive separates them from the cafeteria and cleaning facility; their combined placement within one upper civic band remains a reconstruction.",
     status: "MONITORED",
   },
   {
@@ -501,11 +557,11 @@ export default function SiloExperience() {
 
   useEffect(() => {
     const saved = window.localStorage.getItem("silo-theme");
-    if (saved === "dark" || saved === "light") {
-      setTheme(saved);
-      return;
-    }
-    if (window.matchMedia("(prefers-color-scheme: light)").matches) setTheme("light");
+    const preferredTheme = saved === "dark" || saved === "light"
+      ? saved
+      : window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+    const frame = window.requestAnimationFrame(() => setTheme(preferredTheme));
+    return () => window.cancelAnimationFrame(frame);
   }, []);
 
   useEffect(() => {
@@ -557,10 +613,7 @@ export default function SiloExperience() {
     }
     const hasWebGL = Boolean(capabilityContext);
     capabilityContext?.getExtension("WEBGL_lose_context")?.loseContext();
-    if (!hasWebGL) {
-      setWebglUnavailable(true);
-      return;
-    }
+    if (!hasWebGL) return;
 
     const scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2(0x070806, 0.0155);
@@ -569,7 +622,6 @@ export default function SiloExperience() {
     try {
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     } catch {
-      setWebglUnavailable(true);
       return;
     }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
@@ -828,7 +880,6 @@ export default function SiloExperience() {
     // water shelf, Algorithm threshold and a deliberately non-canonical mine routing.
     const subterranean = new THREE.Group();
     const rockMat = new THREE.MeshStandardMaterial({ color: 0x24231f, roughness: 1, metalness: 0.02, side: THREE.DoubleSide });
-    const wetRockMat = new THREE.MeshStandardMaterial({ color: 0x252a27, roughness: 0.88, metalness: 0.08 });
     const belowMetal = new THREE.MeshStandardMaterial({ color: 0x554d42, roughness: 0.52, metalness: 0.7 });
     const cavernRing = new THREE.Mesh(new THREE.TorusGeometry(10.8, 2.1, 12, 72, Math.PI * 1.72), rockMat);
     cavernRing.position.set(0, -21.6, -1.2);
@@ -1016,27 +1067,112 @@ export default function SiloExperience() {
       localLight.position.set(3.5, 3.8, 3.5);
       group.add(localLight);
 
-      if (zone.scene === "civic") {
-        const display = new THREE.Mesh(new THREE.CircleGeometry(2.25, 48), new THREE.MeshBasicMaterial({ color: 0x718078, toneMapped: false }));
-        display.position.set(0.2, 0.95, -4.62);
+      if (zone.scene === "cafeteria") {
+        const exteriorFeed = new THREE.MeshBasicMaterial({ color: 0x77877c, toneMapped: false });
+        const display = new THREE.Mesh(new THREE.CircleGeometry(2.52, 64), exteriorFeed);
+        display.position.set(0, 0.55, -4.62);
         group.add(display);
-        const displayRim = new THREE.Mesh(new THREE.TorusGeometry(2.32, 0.14, 10, 48), detailMetalMat);
+        const displayRim = new THREE.Mesh(new THREE.TorusGeometry(2.61, 0.16, 12, 64), detailMetalMat);
         displayRim.position.copy(display.position);
         group.add(displayRim);
-        for (let i = -2; i <= 2; i += 1) {
-          const table = new THREE.Mesh(new THREE.CylinderGeometry(0.58, 0.66, 0.18, 16), detailMetalMat);
-          table.position.set(i * 1.65, -1.62, 0.6 + Math.abs(i) * 0.34);
-          group.add(table);
-          for (const offset of [-0.82, 0.82]) addCylinder(group, 0.22, 0.35, [i * 1.65 + offset, -1.82, 0.6 + Math.abs(i) * 0.34], detailDarkMat);
+        const falseHorizon = addBox(group, [4.35, 0.055, 0.03], [0, 0.1, -4.57], glow);
+        falseHorizon.material = glow;
+        for (let ring = 0; ring < 3; ring += 1) {
+          const feedRing = new THREE.Mesh(new THREE.TorusGeometry(0.48 + ring * 0.48, 0.018, 6, 48), new THREE.MeshBasicMaterial({ color: 0xa9b6aa, transparent: true, opacity: 0.34, toneMapped: false }));
+          feedRing.position.set(0, 0.55, -4.57);
+          group.add(feedRing);
         }
-        const airlock = new THREE.Mesh(new THREE.TorusGeometry(1.15, 0.22, 10, 32), accent);
-        airlock.position.set(-5.05, 0.1, -4.58);
-        group.add(airlock);
-        addCylinder(group, 1.05, 0.24, [-5.05, 0.1, -4.7], detailDarkMat, [Math.PI / 2, 0, 0]);
-        addBox(group, [3.5, 0.88, 1.35], [4.65, -1.75, -2.1], detailMetalMat);
-        addConsole(group, [4.65, -0.9, -2.25], accent, 2.15);
-        for (let x = 3.2; x <= 6; x += 0.38) addBox(group, [0.08, 3.1, 0.08], [x, -0.85, 2.85], detailMetalMat);
-        addRail(group, -6, 6, -2.38, 4.1, detailMetalMat);
+        for (let row = 0; row < 2; row += 1) {
+          for (let i = -2; i <= 2; i += 1) {
+            const x = i * 2.05 + (row ? 0.5 : 0);
+            const z = 0.35 + row * 2.15 + Math.abs(i) * 0.12;
+            const table = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.7, 0.18, 18), detailMetalMat);
+            table.position.set(x, -1.55, z);
+            group.add(table);
+            addCylinder(group, 0.12, 0.82, [x, -2.03, z], detailDarkMat);
+            for (const offset of [-0.83, 0.83]) addCylinder(group, 0.22, 0.34, [x + offset, -1.82, z], detailDarkMat);
+          }
+        }
+        addBox(group, [3.6, 1.05, 1.15], [-4.75, -1.75, -2.55], detailMetalMat);
+        addConsole(group, [-4.75, -0.83, -2.72], accent, 2.15);
+        addTube(group, [[5.85, 2.3, -4.12], [3.25, 2.3, -4.12], [3.25, 0.7, -4.12], [2.65, 0.7, -4.12]], 0.12, accent);
+        addRail(group, -6, 6, -2.38, 4.25, detailMetalMat);
+      } else if (zone.scene === "airlock") {
+        const warningMat = new THREE.MeshStandardMaterial({ color: 0xd15e3e, emissive: 0x6e170a, emissiveIntensity: 0.82, roughness: 0.4, metalness: 0.62 });
+        const suitMat = new THREE.MeshStandardMaterial({ color: 0xd7d5c8, roughness: 0.72, metalness: 0.12 });
+        const visorMat = new THREE.MeshStandardMaterial({ color: 0x243438, emissive: 0x16333a, emissiveIntensity: 0.45, roughness: 0.18, metalness: 0.55 });
+        addBox(group, [0.16, 5.2, 8.7], [-2.45, 0, -0.05], detailGlassMat);
+        addBox(group, [0.16, 5.2, 8.7], [2.65, 0, -0.05], detailGlassMat);
+        const innerRim = new THREE.Mesh(new THREE.TorusGeometry(1.48, 0.23, 12, 48), detailMetalMat);
+        innerRim.position.set(-4.55, 0.12, -4.56);
+        group.add(innerRim);
+        const innerDoor = new THREE.Mesh(new THREE.CircleGeometry(1.28, 48), detailDarkMat);
+        innerDoor.position.set(-4.55, 0.12, -4.59);
+        group.add(innerDoor);
+        for (let spoke = 0; spoke < 8; spoke += 1) {
+          const bar = addBox(group, [0.07, 1.08, 0.035], [-4.55, 0.12, -4.54], detailMetalMat);
+          bar.rotation.z = (Math.PI / 4) * spoke;
+        }
+        const outerRim = new THREE.Mesh(new THREE.TorusGeometry(1.72, 0.27, 12, 48), warningMat);
+        outerRim.position.set(4.62, 0.18, -4.56);
+        group.add(outerRim);
+        const outerDoor = new THREE.Mesh(new THREE.CircleGeometry(1.5, 48), detailDarkMat);
+        outerDoor.position.set(4.62, 0.18, -4.59);
+        group.add(outerDoor);
+        for (let y = -2.25; y <= 2.3; y += 0.58) {
+          addBox(group, [4.5, 0.055, 0.06], [0.12, y, -4.47], y > 1.7 || y < -1.7 ? warningMat : detailMetalMat);
+        }
+        const suit = new THREE.Group();
+        const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.48, 1.12, 6, 16), suitMat);
+        torso.position.y = -0.25;
+        suit.add(torso);
+        const hood = new THREE.Mesh(new THREE.SphereGeometry(0.48, 20, 16), suitMat);
+        hood.position.y = 1.0;
+        suit.add(hood);
+        const visor = new THREE.Mesh(new THREE.SphereGeometry(0.35, 20, 12, 0, Math.PI * 2, 0, Math.PI * 0.52), visorMat);
+        visor.rotation.x = Math.PI / 2;
+        visor.position.set(0, 1.03, 0.24);
+        suit.add(visor);
+        for (const side of [-1, 1]) {
+          const arm = new THREE.Mesh(new THREE.CapsuleGeometry(0.16, 0.9, 4, 10), suitMat);
+          arm.rotation.z = side * -0.18;
+          arm.position.set(side * 0.56, -0.15, 0);
+          suit.add(arm);
+          addCylinder(suit, 0.19, 0.16, [side * 0.65, -0.42, 0], warningMat);
+        }
+        for (const side of [-1, 1]) {
+          const leg = new THREE.Mesh(new THREE.CapsuleGeometry(0.19, 0.94, 4, 10), suitMat);
+          leg.position.set(side * 0.24, -1.42, 0);
+          suit.add(leg);
+          addCylinder(suit, 0.22, 0.16, [side * 0.24, -1.62, 0], warningMat);
+        }
+        addBox(suit, [0.92, 0.11, 0.76], [0, 0.02, 0], warningMat);
+        suit.position.set(-0.05, -0.55, -1.5);
+        group.add(suit);
+        for (const x of [-1.7, -0.85, 0, 0.85, 1.7]) {
+          addBox(group, [0.42, 0.06, 5.9], [x, -2.35, 0.15], warningMat);
+          addBox(group, [0.28, 0.06, 5.9], [x, 2.58, 0.15], warningMat);
+        }
+        const ramp = addBox(group, [3.65, 0.22, 5.35], [4.6, -2.05, 1.8], detailMetalMat);
+        ramp.rotation.x = -0.08;
+        addConsole(group, [-4.95, -1.05, -2.15], accent, 1.55);
+        addConsole(group, [3.55, -1.05, -2.1], warningMat, 1.35);
+        addTube(group, [[-6.35, 2.28, -4.0], [-2.65, 2.28, -4.0], [-2.65, -1.75, -4.0]], 0.17, accent);
+      } else if (zone.scene === "civic") {
+        for (const x of [-4.7, -1.55, 1.6, 4.75]) {
+          addBox(group, [2.55, 0.72, 1.45], [x, -1.72, -1.45], detailMetalMat);
+          addConsole(group, [x, -0.93, -1.65], accent, 1.65);
+        }
+        addBox(group, [5.25, 0.8, 1.55], [0, -1.55, -3.6], detailDarkMat);
+        addBox(group, [4.25, 0.25, 1.1], [0, -0.92, -3.72], accent);
+        for (let x = 3.35; x <= 6.15; x += 0.42) addBox(group, [0.08, 4.05, 0.08], [x, -0.52, 2.75], detailMetalMat);
+        for (let x = -5.8; x <= -3.2; x += 1.3) {
+          addBox(group, [1.02, 3.75, 0.75], [x, -0.5, -4.22], detailMetalMat);
+          for (let y = -1.7; y <= 1.15; y += 0.6) addBox(group, [0.74, 0.05, 0.04], [x, y, -3.82], accent);
+        }
+        addBox(group, [2.7, 2.35, 0.14], [4.7, 0.65, -4.56], detailDarkMat);
+        for (let y = -0.15; y <= 1.45; y += 0.4) addBox(group, [2.25, 0.045, 0.04], [4.7, y, -4.46], y > 1 ? accent : detailMetalMat);
+        addRail(group, -6, 3.05, -2.38, 4.2, detailMetalMat);
       } else if (zone.scene === "judicial") {
         addBox(group, [6.4, 0.65, 2.35], [1.1, -1.62, -2.9], detailMetalMat);
         addBox(group, [3.5, 1.35, 1.2], [1.1, -0.7, -3.55], detailDarkMat);
@@ -1603,7 +1739,7 @@ export default function SiloExperience() {
             <div className="fallback-section__room">
               <div className="fallback-section__backwall" />
               <div className="fallback-section__feature">
-                {selected.scene === "mine" ? <Pickaxe size={58} /> : selected.scene === "tunnel" ? <DoorOpen size={58} /> : selected.scene === "gap" ? <Waves size={58} /> : selected.scene === "digger" ? <Drill size={58} /> : selected.scene === "it" ? <Database size={58} /> : selected.scene === "mechanical" ? <Gauge size={58} /> : selected.scene === "farm" ? <Activity size={58} /> : <Layers3 size={58} />}
+                {selected.scene === "mine" ? <Pickaxe size={58} /> : selected.scene === "airlock" ? <DoorOpen size={58} /> : selected.scene === "cafeteria" ? <Eye size={58} /> : selected.scene === "tunnel" ? <DoorOpen size={58} /> : selected.scene === "gap" ? <Waves size={58} /> : selected.scene === "digger" ? <Drill size={58} /> : selected.scene === "it" ? <Database size={58} /> : selected.scene === "mechanical" ? <Gauge size={58} /> : selected.scene === "farm" ? <Activity size={58} /> : <Layers3 size={58} />}
               </div>
               <div className="fallback-section__rails"><i /><i /><i /><i /><i /></div>
               <div className="fallback-section__stations">
@@ -1664,6 +1800,16 @@ export default function SiloExperience() {
           {viewMode !== "overview" && <button className="section-actions__back" onClick={showOverview}><ArrowLeft size={15} /> FULL SILO</button>}
           <button className="section-actions__primary" onClick={selected.scene === "network" ? showNetwork : showSection}>{selected.scene === "network" ? <Network size={15} /> : <Box size={15} />}{selected.scene === "network" ? "OPEN NETWORK" : "OPEN 3D SECTION"}</button>
         </div>
+        {selected.scene === "airlock" && (
+          <div className="sequence-strip" aria-label="One-way cleaning route">
+            <Route size={15} /><div className="sequence-strip__steps"><span>HOLDING</span><i>→</i><span>SUIT PREP</span><i>→</i><span>INNER HATCH</span><i>→</i><span>FIRE PURGE</span><i>→</i><span>OUTER HATCH</span><i>→</i><span>SENSOR</span></div>
+          </div>
+        )}
+        {selected.scene === "cafeteria" && (
+          <div className="sequence-strip sequence-strip--sensor" aria-label="Exterior sensor feed route">
+            <Eye size={15} /><div className="sequence-strip__steps"><span>EXTERIOR SENSOR</span><i>→</i><span>LIVE FEED</span><i>→</i><span>WALL DISPLAY</span><i>→</i><span>PUBLIC VIEWING</span></div>
+          </div>
+        )}
         <div className="intel-rule" /><span className="section-label">FACILITIES / SET ANCHORS</span>
         <ul className="installation-list">{selected.details.map((detail, index) => <li key={detail.name}><span>{String(index + 1).padStart(2, "0")}</span><div><b>{detail.name}</b><small>{detail.note}</small></div><i className={`detail-tag detail-tag--${detail.tag.toLowerCase().replace(" ", "-")}`}>{detail.tag}</i></li>)}</ul>
         <span className="section-label section-label--people">ASSOCIATED PERSONNEL</span>
@@ -1681,7 +1827,7 @@ export default function SiloExperience() {
           <div className="help-modal" role="dialog" aria-modal="true" aria-labelledby="help-title" onMouseDown={(event) => event.stopPropagation()}>
             <button className="help-modal__close" onClick={() => setHelp(false)} aria-label="Close"><X size={19} /></button>
             <Layers3 size={24} /><span className="eyebrow">ARCHIVE INTERFACE / SPOILERS</span><h2 id="help-title">Explore the city—and what lies beneath it</h2>
-            <div className="help-grid"><div><b>OVERVIEW</b><span>144 levels plus the buried undercroft</span></div><div><b>SECTION</b><span>Enter a purpose-built 3D diorama</span></div><div><b>BELOW</b><span>Digger, water, Algorithm door and mines</span></div><div><b>UTILITY</b><span>I.T. power and Judicial Safeguard are separate lines</span></div><div><b>SERIES</b><span>Directly established on screen</span></div><div><b>BOOKS / RECONSTRUCTION</b><span>Clearly labeled alternate or inferred lore</span></div></div>
+            <div className="help-grid"><div><b>OVERVIEW</b><span>144 levels plus the buried undercroft</span></div><div><b>SECTION</b><span>Enter a purpose-built 3D diorama</span></div><div><b>UP TOP</b><span>Cafeteria and the one-way cleaning facility are separate sections</span></div><div><b>BELOW</b><span>Digger, water, Algorithm door and mines</span></div><div><b>UTILITY</b><span>I.T. power and Judicial Safeguard are separate lines</span></div><div><b>SERIES / INFERRED</b><span>Every detail carries an evidence label</span></div></div>
             <button className="primary-button" onClick={() => setHelp(false)}>ENTER ARCHIVE <ChevronRight size={16} /></button>
           </div>
         </div>

@@ -17,6 +17,7 @@ import {
   Gauge,
   Layers3,
   Map as MapIcon,
+  Moon,
   Network,
   Pause,
   Pickaxe,
@@ -24,6 +25,7 @@ import {
   RotateCcw,
   Route,
   ShieldAlert,
+  Sun,
   Waves,
   Wind,
   X,
@@ -99,22 +101,25 @@ const ZONES: Zone[] = [
     level: 15,
     code: "L-015",
     group: "internal",
-    canon: "RECONSTRUCTION",
+    canon: "SERIES",
     scene: "judicial",
     color: "#b98a58",
     description:
-      "Courtrooms, records and enforcement offices occupy a deliberately defensible band above the Mids.",
+      "Courtrooms and enforcement offices conceal a second purpose: the externally supplied Safeguard delivery line passes through Judicial, physically separate from the buried Algorithm door.",
     details: [
       { name: "Judge Meadows' chamber", note: "Private office, hearing table and sealed personal archive.", tag: "ON SCREEN" },
       { name: "Sims operations office", note: "Judicial command point for investigations and enforcement.", tag: "ON SCREEN" },
       { name: "Raider ready room", note: "Protective equipment, weapons control and rapid stair access.", tag: "ON SCREEN" },
       { name: "Interview & holding", note: "Controlled rooms for suspects before formal disposition.", tag: "INFERRED" },
       { name: "Records / evidence hall", note: "Case files and relic seizures behind restricted counters.", tag: "INFERRED" },
+      { name: "Safeguard delivery line", note: "The lethal external line identified on the recovered drive enters through Judicial.", tag: "ON SCREEN" },
+      { name: "Concealed service wall", note: "Juliette's group traces the line behind the Judicial fabric and plans a controlled breach.", tag: "ON SCREEN" },
+      { name: "Isolation / capping point", note: "A proposed intervention point; striking the line itself could release the agent locally.", tag: "ON SCREEN" },
     ],
     people: ["Mary Meadows", "Robert Sims", "Amundsen", "Paul Billings"],
-    telemetry: [{ label: "WATCH", value: "ACTIVE" }, { label: "RAIDERS", value: "READY" }, { label: "ACCESS", value: "JUDICIAL" }],
-    era: "SEASONS 1—2",
-    evidence: "Judicial is visibly high in the social hierarchy. Its narrow level range is inferred from dialogue and travel patterns, not a published blueprint.",
+    telemetry: [{ label: "SAFEGUARD", value: "DELIVERY" }, { label: "LINE", value: "EXTERNAL" }, { label: "ACCESS", value: "SEALED" }],
+    era: "SEASONS 1—3",
+    evidence: "Season 3 identifies the external line entering Judicial as the likely Safeguard delivery path. The exact room and dispersal branches remain a reconstruction.",
     status: "RESTRICTED",
   },
   {
@@ -134,15 +139,16 @@ const ZONES: Zone[] = [
       { name: "I.T. operations floor", note: "Public-facing terminals, repair desks and the controlled approach to the rear.", tag: "ON SCREEN" },
       { name: "Server aisles", note: "Tall rack banks carry silo data, displays, cameras and internal systems.", tag: "ON SCREEN" },
       { name: "Independent power bus", note: "I.T. stays illuminated when Mechanical cuts general power.", tag: "ON SCREEN" },
+      { name: "External Silo 1 feeder", note: "A separate line on the recovered schematic supplies I.T. from Silo 1's generators.", tag: "ON SCREEN" },
       { name: "Secure bridge / checkpoint", note: "A narrow defensible approach; its broken Silo 17 counterpart is shown in Season 2.", tag: "ON SCREEN" },
       { name: "The Vault", note: "Circular sealed threshold opened by the illuminated Silo 18 key and code.", tag: "ON SCREEN" },
       { name: "Algorithm chamber", note: "A sparse Y-plan room aimed at one screen, flanked by stepped server and power banks.", tag: "ON SCREEN" },
       { name: "The Legacy", note: "Pre-silo knowledge, models, books, relics, food stores and shadow quarters.", tag: "ON SCREEN" },
     ],
     people: ["Bernard Holland", "Lukas Kyle", "Mary Meadows", "Solo / Jimmy"],
-    telemetry: [{ label: "POWER", value: "ISOLATED" }, { label: "ARCHIVE", value: "LEGACY" }, { label: "ACCESS", value: "18-KEY" }],
-    era: "SEASON 2 / PRIORITY",
-    evidence: "Season 2 directly establishes the Vault, Legacy, independent power and Algorithm room. Its Y-shaped focal plan and stepped server/power banks follow the production designer's description; the exact outer rack layout is reconstructed.",
+    telemetry: [{ label: "POWER", value: "SILO 1 FEED" }, { label: "ARCHIVE", value: "LEGACY" }, { label: "ACCESS", value: "18-KEY" }],
+    era: "SEASONS 2—3 / PRIORITY",
+    evidence: "The Vault, Legacy and Algorithm room are shown in Season 2. Season 3 distinguishes I.T.'s external Silo 1 power feeder from the Safeguard line entering Judicial.",
     status: "CLASSIFIED",
   },
   {
@@ -337,8 +343,8 @@ const ZONES: Zone[] = [
   },
   {
     id: "tunnel",
-    name: "SAFEGUARD TUNNEL",
-    kicker: "Buried control route",
+    name: "ALGORITHM ACCESS TUNNEL",
+    kicker: "Buried threshold",
     levels: "Sub-foundation · T-01",
     level: 163,
     code: "T-01",
@@ -352,14 +358,15 @@ const ZONES: Zone[] = [
       { name: "Circular intelligent door", note: "A sealed metal face that activates when a visitor approaches.", tag: "ON SCREEN" },
       { name: "Algorithm voice interface", note: "The system identifies Lukas and issues the Safeguard warning.", tag: "ON SCREEN" },
       { name: "Segmented tunnel shell", note: "Concrete rings, low service lights and a straight controlled approach.", tag: "ON SCREEN" },
-      { name: "Safeguard feed", note: "A lethal delivery system associated with the buried control route.", tag: "ON SCREEN" },
+      { name: "Safeguard warning point", note: "The Algorithm threatens activation here; the poison does not physically enter the silo at this door.", tag: "ON SCREEN" },
       { name: "Power / data conduits", note: "Independent cables keep the door and voice alive below the silo.", tag: "INFERRED" },
       { name: "Visitor trace", note: "Quinn, Meadows, George and Lukas reached the threshold at different times.", tag: "ON SCREEN" },
+      { name: "Unknown space beyond", note: "The series has not yet confirmed the door's destination or whether it is a transit route.", tag: "ON SCREEN" },
     ],
     people: ["Lukas Kyle", "Salvador Quinn", "Mary Meadows", "George Wilkins"],
-    telemetry: [{ label: "VOICE", value: "ALGORITHM" }, { label: "SAFEGUARD", value: "STANDBY" }, { label: "ACCESS", value: "BLACK" }],
-    era: "SEASON 2 / SAFEGUARD",
-    evidence: "The tunnel, door and warning are Season 2 canon. Its ultimate destination and precise relationship to other silos remain unresolved on screen.",
+    telemetry: [{ label: "VOICE", value: "ALGORITHM" }, { label: "ROLE", value: "WARNING NODE" }, { label: "BEYOND", value: "UNKNOWN" }],
+    era: "SEASON 2 / THRESHOLD",
+    evidence: "The tunnel, intelligent door and Safeguard warning are on-screen canon. No poison inlet is shown here, and the destination beyond the door remains unresolved.",
     status: "BLACK LEVEL",
   },
   {
@@ -397,11 +404,11 @@ const ZONES: Zone[] = [
     level: 166,
     code: "NET-51",
     group: "network",
-    canon: "BOOKS",
+    canon: "RECONSTRUCTION",
     scene: "network",
     color: "#d0b070",
     description:
-      "The show confirms fifty other silos beyond 18. The books provide the clearest connection model: Silo 18 tunnels to 17, while concealed diggers are aligned toward Seed.",
+      "The show confirms fifty other silos beyond 18, but not an open transit grid. Utility links to I.T. and Judicial are distinct from the human-scale tunnel below the digger.",
     details: [
       { name: "51-silo field", note: "Silo 18 plus the fifty other structures confirmed in series dialogue.", tag: "ON SCREEN" },
       { name: "Silo 18 → 17 route", note: "A concealed digger route completed in the book continuity.", tag: "BOOK CANON" },
@@ -409,11 +416,13 @@ const ZONES: Zone[] = [
       { name: "Seed alignment", note: "Stored machines are oriented toward the long-term survival cache.", tag: "BOOK CANON" },
       { name: "Surface exclusion field", note: "The circular rims remain separated above ground.", tag: "ON SCREEN" },
       { name: "Universal transit grid", note: "Shown only as a hypothesis; no open all-silo metro is confirmed.", tag: "INFERRED" },
+      { name: "I.T. external power line", note: "A dedicated utility feed runs from Silo 1 infrastructure to I.T.", tag: "ON SCREEN" },
+      { name: "Judicial Safeguard line", note: "A separate external line delivers the Safeguard agent through Judicial.", tag: "ON SCREEN" },
     ],
     people: ["Silo 18", "Silo 17", "Silo 1", "Seed"],
-    telemetry: [{ label: "FIELD", value: "51" }, { label: "ROUTE", value: "18→17" }, { label: "ACCESS", value: "SEALED" }],
+    telemetry: [{ label: "FIELD", value: "51" }, { label: "UTILITY", value: "2 LINES" }, { label: "TRANSIT", value: "UNCONFIRMED" }],
     era: "SERIES + BOOK SYNTHESIS",
-    evidence: "The 51-silo count is series dialogue. The 18-to-17 excavation and Seed destination are book canon; a pre-opened universal transit network is not confirmed.",
+    evidence: "The 51-silo count and two external utility lines are series canon. The 18-to-17 excavation and Seed destination are book canon; a pre-opened universal transit network is not confirmed.",
     status: "SYNTHESIS",
   },
 ];
@@ -472,6 +481,10 @@ export default function SiloExperience() {
     utility?: THREE.Object3D;
     population?: THREE.Object3D;
     floorMaterials?: THREE.MeshStandardMaterial[];
+    scene?: THREE.Scene;
+    renderer?: THREE.WebGLRenderer;
+    hemisphere?: THREE.HemisphereLight;
+    key?: THREE.DirectionalLight;
   }>({});
   const [selected, setSelected] = useState(ZONES[0]);
   const [sectorTab, setSectorTab] = useState<"internal" | "below" | "network">("internal");
@@ -484,6 +497,36 @@ export default function SiloExperience() {
   const [webglUnavailable, setWebglUnavailable] = useState(true);
   const [help, setHelp] = useState(false);
   const [mobilePanel, setMobilePanel] = useState(false);
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+
+  useEffect(() => {
+    const saved = window.localStorage.getItem("silo-theme");
+    if (saved === "dark" || saved === "light") {
+      setTheme(saved);
+      return;
+    }
+    if (window.matchMedia("(prefers-color-scheme: light)").matches) setTheme("light");
+  }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem("silo-theme", theme);
+    document.documentElement.dataset.theme = theme;
+    const visuals = visualRef.current;
+    if (visuals.scene?.fog instanceof THREE.FogExp2) {
+      visuals.scene.fog.color.set(theme === "light" ? 0xe7e1d5 : 0x070806);
+      visuals.scene.fog.density = theme === "light" ? 0.012 : 0.0155;
+    }
+    if (visuals.renderer) visuals.renderer.toneMappingExposure = theme === "light" ? 1.24 : 1.08;
+    if (visuals.hemisphere) {
+      visuals.hemisphere.color.set(theme === "light" ? 0xf5ead4 : 0x9aa7a1);
+      visuals.hemisphere.groundColor.set(theme === "light" ? 0x6f6658 : 0x17130e);
+      visuals.hemisphere.intensity = theme === "light" ? 2.25 : 1.5;
+    }
+    if (visuals.key) {
+      visuals.key.color.set(theme === "light" ? 0xffefd1 : 0xe2c99e);
+      visuals.key.intensity = theme === "light" ? 4.2 : 3.4;
+    }
+  }, [theme]);
 
   useEffect(() => {
     autoRotateRef.current = autoRotate;
@@ -548,12 +591,17 @@ export default function SiloExperience() {
     const world = new THREE.Group();
     world.rotation.y = -0.05;
     scene.add(world);
-    scene.add(new THREE.HemisphereLight(0x9aa7a1, 0x17130e, 1.5));
+    const hemisphere = new THREE.HemisphereLight(0x9aa7a1, 0x17130e, 1.5);
+    scene.add(hemisphere);
     const key = new THREE.DirectionalLight(0xe2c99e, 3.4);
     key.position.set(10, 24, 16);
     key.castShadow = true;
     key.shadow.mapSize.set(1024, 1024);
     scene.add(key);
+    visualRef.current.scene = scene;
+    visualRef.current.renderer = renderer;
+    visualRef.current.hemisphere = hemisphere;
+    visualRef.current.key = key;
     const redLight = new THREE.PointLight(0xd7502e, 24, 18, 2);
     redLight.position.set(2, -14, 7);
     scene.add(redLight);
@@ -689,6 +737,25 @@ export default function SiloExperience() {
       pipeRing.rotation.z = CUT_START;
       utility.add(pipeRing);
     }
+    const addExternalUtilityLine = (points: THREE.Vector3[], color: number, emissive: number) => {
+      const material = new THREE.MeshStandardMaterial({ color, emissive, emissiveIntensity: 0.9, roughness: 0.34, metalness: 0.82 });
+      const curve = new THREE.CatmullRomCurve3(points);
+      const line = new THREE.Mesh(new THREE.TubeGeometry(curve, 72, 0.2, 12, false), material);
+      utility.add(line);
+      const endpoint = new THREE.Mesh(new THREE.SphereGeometry(0.34, 18, 12), material);
+      endpoint.position.copy(points[points.length - 1]);
+      utility.add(endpoint);
+    };
+    addExternalUtilityLine(
+      [new THREE.Vector3(-19, levelToY(18), -4), new THREE.Vector3(-12, levelToY(18), -4), new THREE.Vector3(-8.4, levelToY(18), -5.1)],
+      0x6eabb4,
+      0x174d56,
+    );
+    addExternalUtilityLine(
+      [new THREE.Vector3(19, levelToY(15), -4), new THREE.Vector3(12, levelToY(15), -4), new THREE.Vector3(8.4, levelToY(15), -5.1)],
+      0xb8563f,
+      0x59160c,
+    );
     world.add(utility);
 
     const screenCanvas = document.createElement("canvas");
@@ -758,7 +825,7 @@ export default function SiloExperience() {
     world.add(generator);
 
     // Everything the official level count tries to hide: the digger void,
-    // water shelf, tunnel door and a deliberately non-canonical mine routing.
+    // water shelf, Algorithm threshold and a deliberately non-canonical mine routing.
     const subterranean = new THREE.Group();
     const rockMat = new THREE.MeshStandardMaterial({ color: 0x24231f, roughness: 1, metalness: 0.02, side: THREE.DoubleSide });
     const wetRockMat = new THREE.MeshStandardMaterial({ color: 0x252a27, roughness: 0.88, metalness: 0.08 });
@@ -983,6 +1050,14 @@ export default function SiloExperience() {
         addConsole(group, [-3.9, -1.25, 0.25], accent, 2.5);
         for (let x = -1.4; x <= 1.4; x += 1.4) addBox(group, [0.9, 1.7, 0.48], [x, 0.9, -4.46], detailDarkMat);
         addRail(group, -6, 3.1, -2.38, 4.2, accent);
+        const safeguardMat = new THREE.MeshStandardMaterial({ color: 0x8f3f2f, emissive: 0x4f0e09, emissiveIntensity: 0.75, roughness: 0.36, metalness: 0.8 });
+        addTube(group, [[6.45, 2.25, -4.1], [4.75, 2.25, -4.1], [4.75, -1.75, -4.1], [2.8, -1.75, -4.1]], 0.24, safeguardMat);
+        for (let y = -1.65; y <= 2.15; y += 0.56) addBox(group, [1.25, 0.045, 0.04], [4.75, y, -3.92], safeguardMat);
+        const valve = new THREE.Mesh(new THREE.TorusGeometry(0.58, 0.09, 8, 28), safeguardMat);
+        valve.position.set(3.55, -1.72, -4.28);
+        group.add(valve);
+        addBox(group, [0.08, 4.55, 2.4], [2.35, -0.25, -3.55], detailConcreteMat);
+        addConsole(group, [5.4, -1.05, -2.9], safeguardMat, 1.2);
       } else if (zone.scene === "it") {
         // Season 2's Vault is deliberately unlike the rest of the silo: a Y-plan
         // focused on the Algorithm screen with stepped server / power banks.
@@ -1021,6 +1096,11 @@ export default function SiloExperience() {
         addBox(group, [1.8, 0.18, 0.75], [-4.45, 0.02, 1.92], detailGlassMat);
         addBox(group, [2.35, 1.8, 1.5], [4.5, -1.45, 1.75], detailMetalMat);
         for (let y = -2.1; y <= -0.9; y += 0.4) addBox(group, [1.7, 0.08, 0.08], [4.5, y, 2.52], accent);
+        const feederMat = new THREE.MeshStandardMaterial({ color: 0x548e9a, emissive: 0x173e49, emissiveIntensity: 0.72, roughness: 0.34, metalness: 0.82 });
+        addTube(group, [[-6.5, 2.52, -4.25], [-5.8, 2.52, -4.25], [-5.8, -1.72, -4.25], [-3.6, -1.72, -3.55]], 0.2, feederMat);
+        for (let y = -1.65; y <= 2.2; y += 0.52) addBox(group, [0.9, 0.045, 0.04], [-5.8, y, -4.02], feederMat);
+        addBox(group, [1.35, 2.5, 0.82], [-5.75, -1.1, 2.85], detailDarkMat);
+        for (let y = -2.05; y <= -0.25; y += 0.38) addBox(group, [0.95, 0.05, 0.05], [-5.75, y, 3.28], feederMat);
       } else if (zone.scene === "medical") {
         const cleanMat = new THREE.MeshStandardMaterial({ color: 0xb6b8ad, roughness: 0.82 });
         for (let x = -4.8; x <= 1.2; x += 3) {
@@ -1167,7 +1247,8 @@ export default function SiloExperience() {
           spoke.rotation.z = -angle;
         }
         addCylinder(group, 0.34, 0.32, [0, 0, -4.72], glow, [Math.PI / 2, 0, 0]);
-        addTube(group, [[-2.65, -2.15, 4.8], [-2.65, -2.15, -4.25], [-1.8, -1.55, -4.4]], 0.14, accent);
+        const dataMat = new THREE.MeshStandardMaterial({ color: 0x52767b, emissive: 0x173b40, emissiveIntensity: 0.45, roughness: 0.48, metalness: 0.72 });
+        addTube(group, [[-2.65, -2.15, 4.8], [-2.65, -2.15, -4.25], [-1.8, -1.55, -4.4]], 0.08, dataMat);
         for (let z = -3.4; z <= 4.2; z += 1.9) addBox(group, [0.55, 0.08, 0.2], [0, 2.65, z], glow);
         addConsole(group, [2.3, -1.55, -3.7], accent, 1.25, -0.15);
       } else if (zone.scene === "mine") {
@@ -1459,12 +1540,15 @@ export default function SiloExperience() {
   const visibleZones = ZONES.filter((zone) => zone.group === sectorTab);
 
   return (
-    <main className="silo-app">
+    <main className="silo-app" data-theme={theme}>
       <header className="topbar">
         <div className="brand-lockup"><SiloMark /><div><span className="eyebrow">THE LAST CITY</span><strong>SILO</strong></div></div>
         <div className="archive-title"><span>STRUCTURAL ARCHIVE</span><b>18 / INTERNAL</b></div>
         <div className="topbar__right">
           <span className="system-status"><i /> SYSTEM NOMINAL</span>
+          <button className="icon-button" onClick={() => setTheme((value) => value === "dark" ? "light" : "dark")} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`} title={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}>
+            {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
           <button className="icon-button" onClick={() => setHelp(true)} aria-label="Open controls help"><CircleHelp size={18} /></button>
         </div>
       </header>
@@ -1597,7 +1681,7 @@ export default function SiloExperience() {
           <div className="help-modal" role="dialog" aria-modal="true" aria-labelledby="help-title" onMouseDown={(event) => event.stopPropagation()}>
             <button className="help-modal__close" onClick={() => setHelp(false)} aria-label="Close"><X size={19} /></button>
             <Layers3 size={24} /><span className="eyebrow">ARCHIVE INTERFACE / SPOILERS</span><h2 id="help-title">Explore the city—and what lies beneath it</h2>
-            <div className="help-grid"><div><b>OVERVIEW</b><span>144 levels plus the buried undercroft</span></div><div><b>SECTION</b><span>Enter a purpose-built 3D diorama</span></div><div><b>BELOW</b><span>Digger, water, tunnel and mines</span></div><div><b>NETWORK</b><span>Compare 18, 17, 1 and Seed routes</span></div><div><b>SERIES</b><span>Directly established on screen</span></div><div><b>BOOKS / RECONSTRUCTION</b><span>Clearly labeled alternate or inferred lore</span></div></div>
+            <div className="help-grid"><div><b>OVERVIEW</b><span>144 levels plus the buried undercroft</span></div><div><b>SECTION</b><span>Enter a purpose-built 3D diorama</span></div><div><b>BELOW</b><span>Digger, water, Algorithm door and mines</span></div><div><b>UTILITY</b><span>I.T. power and Judicial Safeguard are separate lines</span></div><div><b>SERIES</b><span>Directly established on screen</span></div><div><b>BOOKS / RECONSTRUCTION</b><span>Clearly labeled alternate or inferred lore</span></div></div>
             <button className="primary-button" onClick={() => setHelp(false)}>ENTER ARCHIVE <ChevronRight size={16} /></button>
           </div>
         </div>

@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "SILO — The Last City",
   description:
-    "An interactive 3D archive of Silo 18: 144 levels, the digger cavern, Algorithm access tunnel, mines, external utility lines and inter-silo network.",
+    "An interactive 3D archive of Silo 18: the cafeteria sensor gallery, one-way cleaning airlock, 144 levels, digger cavern, Algorithm tunnel, mines and inter-silo network.",
   other: {
     "codex-preview": "development",
   },

@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Activity,
   Aperture,
   ArrowLeft,
   BookOpen,
   Box,
+  Check,
+  ChevronLeft,
   ChevronRight,
   CircleHelp,
   Database,
@@ -14,8 +16,10 @@ import {
   Drill,
   Eye,
   EyeOff,
+  ExternalLink,
   Gauge,
   Layers3,
+  Languages,
   Map as MapIcon,
   Moon,
   Network,
@@ -24,14 +28,18 @@ import {
   Play,
   RotateCcw,
   Route,
+  Search,
+  Share2,
   ShieldAlert,
   Sun,
+  Trees,
   Waves,
   Wind,
   X,
   ZoomIn,
 } from "lucide-react";
 import * as THREE from "three";
+import { makeArchiveHash, parseArchiveHash } from "./archive-url.mjs";
 
 type DetailTag = "ON SCREEN" | "BOOK CANON" | "INFERRED";
 
@@ -46,6 +54,25 @@ type Telemetry = {
   value: string;
 };
 
+type SceneKind =
+  | "surface"
+  | "cafeteria"
+  | "airlock"
+  | "civic"
+  | "judicial"
+  | "it"
+  | "medical"
+  | "residential"
+  | "farm"
+  | "utilities"
+  | "industrial"
+  | "mechanical"
+  | "digger"
+  | "gap"
+  | "tunnel"
+  | "mine"
+  | "network";
+
 type Zone = {
   id: string;
   name: string;
@@ -55,7 +82,7 @@ type Zone = {
   code: string;
   group: "internal" | "below" | "network";
   canon: "SERIES" | "BOOKS" | "RECONSTRUCTION";
-  scene: "cafeteria" | "airlock" | "civic" | "judicial" | "it" | "medical" | "residential" | "farm" | "industrial" | "mechanical" | "digger" | "gap" | "tunnel" | "mine" | "network";
+  scene: SceneKind;
   color: string;
   description: string;
   details: Facility[];
@@ -66,7 +93,56 @@ type Zone = {
   status: string;
 };
 
+type SourceReference = {
+  label: string;
+  coverage: string;
+  kind: "SERIES" | "BOOKS" | "PRODUCTION";
+  url: string;
+};
+
+type Journey = {
+  id: string;
+  name: string;
+  subtitle: string;
+  zones: string[];
+};
+
+const ARCHIVE_UPDATED = "20 AUG 2026";
+const SERIES_COVERAGE = "SERIES THROUGH S3E7";
+const APPLE_SERIES_URL = "https://www.apple.com/tv-pr/originals/silo/";
+const APPLE_EPISODES_URL = "https://www.apple.com/tv-pr/originals/silo/episodes-images/";
+const APPLE_SEASON_THREE_URL = "https://www.apple.com/tv-pr/news/2026/04/apples-globally-acclaimed-drama-silo-starring-and-executive-produced-by-rebecca-ferguson-returns-for-season-three-on-july-3-2026/";
+const HOWEY_WOOL_URL = "https://hughhowey.com/books/wool/";
+
 const ZONES: Zone[] = [
+  {
+    id: "surface",
+    name: "SURFACE & SENSOR FIELD",
+    kicker: "The world above",
+    levels: "Exterior · beyond the outer hatch",
+    level: 0,
+    code: "EXT-18",
+    group: "internal",
+    canon: "SERIES",
+    scene: "surface",
+    color: "#9aa58e",
+    description:
+      "The buried rim of Silo 18 opens behind an earthen berm. A short cleaning path leads to the exterior sensor while the apparently empty landscape conceals a wider field of silo crowns.",
+    details: [
+      { name: "Buried silo crown", note: "Only the armored hatch, ramp and sensor assembly break the surface above the cylinder.", tag: "ON SCREEN" },
+      { name: "Outer hatch ramp", note: "The cleaner emerges behind the berm and climbs into the sensor field.", tag: "ON SCREEN" },
+      { name: "Exterior sensor mast", note: "A protected lens supplies the public cafeteria image and is cleaned with wool.", tag: "ON SCREEN" },
+      { name: "Cleaning path", note: "A short exposed route passes the remains of prior cleaners before reaching the lens.", tag: "ON SCREEN" },
+      { name: "Berm and false horizon", note: "The local ridge blocks nearby silo crowns until a cleaner crosses it.", tag: "ON SCREEN" },
+      { name: "Distant silo rims", note: "Neighboring circular crowns occupy the same devastated field beyond Silo 18.", tag: "ON SCREEN" },
+      { name: "Toxic exclusion zone", note: "The archive visualizes an uninhabitable exterior without claiming a precise toxin mechanism.", tag: "INFERRED" },
+    ],
+    people: ["Allison Becker", "Holston Becker", "Juliette Nichols", "Silo 18 cleaners"],
+    telemetry: [{ label: "AIR", value: "LETHAL" }, { label: "SENSOR", value: "ONLINE" }, { label: "ACCESS", value: "ONE WAY" }],
+    era: "SEASONS 1—3",
+    evidence: "The hatch, berm, sensor, cleaners and neighboring silo field are shown on screen. Distances and topography in this model are reconstructed from the available views.",
+    status: "EXTERIOR",
+  },
   {
     id: "cleaning-facility",
     name: "CLEANING FACILITY",
@@ -289,6 +365,34 @@ const ZONES: Zone[] = [
     status: "NOMINAL",
   },
   {
+    id: "life-support",
+    name: "LIFE SUPPORT",
+    kicker: "Air, water and waste",
+    levels: "Distributed utility band · modeled at Level 86",
+    level: 86,
+    code: "U-086",
+    group: "internal",
+    canon: "RECONSTRUCTION",
+    scene: "utilities",
+    color: "#74a3a0",
+    description:
+      "A systems reconstruction of the machinery a sealed city requires: air handling, water treatment, heat exchange, waste recovery and the vertical trunks that connect every inhabited level.",
+    details: [
+      { name: "Air-handling hall", note: "Filter banks, blowers and pressure dampers circulate breathable air through the vertical trunks.", tag: "INFERRED" },
+      { name: "Water treatment gallery", note: "Settling tanks, pumps and polishing filters return counted water to the inhabited rings.", tag: "INFERRED" },
+      { name: "Waste & recycling intake", note: "Organic waste and reusable material are separated before treatment or return to Supply.", tag: "INFERRED" },
+      { name: "Heat-exchange deck", note: "Closed-loop exchangers reject heat from inhabited rooms, farms and machinery.", tag: "INFERRED" },
+      { name: "Fire-water reservoir", note: "A protected emergency reserve feeds standpipes and compartment suppression.", tag: "INFERRED" },
+      { name: "Vertical utility trunks", note: "Redundant pipe and duct risers branch into every major band of the silo.", tag: "ON SCREEN" },
+      { name: "Maintenance control room", note: "Pressure, flow, contamination and reserve levels are monitored from a sealed console line.", tag: "INFERRED" },
+    ],
+    people: ["Maintenance crews", "Mechanical engineers", "Supply recyclers", "Farm technicians"],
+    telemetry: [{ label: "AIR LOOP", value: "CLOSED" }, { label: "WATER", value: "RECYCLED" }, { label: "MODEL", value: "INFERRED" }],
+    era: "SYSTEMS RECONSTRUCTION",
+    evidence: "The series shows utility pipes, ducts, recycling and water infrastructure but has not published a complete life-support plant. This room is deliberately labeled as a functional reconstruction.",
+    status: "ESSENTIAL",
+  },
+  {
     id: "supply",
     name: "SUPPLY",
     kicker: "Industrial belt",
@@ -483,6 +587,134 @@ const ZONES: Zone[] = [
   },
 ];
 
+const SERIES_SOURCE: SourceReference = {
+  label: "Apple TV+ — Silo",
+  coverage: SERIES_COVERAGE,
+  kind: "SERIES",
+  url: APPLE_SERIES_URL,
+};
+
+const EPISODE_SOURCE: SourceReference = {
+  label: "Official episode & image guide",
+  coverage: "S1—S3 episode index",
+  kind: "SERIES",
+  url: APPLE_EPISODES_URL,
+};
+
+const BOOK_SOURCE: SourceReference = {
+  label: "Hugh Howey — Wool",
+  coverage: "Book continuity",
+  kind: "BOOKS",
+  url: HOWEY_WOOL_URL,
+};
+
+const SEASON_THREE_SOURCE: SourceReference = {
+  label: "Apple — Season 3 release note",
+  coverage: "Premiered 03 JUL 2026",
+  kind: "PRODUCTION",
+  url: APPLE_SEASON_THREE_URL,
+};
+
+const ZONE_REFERENCES: Record<string, SourceReference[]> = {
+  surface: [EPISODE_SOURCE, SERIES_SOURCE],
+  "cleaning-facility": [EPISODE_SOURCE, SERIES_SOURCE],
+  cafeteria: [EPISODE_SOURCE, SERIES_SOURCE],
+  "up-top": [EPISODE_SOURCE, SERIES_SOURCE],
+  judicial: [EPISODE_SOURCE, SEASON_THREE_SOURCE],
+  it: [EPISODE_SOURCE, SEASON_THREE_SOURCE],
+  medical: [EPISODE_SOURCE, SERIES_SOURCE],
+  mids: [EPISODE_SOURCE, BOOK_SOURCE],
+  farms: [EPISODE_SOURCE, BOOK_SOURCE],
+  "life-support": [SERIES_SOURCE, BOOK_SOURCE],
+  supply: [EPISODE_SOURCE, BOOK_SOURCE],
+  mechanical: [EPISODE_SOURCE, SERIES_SOURCE],
+  digger: [EPISODE_SOURCE, SERIES_SOURCE],
+  gap: [EPISODE_SOURCE, SERIES_SOURCE],
+  tunnel: [EPISODE_SOURCE, SEASON_THREE_SOURCE],
+  mines: [SERIES_SOURCE, BOOK_SOURCE],
+  network: [EPISODE_SOURCE, BOOK_SOURCE, SEASON_THREE_SOURCE],
+};
+
+const JOURNEYS: Journey[] = [
+  {
+    id: "cleaning-route",
+    name: "THE CLEANING ROUTE",
+    subtitle: "Cafeteria to the surface sensor",
+    zones: ["cafeteria", "up-top", "cleaning-facility", "surface"],
+  },
+  {
+    id: "juliette-descent",
+    name: "JULIETTE'S DESCENT",
+    subtitle: "From Up Top into the buried threshold",
+    zones: ["up-top", "medical", "mechanical", "digger", "gap", "tunnel"],
+  },
+  {
+    id: "george-lukas",
+    name: "GEORGE → LUKAS",
+    subtitle: "The hard drive, the Gap and the Algorithm door",
+    zones: ["it", "digger", "gap", "tunnel"],
+  },
+  {
+    id: "hidden-systems",
+    name: "HIDDEN SYSTEMS",
+    subtitle: "Safeguard, I.T. power and silo utilities",
+    zones: ["judicial", "it", "life-support", "mechanical", "network"],
+  },
+];
+
+const UI_COPY = {
+  en: {
+    archive: "ARCHIVE",
+    inside: "INSIDE",
+    below: "BELOW",
+    grid: "GRID",
+    search: "Search rooms, systems or people",
+    noResults: "No archive sections match this search.",
+    overview: "OVERVIEW",
+    section: "SECTION",
+    network: "NETWORK",
+    structure: "STRUCTURE",
+    systems: "SYSTEMS",
+    life: "LIFE",
+    fullSilo: "FULL SILO",
+    openSection: "OPEN 3D SECTION",
+    openNetwork: "OPEN NETWORK",
+    overviewTab: "BRIEFING",
+    facilitiesTab: "FACILITIES",
+    sourcesTab: "SOURCES",
+    personnel: "ASSOCIATED PERSONNEL",
+    evidence: "EVIDENCE LEDGER",
+    guided: "GUIDED ROUTES",
+    share: "SHARE VIEW",
+    copied: "LINK COPIED",
+  },
+  fa: {
+    archive: "آرشیو",
+    inside: "داخل سیلو",
+    below: "زیر سازه",
+    grid: "شبکه",
+    search: "جست‌وجوی فضا، سیستم یا شخصیت",
+    noResults: "بخشی با این جست‌وجو پیدا نشد.",
+    overview: "نمای کلی",
+    section: "نمای بخش",
+    network: "شبکه",
+    structure: "سازه",
+    systems: "سیستم‌ها",
+    life: "زندگی",
+    fullSilo: "کل سیلو",
+    openSection: "بازکردن نمای سه‌بعدی",
+    openNetwork: "بازکردن شبکه",
+    overviewTab: "خلاصه",
+    facilitiesTab: "فضاها",
+    sourcesTab: "منابع",
+    personnel: "افراد مرتبط",
+    evidence: "دفتر شواهد",
+    guided: "مسیرهای راهنما",
+    share: "اشتراک نما",
+    copied: "پیوند کپی شد",
+  },
+} as const;
+
 const TAU = Math.PI * 2;
 const CUT_START = 0.48;
 const CUT_LENGTH = TAU - 0.96;
@@ -513,6 +745,20 @@ function zoneForLevel(level: number) {
 function seeded(index: number) {
   const value = Math.sin(index * 12.9898 + 78.233) * 43758.5453;
   return value - Math.floor(value);
+}
+
+function readArchiveHash(): { zone: Zone; view: "overview" | "section" | "network" } | null {
+  if (typeof window === "undefined") return null;
+  const archived = parseArchiveHash(window.location.hash, ZONES.map((item) => item.id));
+  const zone = ZONES.find((item) => item.id === archived?.zoneId);
+  if (!zone || !archived) return null;
+  const view = archived.view === "section" || archived.view === "network" ? archived.view : "overview";
+  return { zone, view: zone.scene === "network" ? "network" : view };
+}
+
+function writeArchiveHash(zone: Zone, view: "overview" | "section" | "network") {
+  if (typeof window === "undefined") return;
+  window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}${makeArchiveHash(zone.id, view)}`);
 }
 
 function SiloMark() {
@@ -554,6 +800,25 @@ export default function SiloExperience() {
   const [help, setHelp] = useState(false);
   const [mobilePanel, setMobilePanel] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [language, setLanguage] = useState<"en" | "fa">("en");
+  const [query, setQuery] = useState("");
+  const [detailTab, setDetailTab] = useState<"briefing" | "facilities" | "sources">("briefing");
+  const [journeyId, setJourneyId] = useState(JOURNEYS[0].id);
+  const [journeyStep, setJourneyStep] = useState(0);
+  const [shared, setShared] = useState(false);
+  const copy = UI_COPY[language];
+
+  const activeJourney = JOURNEYS.find((journey) => journey.id === journeyId) ?? JOURNEYS[0];
+
+  const visibleZones = useMemo(() => {
+    const normalized = query.trim().toLocaleLowerCase();
+    return ZONES.filter((zone) => {
+      if (zone.group !== sectorTab) return false;
+      if (!normalized) return true;
+      return [zone.name, zone.kicker, zone.levels, zone.description, ...zone.people, ...zone.details.flatMap((detail) => [detail.name, detail.note])]
+        .some((value) => value.toLocaleLowerCase().includes(normalized));
+    });
+  }, [query, sectorTab]);
 
   useEffect(() => {
     const saved = window.localStorage.getItem("silo-theme");
@@ -562,6 +827,41 @@ export default function SiloExperience() {
       : window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
     const frame = window.requestAnimationFrame(() => setTheme(preferredTheme));
     return () => window.cancelAnimationFrame(frame);
+  }, []);
+
+  useEffect(() => {
+    const savedLanguage = window.localStorage.getItem("silo-language");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const frame = window.requestAnimationFrame(() => {
+      if (savedLanguage === "fa" || savedLanguage === "en") setLanguage(savedLanguage);
+      if (reducedMotion.matches) setAutoRotate(false);
+    });
+    const onMotionChange = (event: MediaQueryListEvent) => {
+      if (event.matches) setAutoRotate(false);
+    };
+    reducedMotion.addEventListener("change", onMotionChange);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      reducedMotion.removeEventListener("change", onMotionChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem("silo-language", language);
+  }, [language]);
+
+  useEffect(() => {
+    const applyHash = () => {
+      const archived = readArchiveHash();
+      if (!archived) return;
+      setSelected(archived.zone);
+      setSectorTab(archived.zone.group);
+      setViewMode(archived.view);
+      window.requestAnimationFrame(() => sceneModeRef.current(archived.view, archived.zone));
+    };
+    applyHash();
+    window.addEventListener("hashchange", applyHash);
+    return () => window.removeEventListener("hashchange", applyHash);
   }, []);
 
   useEffect(() => {
@@ -632,7 +932,9 @@ export default function SiloExperience() {
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.domElement.setAttribute("aria-label", "Interactive 3D cutaway of Silo 18");
-    renderer.domElement.setAttribute("role", "img");
+    renderer.domElement.setAttribute("role", "application");
+    renderer.domElement.setAttribute("tabindex", "0");
+    renderer.domElement.setAttribute("aria-description", "Use arrow keys to orbit, plus and minus to zoom, and R to reset the view.");
     mount.appendChild(renderer.domElement);
     const onContextLost = (event: Event) => {
       event.preventDefault();
@@ -685,6 +987,51 @@ export default function SiloExperience() {
     foundation.scale.set(1.05, 1.2, 1.05);
     foundation.position.y = -18;
     world.add(foundation);
+
+    const surfaceGround = new THREE.Mesh(
+      new THREE.RingGeometry(11.7, 25, 96),
+      new THREE.MeshStandardMaterial({ color: 0x34382f, roughness: 1, metalness: 0.02, side: THREE.DoubleSide }),
+    );
+    surfaceGround.rotation.x = -Math.PI / 2;
+    surfaceGround.position.y = 18.25;
+    surfaceGround.receiveShadow = true;
+    world.add(surfaceGround);
+    const surfaceBerm = new THREE.Mesh(
+      new THREE.TorusGeometry(13.4, 1.05, 10, 96),
+      new THREE.MeshStandardMaterial({ color: 0x4a493b, roughness: 1 }),
+    );
+    surfaceBerm.rotation.x = Math.PI / 2;
+    surfaceBerm.position.y = 18.45;
+    surfaceBerm.scale.z = 0.58;
+    world.add(surfaceBerm);
+    const surfaceHatch = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.55, 2.7), capMat);
+    surfaceHatch.position.set(-4.8, 18.65, 1.4);
+    surfaceHatch.rotation.y = -0.18;
+    world.add(surfaceHatch);
+    const sensorMast = new THREE.Group();
+    sensorMast.position.set(4.6, 18.3, 0.2);
+    const sensorPole = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.18, 0.27, 2.55, 14),
+      new THREE.MeshStandardMaterial({ color: 0x5d625a, roughness: 0.48, metalness: 0.72 }),
+    );
+    sensorPole.position.y = 1.25;
+    sensorMast.add(sensorPole);
+    const sensorLens = new THREE.Mesh(
+      new THREE.SphereGeometry(0.48, 24, 16),
+      new THREE.MeshStandardMaterial({ color: 0x7fa2a0, emissive: 0x1e5154, emissiveIntensity: 0.9, roughness: 0.18, metalness: 0.56 }),
+    );
+    sensorLens.position.set(0, 2.52, 0.18);
+    sensorMast.add(sensorLens);
+    world.add(sensorMast);
+    [[-20, 4], [19, -7], [-15, -17], [13, 15]].forEach(([x, z]) => {
+      const distantRim = new THREE.Mesh(
+        new THREE.TorusGeometry(2.45, 0.24, 8, 48),
+        new THREE.MeshStandardMaterial({ color: 0x51534a, roughness: 0.9, metalness: 0.16 }),
+      );
+      distantRim.rotation.x = Math.PI / 2;
+      distantRim.position.set(x, 18.35, z);
+      world.add(distantRim);
+    });
 
     const zoneColors = [0xd7b26d, 0xb98a58, 0x82b8bc, 0xa5aaa0, 0xc9a778, 0x99ad73, 0xc17b58, 0xe06745];
     const floorMaterials = zoneColors.map(
@@ -1067,7 +1414,47 @@ export default function SiloExperience() {
       localLight.position.set(3.5, 3.8, 3.5);
       group.add(localLight);
 
-      if (zone.scene === "cafeteria") {
+      if (zone.scene === "surface") {
+        const earthMat = new THREE.MeshStandardMaterial({ color: 0x4b4b3e, roughness: 1, metalness: 0.01 });
+        const toxicMat = new THREE.MeshStandardMaterial({ color: 0x687264, roughness: 0.92, emissive: 0x182019, emissiveIntensity: 0.28 });
+        addBox(group, [14, 0.52, 10], [0, -2.35, 0], earthMat);
+        for (let x = -5.8; x <= 5.8; x += 1.15) {
+          const rubble = new THREE.Mesh(new THREE.DodecahedronGeometry(0.18 + seeded(Math.round((x + 9) * 13)) * 0.42, 0), earthMat);
+          rubble.position.set(x, -1.95, -1.6 + seeded(Math.round((x + 9) * 17)) * 5.3);
+          rubble.scale.y = 0.45;
+          group.add(rubble);
+        }
+        const berm = new THREE.Mesh(new THREE.TorusGeometry(4.5, 1.15, 8, 58, Math.PI * 1.35), earthMat);
+        berm.rotation.x = Math.PI / 2;
+        berm.rotation.z = 0.42;
+        berm.position.set(0.8, -1.35, -1.5);
+        berm.scale.z = 0.62;
+        group.add(berm);
+        addBox(group, [3.25, 0.58, 2.65], [-4.4, -1.65, -1.15], detailDarkMat, -0.12);
+        const ramp = addBox(group, [4.7, 0.18, 1.75], [-2.0, -1.9, 0.2], detailMetalMat, -0.12);
+        ramp.rotation.z = 0.06;
+        addRail(group, -4.2, 0.1, -1.88, 1.05, detailMetalMat);
+        addCylinder(group, 0.19, 3.55, [3.6, -0.45, -0.1], detailMetalMat);
+        const lens = new THREE.Mesh(new THREE.SphereGeometry(0.58, 24, 16), glow);
+        lens.position.set(3.6, 1.36, 0.15);
+        group.add(lens);
+        const lensCage = new THREE.Mesh(new THREE.TorusGeometry(0.73, 0.08, 8, 28), detailMetalMat);
+        lensCage.position.set(3.6, 1.36, 0.15);
+        group.add(lensCage);
+        for (const x of [-0.7, 1.1, 5.2]) {
+          addCylinder(group, 0.18, 1.25, [x, -1.55, 2.4 + seeded(Math.round(x * 10))], toxicMat, [0, 0, 1.1]);
+          addBox(group, [0.8, 0.2, 0.42], [x + 0.38, -1.84, 2.4 + seeded(Math.round(x * 10))], toxicMat, 0.35);
+        }
+        for (const x of [-5.2, -1.7, 1.8, 5.3]) {
+          const rim = new THREE.Mesh(new THREE.TorusGeometry(0.72, 0.09, 8, 28), detailMetalMat);
+          rim.rotation.x = Math.PI / 2;
+          rim.position.set(x, -1.92, -4.1);
+          group.add(rim);
+        }
+        const haze = new THREE.PointLight(0x87937f, 14, 18, 2);
+        haze.position.set(0, 5, 2);
+        group.add(haze);
+      } else if (zone.scene === "cafeteria") {
         const exteriorFeed = new THREE.MeshBasicMaterial({ color: 0x77877c, toneMapped: false });
         const display = new THREE.Mesh(new THREE.CircleGeometry(2.52, 64), exteriorFeed);
         display.position.set(0, 0.55, -4.62);
@@ -1258,6 +1645,14 @@ export default function SiloExperience() {
         }
         for (let y = -1.55; y <= 1.55; y += 0.78) addBox(group, [2.2, 0.08, 0.55], [4.55, y, -4.35], y > 0.7 ? accent : detailMetalMat);
         addConsole(group, [4.5, -1.28, 1.75], accent, 2.25);
+        for (const x of [-5.65, -2.65, 0.35]) {
+          addCylinder(group, 0.045, 2.45, [x, -0.45, 2.75], detailMetalMat);
+          addBox(group, [0.5, 0.28, 0.06], [x, 0.82, 2.75], glow);
+          addTube(group, [[x, 0.55, 2.75], [x + 0.35, -0.4, 2.75]], 0.025, accent);
+        }
+        addBox(group, [2.65, 4.65, 0.16], [-5.25, -0.05, -4.45], detailDarkMat);
+        for (let y = -1.8; y <= 1.55; y += 0.56) addBox(group, [2.15, 0.06, 0.04], [-5.25, y, -4.34], y > 0.9 ? accent : detailMetalMat);
+        addBox(group, [0.12, 5.2, 3.25], [-1.25, -0.05, 3.15], detailGlassMat);
       } else if (zone.scene === "residential") {
         for (let floor = 0; floor < 2; floor += 1) {
           for (let x = -5.2; x <= 5.2; x += 2.6) {
@@ -1272,6 +1667,11 @@ export default function SiloExperience() {
           addBox(group, [2.05, 0.08, 1.7], [x, -1.2, 1.8], accent);
         }
         addBox(group, [12.4, 0.12, 0.15], [0, 1.9, 1.8], accent);
+        addBox(group, [3.2, 2.1, 0.15], [-4.35, 0.45, -4.5], detailDarkMat);
+        for (let row = 0; row < 3; row += 1) for (let col = 0; col < 4; col += 1) addBox(group, [0.5, 0.3, 0.05], [-5.1 + col * 0.5, -0.15 + row * 0.48, -4.4], (row + col) % 3 === 0 ? accent : detailMetalMat);
+        addBox(group, [2.6, 1.1, 1.25], [4.3, -1.75, 3.25], detailMetalMat);
+        addBox(group, [2.35, 0.08, 1.05], [4.3, -1.12, 3.25], glow);
+        for (let step = 0; step < 7; step += 1) addBox(group, [1.75, 0.13, 0.56], [0.2, -2.05 + step * 0.42, 3.75 - step * 0.42], detailMetalMat);
       } else if (zone.scene === "farm") {
         const plantMat = new THREE.MeshStandardMaterial({ color: 0x78965f, roughness: 0.82, emissive: 0x243719, emissiveIntensity: 0.42 });
         for (let x = -5.35; x <= 2.5; x += 1.3) {
@@ -1288,6 +1688,40 @@ export default function SiloExperience() {
         for (let z = -2.6; z <= 2.8; z += 0.68) addBox(group, [3.05, 0.07, 0.07], [4.45, -1.05, z], detailMetalMat);
         for (let x = 3; x <= 5.9; x += 0.75) addBox(group, [0.06, 1.4, 0.06], [x, -1.45, -3.12], detailMetalMat);
         addCylinder(group, 0.62, 2.25, [5.45, -1.3, 3.35], detailMetalMat);
+        addCylinder(group, 0.72, 3.1, [3.55, -0.85, 3.25], accent);
+        addTube(group, [[3.55, 0.7, 3.25], [3.55, 2.35, 3.25], [-5.6, 2.35, 3.25]], 0.11, accent);
+        addBox(group, [2.7, 3.55, 0.68], [4.45, -0.45, -4.25], detailDarkMat);
+        for (let y = -1.85; y <= 1.05; y += 0.58) addBox(group, [2.25, 0.07, 0.08], [4.45, y, -3.88], y > 0.75 ? glow : detailMetalMat);
+        addConsole(group, [5.1, -1.18, 2.0], accent, 1.25);
+      } else if (zone.scene === "utilities") {
+        const waterMat = new THREE.MeshPhysicalMaterial({ color: 0x38676c, transparent: true, opacity: 0.72, roughness: 0.16, metalness: 0.2 });
+        const airMat = new THREE.MeshStandardMaterial({ color: 0x6e9692, emissive: 0x173c3a, emissiveIntensity: 0.55, roughness: 0.42, metalness: 0.68 });
+        for (const x of [-4.8, -1.65, 1.65, 4.8]) {
+          addCylinder(group, 1.05, 3.65, [x, -0.65, -2.55], x < 0 ? waterMat : detailMetalMat);
+          const crown = new THREE.Mesh(new THREE.TorusGeometry(1.06, 0.09, 8, 28), accent);
+          crown.rotation.x = Math.PI / 2;
+          crown.position.set(x, 1.18, -2.55);
+          group.add(crown);
+          addTube(group, [[x, 1.25, -2.55], [x, 2.25, -2.55], [x * 0.72, 2.25, 0.2]], 0.12, x < 0 ? accent : airMat);
+        }
+        for (let i = 0; i < 3; i += 1) {
+          const fan = new THREE.Group();
+          const ring = new THREE.Mesh(new THREE.TorusGeometry(0.92, 0.14, 8, 32), detailMetalMat);
+          fan.add(ring);
+          for (let blade = 0; blade < 8; blade += 1) {
+            const angle = (blade / 8) * TAU;
+            const fin = addBox(fan, [0.18, 0.78, 0.08], [Math.sin(angle) * 0.39, Math.cos(angle) * 0.39, 0], airMat);
+            fin.rotation.z = -angle;
+          }
+          fan.position.set(-3.5 + i * 3.5, 0.65, -4.56);
+          group.add(fan);
+        }
+        addBox(group, [12.2, 0.24, 2.25], [0, -2.1, 2.6], detailConcreteMat);
+        for (let x = -5.5; x <= 5.5; x += 1.1) addBox(group, [0.78, 0.05, 1.85], [x, -1.93, 2.6], waterMat);
+        addTube(group, [[-6.3, 2.45, 3.7], [-3, 2.45, 3.7], [-3, -1.1, 3.7]], 0.2, airMat);
+        addTube(group, [[6.3, 1.85, 3.45], [3.25, 1.85, 3.45], [3.25, -1.1, 3.45]], 0.17, accent);
+        addConsole(group, [0, -1.05, 1.35], accent, 2.8);
+        addRail(group, -6, 6, -2.35, 4.35, detailMetalMat);
       } else if (zone.scene === "industrial") {
         addBox(group, [11.5, 0.3, 1.6], [0, -1.6, 0], detailMetalMat);
         for (let x = -5; x <= 5; x += 1) {
@@ -1307,6 +1741,10 @@ export default function SiloExperience() {
         const hook = new THREE.Mesh(new THREE.TorusGeometry(0.34, 0.08, 8, 18, Math.PI * 1.45), accent);
         hook.position.set(2.25, 0.1, 2.8);
         group.add(hook);
+        for (let x = -5.8; x <= -3.2; x += 0.52) addBox(group, [0.08, 3.85, 0.08], [x, -0.5, 3.8], detailMetalMat);
+        addBox(group, [3.0, 0.28, 1.15], [-4.5, -1.9, 2.65], detailDarkMat);
+        addConsole(group, [-4.5, -1.18, 2.15], accent, 1.9);
+        for (let x = 3.4; x <= 5.8; x += 0.8) for (let y = -1.8; y <= 1.45; y += 0.65) addBox(group, [0.55, 0.44, 0.65], [x, y, -4.18], (Math.round(x * 10 + y * 10) % 3 === 0) ? accent : detailWallMat);
       } else if (zone.scene === "mechanical") {
         const turbine = addDetailTurbine(group, 0xc0583c, 1.18);
         turbine.position.set(0, -0.55, -0.65);
@@ -1405,6 +1843,16 @@ export default function SiloExperience() {
         for (let y = -2.25; y <= 1.6; y += 0.55) addBox(group, [1.85, 0.07, 0.07], [4.65, y, 1.8], detailMetalMat);
         addCylinder(group, 0.42, 10.5, [-4.9, 1.85, 0], detailMetalMat, [0, 0, Math.PI / 2]);
         for (let z = -3.2; z <= 3.2; z += 1.6) addBox(group, [0.5, 0.06, 0.18], [0, 2.2, z], glow);
+        const vent = addCylinder(group, 0.58, 10.8, [4.95, 1.72, -1.2], accent, [0, 0, Math.PI / 2]);
+        vent.castShadow = true;
+        for (let x = -4.3; x <= 4.3; x += 1.4) {
+          const cart = addBox(group, [1.15, 0.72, 1.1], [x, -1.58, 2.85], detailDarkMat);
+          cart.rotation.x = -0.08;
+          addCylinder(group, 0.16, 1.3, [x - 0.38, -2.02, 2.85], detailMetalMat, [Math.PI / 2, 0, 0], 12);
+          addCylinder(group, 0.16, 1.3, [x + 0.38, -2.02, 2.85], detailMetalMat, [Math.PI / 2, 0, 0], 12);
+        }
+        addBox(group, [2.35, 4.6, 2.1], [5.25, -0.2, 3.1], detailMetalMat);
+        for (let x = 4.35; x <= 6.15; x += 0.45) addBox(group, [0.07, 4.1, 0.07], [x, -0.25, 2.0], accent);
       }
       detailGroups.set(zone.id, group);
       detailRoot.add(group);
@@ -1544,13 +1992,25 @@ export default function SiloExperience() {
     const onPointerUp = () => { dragging = false; };
     const onWheel = (event: WheelEvent) => {
       event.preventDefault();
-      cameraState.targetDistance = THREE.MathUtils.clamp(cameraState.targetDistance + event.deltaY * 0.025, 23, 62);
+      cameraState.targetDistance = THREE.MathUtils.clamp(cameraState.targetDistance + event.deltaY * 0.025, 10, 72);
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "+", "=", "-", "_", "r", "R"].includes(event.key)) event.preventDefault();
+      if (event.key === "ArrowLeft") cameraState.targetYaw -= 0.12;
+      if (event.key === "ArrowRight") cameraState.targetYaw += 0.12;
+      if (event.key === "ArrowUp") cameraState.targetPitch = THREE.MathUtils.clamp(cameraState.targetPitch + 0.08, -0.48, 0.48);
+      if (event.key === "ArrowDown") cameraState.targetPitch = THREE.MathUtils.clamp(cameraState.targetPitch - 0.08, -0.48, 0.48);
+      if (event.key === "+" || event.key === "=") cameraState.targetDistance = Math.max(10, cameraState.targetDistance - 2.5);
+      if (event.key === "-" || event.key === "_") cameraState.targetDistance = Math.min(72, cameraState.targetDistance + 2.5);
+      if (event.key === "r" || event.key === "R") resetRef.current();
+      if (event.key !== "Tab") setAutoRotate(false);
     };
     renderer.domElement.addEventListener("pointerdown", onPointerDown);
     renderer.domElement.addEventListener("pointermove", onPointerMove);
     renderer.domElement.addEventListener("pointerup", onPointerUp);
     renderer.domElement.addEventListener("pointercancel", onPointerUp);
     renderer.domElement.addEventListener("wheel", onWheel, { passive: false });
+    renderer.domElement.addEventListener("keydown", onKeyDown);
 
     const resize = () => {
       const width = mount.clientWidth;
@@ -1567,7 +2027,18 @@ export default function SiloExperience() {
     let frame = 0;
     let animationFrame = 0;
     let rendererHealthy = false;
+    let pageVisible = !document.hidden;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const onVisibilityChange = () => {
+      pageVisible = !document.hidden;
+      if (pageVisible) clock.getDelta();
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
     const animate = () => {
+      if (!pageVisible) {
+        animationFrame = requestAnimationFrame(animate);
+        return;
+      }
       const delta = Math.min(clock.getDelta(), 0.05);
       if (autoRotateRef.current && !dragging) cameraState.targetYaw += delta * 0.055;
       cameraState.yaw = THREE.MathUtils.lerp(cameraState.yaw, cameraState.targetYaw, 0.055);
@@ -1582,8 +2053,10 @@ export default function SiloExperience() {
         Math.cos(cameraState.yaw) * Math.cos(cameraState.pitch) * cameraState.distance,
       );
       camera.lookAt(target);
-      dust.rotation.y += delta * 0.012;
-      generator.rotation.x += delta * 0.18;
+      if (!reducedMotion.matches) {
+        dust.rotation.y += delta * 0.012;
+        generator.rotation.x += delta * 0.18;
+      }
       frame += 1;
       if (frame % 2 === 0) {
         ZONES.forEach((zone) => {
@@ -1620,6 +2093,8 @@ export default function SiloExperience() {
       renderer.domElement.removeEventListener("pointerup", onPointerUp);
       renderer.domElement.removeEventListener("pointercancel", onPointerUp);
       renderer.domElement.removeEventListener("wheel", onWheel);
+      renderer.domElement.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
       scene.traverse((object) => {
         if (object instanceof THREE.Mesh || object instanceof THREE.Points) {
           object.geometry?.dispose();
@@ -1637,15 +2112,20 @@ export default function SiloExperience() {
 
   const chooseZone = (zone: Zone) => {
     setSelected(zone);
+    setDetailTab("briefing");
+    setSectorTab(zone.group);
     if (zone.scene === "network") {
       setViewMode("network");
       sceneModeRef.current("network", zone);
+      writeArchiveHash(zone, "network");
     } else if (viewMode === "section") {
       sceneModeRef.current("section", zone);
+      writeArchiveHash(zone, "section");
     } else {
       setViewMode("overview");
       sceneModeRef.current("overview", zone);
       window.setTimeout(() => focusRef.current(zone), 30);
+      writeArchiveHash(zone, "overview");
     }
     setMobilePanel(true);
   };
@@ -1653,16 +2133,20 @@ export default function SiloExperience() {
   const showOverview = () => {
     setViewMode("overview");
     sceneModeRef.current("overview", selected);
+    window.setTimeout(() => focusRef.current(selected), 30);
+    writeArchiveHash(selected, "overview");
   };
 
   const showSection = () => {
     if (selected.scene === "network") {
       setViewMode("network");
       sceneModeRef.current("network", selected);
+      writeArchiveHash(selected, "network");
       return;
     }
     setViewMode("section");
     sceneModeRef.current("section", selected);
+    writeArchiveHash(selected, "section");
   };
 
   const showNetwork = () => {
@@ -1671,17 +2155,49 @@ export default function SiloExperience() {
     setSectorTab("network");
     setViewMode("network");
     sceneModeRef.current("network", networkZone);
+    setDetailTab("briefing");
+    writeArchiveHash(networkZone, "network");
   };
 
-  const visibleZones = ZONES.filter((zone) => zone.group === sectorTab);
+  const moveJourney = (nextStep: number, journey = activeJourney) => {
+    const boundedStep = Math.max(0, Math.min(journey.zones.length - 1, nextStep));
+    const zone = ZONES.find((item) => item.id === journey.zones[boundedStep]);
+    if (!zone) return;
+    setJourneyStep(boundedStep);
+    chooseZone(zone);
+  };
+
+  const changeJourney = (nextJourneyId: string) => {
+    const journey = JOURNEYS.find((item) => item.id === nextJourneyId) ?? JOURNEYS[0];
+    setJourneyId(journey.id);
+    moveJourney(0, journey);
+  };
+
+  const shareView = async () => {
+    writeArchiveHash(selected, viewMode);
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setShared(true);
+      window.setTimeout(() => setShared(false), 1800);
+    } catch {
+      if (navigator.share) await navigator.share({ title: `SILO 18 — ${selected.name}`, url: window.location.href });
+    }
+  };
 
   return (
-    <main className="silo-app" data-theme={theme}>
+    <main className="silo-app" data-theme={theme} data-language={language} dir={language === "fa" ? "rtl" : "ltr"}>
+      <a className="skip-link" href="#archive-details">Skip to archive details</a>
       <header className="topbar">
         <div className="brand-lockup"><SiloMark /><div><span className="eyebrow">THE LAST CITY</span><strong>SILO</strong></div></div>
-        <div className="archive-title"><span>STRUCTURAL ARCHIVE</span><b>18 / INTERNAL</b></div>
+        <div className="archive-title"><span>STRUCTURAL ARCHIVE</span><b>18 / INTERNAL</b><em>{SERIES_COVERAGE}</em></div>
         <div className="topbar__right">
-          <span className="system-status"><i /> SYSTEM NOMINAL</span>
+          <span className="system-status"><i /> UPDATED {ARCHIVE_UPDATED}</span>
+          <button className={`icon-button icon-button--wide ${shared ? "is-success" : ""}`} onClick={shareView} aria-label={copy.share} title={copy.share}>
+            {shared ? <Check size={16} /> : <Share2 size={16} />}<span>{shared ? copy.copied : copy.share}</span>
+          </button>
+          <button className="icon-button" onClick={() => setLanguage((value) => value === "en" ? "fa" : "en")} aria-label={`Switch interface to ${language === "en" ? "Persian" : "English"}`} title={`Switch to ${language === "en" ? "Persian" : "English"}`}>
+            <Languages size={17} /><small>{language === "en" ? "FA" : "EN"}</small>
+          </button>
           <button className="icon-button" onClick={() => setTheme((value) => value === "dark" ? "light" : "dark")} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`} title={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}>
             {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
           </button>
@@ -1690,19 +2206,21 @@ export default function SiloExperience() {
       </header>
 
       <aside className="level-index" aria-label="Silo sectors">
-        <div className="level-index__head"><span>ARCHIVE</span><b>{sectorTab === "internal" ? "144 LVLS" : sectorTab === "below" ? "SUB-FOUNDATION" : "OP. FIFTY"}</b></div>
+        <div className="level-index__head"><span>{copy.archive}</span><b>{sectorTab === "internal" ? `${ZONES.filter((zone) => zone.group === "internal").length} SECTIONS` : sectorTab === "below" ? "SUB-FOUNDATION" : "OP. FIFTY"}</b></div>
         <div className="sector-tabs" role="tablist" aria-label="Archive layer">
-          <button className={sectorTab === "internal" ? "active" : ""} onClick={() => setSectorTab("internal")} role="tab">INSIDE</button>
-          <button className={sectorTab === "below" ? "active" : ""} onClick={() => setSectorTab("below")} role="tab">BELOW</button>
-          <button className={sectorTab === "network" ? "active" : ""} onClick={() => { setSectorTab("network"); showNetwork(); }} role="tab">GRID</button>
+          <button className={sectorTab === "internal" ? "active" : ""} onClick={() => setSectorTab("internal")} role="tab" aria-selected={sectorTab === "internal"} tabIndex={sectorTab === "internal" ? 0 : -1}>{copy.inside}</button>
+          <button className={sectorTab === "below" ? "active" : ""} onClick={() => setSectorTab("below")} role="tab" aria-selected={sectorTab === "below"} tabIndex={sectorTab === "below" ? 0 : -1}>{copy.below}</button>
+          <button className={sectorTab === "network" ? "active" : ""} onClick={() => { setSectorTab("network"); showNetwork(); }} role="tab" aria-selected={sectorTab === "network"} tabIndex={sectorTab === "network" ? 0 : -1}>{copy.grid}</button>
         </div>
-        <div className="level-list">
+        <div className="archive-search"><Search size={15} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={copy.search} aria-label={copy.search} />{query && <button onClick={() => setQuery("")} aria-label="Clear search"><X size={13} /></button>}</div>
+        <div className="level-list" role="tabpanel" aria-label={`${sectorTab} archive sections`}>
           {visibleZones.map((zone, index) => (
-            <button key={zone.id} className={`level-button ${selected.id === zone.id ? "level-button--active" : ""}`} onClick={() => chooseZone(zone)} style={{ "--zone": zone.color } as React.CSSProperties}>
+            <button key={zone.id} className={`level-button ${selected.id === zone.id ? "level-button--active" : ""}`} onClick={() => chooseZone(zone)} style={{ "--zone": zone.color } as React.CSSProperties} aria-current={selected.id === zone.id ? "location" : undefined}>
               <span className="level-button__number">{String(index + 1).padStart(2, "0")}</span>
               <span><b>{zone.name}</b><small>{zone.levels}</small></span><ChevronRight size={14} />
             </button>
           ))}
+          {visibleZones.length === 0 && <p className="archive-empty">{copy.noResults}</p>}
         </div>
         <div className="canon-key">
           <span><i className="canon-series" /> SERIES</span><span><i className="canon-books" /> BOOKS</span><span><i className="canon-reconstruction" /> RECONSTRUCTION</span>
@@ -1739,7 +2257,7 @@ export default function SiloExperience() {
             <div className="fallback-section__room">
               <div className="fallback-section__backwall" />
               <div className="fallback-section__feature">
-                {selected.scene === "mine" ? <Pickaxe size={58} /> : selected.scene === "airlock" ? <DoorOpen size={58} /> : selected.scene === "cafeteria" ? <Eye size={58} /> : selected.scene === "tunnel" ? <DoorOpen size={58} /> : selected.scene === "gap" ? <Waves size={58} /> : selected.scene === "digger" ? <Drill size={58} /> : selected.scene === "it" ? <Database size={58} /> : selected.scene === "mechanical" ? <Gauge size={58} /> : selected.scene === "farm" ? <Activity size={58} /> : <Layers3 size={58} />}
+                {selected.scene === "surface" ? <Trees size={58} /> : selected.scene === "utilities" ? <Wind size={58} /> : selected.scene === "mine" ? <Pickaxe size={58} /> : selected.scene === "airlock" ? <DoorOpen size={58} /> : selected.scene === "cafeteria" ? <Eye size={58} /> : selected.scene === "tunnel" ? <DoorOpen size={58} /> : selected.scene === "gap" ? <Waves size={58} /> : selected.scene === "digger" ? <Drill size={58} /> : selected.scene === "it" ? <Database size={58} /> : selected.scene === "mechanical" ? <Gauge size={58} /> : selected.scene === "farm" ? <Activity size={58} /> : <Layers3 size={58} />}
               </div>
               <div className="fallback-section__rails"><i /><i /><i /><i /><i /></div>
               <div className="fallback-section__stations">
@@ -1779,46 +2297,85 @@ export default function SiloExperience() {
           <button onClick={() => setHelp(true)} title="Controls"><ZoomIn size={17} /></button>
         </div>
         <div className="view-switch" aria-label="Scene view">
-          <button className={viewMode === "overview" ? "active" : ""} onClick={showOverview}><MapIcon size={14} /> OVERVIEW</button>
-          <button className={viewMode === "section" ? "active" : ""} onClick={showSection}><Box size={14} /> SECTION</button>
-          <button className={viewMode === "network" ? "active" : ""} onClick={showNetwork}><Network size={14} /> NETWORK</button>
+          <button className={viewMode === "overview" ? "active" : ""} onClick={showOverview} aria-pressed={viewMode === "overview"}><MapIcon size={14} /> {copy.overview}</button>
+          <button className={viewMode === "section" ? "active" : ""} onClick={showSection} aria-pressed={viewMode === "section"}><Box size={14} /> {copy.section}</button>
+          <button className={viewMode === "network" ? "active" : ""} onClick={showNetwork} aria-pressed={viewMode === "network"}><Network size={14} /> {copy.network}</button>
         </div>
         <div className="mode-switch" aria-label="Visualization layer">
-          <button className={mode === "structure" ? "active" : ""} onClick={() => setMode("structure")}><Box size={14} /> STRUCTURE</button>
-          <button className={mode === "systems" ? "active" : ""} onClick={() => setMode("systems")}><Gauge size={14} /> SYSTEMS</button>
-          <button className={mode === "life" ? "active" : ""} onClick={() => setMode("life")}><Aperture size={14} /> LIFE</button>
+          <button className={mode === "structure" ? "active" : ""} onClick={() => setMode("structure")} aria-pressed={mode === "structure"}><Box size={14} /> {copy.structure}</button>
+          <button className={mode === "systems" ? "active" : ""} onClick={() => setMode("systems")} aria-pressed={mode === "systems"}><Gauge size={14} /> {copy.systems}</button>
+          <button className={mode === "life" ? "active" : ""} onClick={() => setMode("life")} aria-pressed={mode === "life"}><Aperture size={14} /> {copy.life}</button>
+        </div>
+        <div className="journey-dock" aria-label="Guided archive routes">
+          <div className="journey-dock__title"><Route size={15} /><span>{copy.guided}</span><b>{journeyStep + 1}/{activeJourney.zones.length}</b></div>
+          <select value={journeyId} onChange={(event) => changeJourney(event.target.value)} aria-label="Choose a guided route">
+            {JOURNEYS.map((journey) => <option key={journey.id} value={journey.id}>{journey.name}</option>)}
+          </select>
+          <small>{activeJourney.subtitle}</small>
+          <div className="journey-dock__steps" role="list" aria-label={activeJourney.name}>
+            {activeJourney.zones.map((zoneId, index) => {
+              const zone = ZONES.find((item) => item.id === zoneId);
+              return <button key={zoneId} className={index === journeyStep ? "active" : ""} onClick={() => moveJourney(index)} aria-label={`Step ${index + 1}: ${zone?.name ?? zoneId}`} aria-current={index === journeyStep ? "step" : undefined}><i />{zone?.name ?? zoneId}</button>;
+            })}
+          </div>
+          <div className="journey-dock__nav"><button onClick={() => moveJourney(journeyStep - 1)} disabled={journeyStep === 0}><ChevronLeft size={15} /> PREV</button><button onClick={() => moveJourney(journeyStep + 1)} disabled={journeyStep === activeJourney.zones.length - 1}>NEXT <ChevronRight size={15} /></button></div>
         </div>
       </section>
 
-      <aside className={`intel-panel ${mobilePanel ? "intel-panel--mobile-open" : ""}`}>
+      <aside id="archive-details" className={`intel-panel ${mobilePanel ? "intel-panel--mobile-open" : ""}`} aria-label={`${selected.name} archive details`}>
         <button className="intel-panel__close" onClick={() => setMobilePanel(false)} aria-label="Close detail panel"><X size={18} /></button>
         <div className="intel-panel__stripe" style={{ background: selected.color }} />
         <div className="intel-panel__topline"><span>{selected.kicker}</span><b className={`clearance clearance--${selected.status.toLowerCase().replace(" ", "-")}`}>{selected.status}</b></div>
         <div className="zone-meta"><span className="zone-number">{selected.code}</span><b className={`canon-badge canon-badge--${selected.canon.toLowerCase()}`}>{selected.canon}</b><span className="zone-era">{selected.era}</span></div>
-        <h1>{selected.name}</h1><p className="zone-levels">{selected.levels}</p><p className="zone-copy">{selected.description}</p>
+        <h1>{selected.name}</h1><p className="zone-levels">{selected.levels}</p>
         <div className="section-actions">
-          {viewMode !== "overview" && <button className="section-actions__back" onClick={showOverview}><ArrowLeft size={15} /> FULL SILO</button>}
-          <button className="section-actions__primary" onClick={selected.scene === "network" ? showNetwork : showSection}>{selected.scene === "network" ? <Network size={15} /> : <Box size={15} />}{selected.scene === "network" ? "OPEN NETWORK" : "OPEN 3D SECTION"}</button>
+          {viewMode !== "overview" && <button className="section-actions__back" onClick={showOverview}><ArrowLeft size={15} /> {copy.fullSilo}</button>}
+          <button className="section-actions__primary" onClick={selected.scene === "network" ? showNetwork : showSection}>{selected.scene === "network" ? <Network size={15} /> : <Box size={15} />}{selected.scene === "network" ? copy.openNetwork : copy.openSection}</button>
         </div>
-        {selected.scene === "airlock" && (
-          <div className="sequence-strip" aria-label="One-way cleaning route">
-            <Route size={15} /><div className="sequence-strip__steps"><span>HOLDING</span><i>→</i><span>SUIT PREP</span><i>→</i><span>INNER HATCH</span><i>→</i><span>FIRE PURGE</span><i>→</i><span>OUTER HATCH</span><i>→</i><span>SENSOR</span></div>
-          </div>
-        )}
-        {selected.scene === "cafeteria" && (
-          <div className="sequence-strip sequence-strip--sensor" aria-label="Exterior sensor feed route">
-            <Eye size={15} /><div className="sequence-strip__steps"><span>EXTERIOR SENSOR</span><i>→</i><span>LIVE FEED</span><i>→</i><span>WALL DISPLAY</span><i>→</i><span>PUBLIC VIEWING</span></div>
-          </div>
-        )}
-        <div className="intel-rule" /><span className="section-label">FACILITIES / SET ANCHORS</span>
-        <ul className="installation-list">{selected.details.map((detail, index) => <li key={detail.name}><span>{String(index + 1).padStart(2, "0")}</span><div><b>{detail.name}</b><small>{detail.note}</small></div><i className={`detail-tag detail-tag--${detail.tag.toLowerCase().replace(" ", "-")}`}>{detail.tag}</i></li>)}</ul>
-        <span className="section-label section-label--people">ASSOCIATED PERSONNEL</span>
-        <div className="people-strip">{selected.people.map((person) => <span key={person}>{person}</span>)}</div>
-        <div className="system-card">
-          {selected.telemetry.map((item, index) => <div key={item.label}>{index === 0 ? <Wind size={16} /> : index === 1 ? <Gauge size={16} /> : <ShieldAlert size={16} />}<span>{item.label}</span><b>{item.value}</b></div>)}
+        <div className="intel-tabs" role="tablist" aria-label="Archive detail view">
+          <button id="tab-briefing" role="tab" aria-selected={detailTab === "briefing"} aria-controls="panel-briefing" tabIndex={detailTab === "briefing" ? 0 : -1} className={detailTab === "briefing" ? "active" : ""} onClick={() => setDetailTab("briefing")}>{copy.overviewTab}</button>
+          <button id="tab-facilities" role="tab" aria-selected={detailTab === "facilities"} aria-controls="panel-facilities" tabIndex={detailTab === "facilities" ? 0 : -1} className={detailTab === "facilities" ? "active" : ""} onClick={() => setDetailTab("facilities")}>{copy.facilitiesTab}<span>{selected.details.length}</span></button>
+          <button id="tab-sources" role="tab" aria-selected={detailTab === "sources"} aria-controls="panel-sources" tabIndex={detailTab === "sources" ? 0 : -1} className={detailTab === "sources" ? "active" : ""} onClick={() => setDetailTab("sources")}>{copy.sourcesTab}<span>{ZONE_REFERENCES[selected.id]?.length ?? 0}</span></button>
         </div>
-        <div className="intel-note"><BookOpen size={16} /><p><b>EVIDENCE LEDGER</b>{selected.evidence}</p></div>
-        {selected.group === "below" && <div className="route-note"><Route size={15} /><span>SUB-FOUNDATION ROUTING SHOWN AT INFERRED SCALE</span></div>}
+
+        {detailTab === "briefing" && <div id="panel-briefing" className="intel-tabpanel" role="tabpanel" aria-labelledby="tab-briefing">
+          <p className="zone-copy">{selected.description}</p>
+          {selected.scene === "airlock" && (
+            <div className="sequence-strip" aria-label="One-way cleaning route">
+              <Route size={15} /><div className="sequence-strip__steps"><span>HOLDING</span><i>→</i><span>SUIT PREP</span><i>→</i><span>INNER HATCH</span><i>→</i><span>FIRE PURGE</span><i>→</i><span>OUTER HATCH</span><i>→</i><span>SENSOR</span></div>
+            </div>
+          )}
+          {selected.scene === "cafeteria" && (
+            <div className="sequence-strip sequence-strip--sensor" aria-label="Exterior sensor feed route">
+              <Eye size={15} /><div className="sequence-strip__steps"><span>EXTERIOR SENSOR</span><i>→</i><span>LIVE FEED</span><i>→</i><span>WALL DISPLAY</span><i>→</i><span>PUBLIC VIEWING</span></div>
+            </div>
+          )}
+          {selected.scene === "surface" && (
+            <div className="sequence-strip sequence-strip--sensor" aria-label="Surface cleaning path">
+              <Trees size={15} /><div className="sequence-strip__steps"><span>OUTER HATCH</span><i>→</i><span>BERM</span><i>→</i><span>PRIOR CLEANERS</span><i>→</i><span>SENSOR</span><i>→</i><span>SILO FIELD</span></div>
+            </div>
+          )}
+          <span className="section-label section-label--people">{copy.personnel}</span>
+          <div className="people-strip">{selected.people.map((person) => <span key={person}>{person}</span>)}</div>
+          <div className="system-card">
+            {selected.telemetry.map((item, index) => <div key={item.label}>{index === 0 ? <Wind size={16} /> : index === 1 ? <Gauge size={16} /> : <ShieldAlert size={16} />}<span>{item.label}</span><b>{item.value}</b></div>)}
+          </div>
+          <div className="intel-note"><BookOpen size={16} /><p><b>{copy.evidence}</b>{selected.evidence}</p></div>
+          {selected.group === "below" && <div className="route-note"><Route size={15} /><span>SUB-FOUNDATION ROUTING SHOWN AT INFERRED SCALE</span></div>}
+        </div>}
+
+        {detailTab === "facilities" && <div id="panel-facilities" className="intel-tabpanel" role="tabpanel" aria-labelledby="tab-facilities">
+          <span className="section-label">FACILITIES / SET ANCHORS</span>
+          <ul className="installation-list">{selected.details.map((detail, index) => <li key={detail.name}><span>{String(index + 1).padStart(2, "0")}</span><div><b>{detail.name}</b><small>{detail.note}</small></div><i className={`detail-tag detail-tag--${detail.tag.toLowerCase().replace(" ", "-")}`}>{detail.tag}</i></li>)}</ul>
+        </div>}
+
+        {detailTab === "sources" && <div id="panel-sources" className="intel-tabpanel" role="tabpanel" aria-labelledby="tab-sources">
+          <div className="coverage-card"><span>ARCHIVE COVERAGE</span><b>{SERIES_COVERAGE}</b><small>Last reviewed {ARCHIVE_UPDATED}. Season 3 is ongoing; unreleased material is not treated as canon here.</small></div>
+          <div className="source-list">
+            {(ZONE_REFERENCES[selected.id] ?? [SERIES_SOURCE]).map((source) => <a key={`${selected.id}-${source.label}`} href={source.url} target="_blank" rel="noreferrer"><span className={`source-kind source-kind--${source.kind.toLowerCase()}`}>{source.kind}</span><div><b>{source.label}</b><small>{source.coverage}</small></div><ExternalLink size={15} /></a>)}
+          </div>
+          <div className="method-note"><ShieldAlert size={16} /><p><b>HOW TO READ THIS MODEL</b>Series evidence, book continuity and inferred geometry are never merged into one certainty label. Official links establish the works and release coverage; the room-by-room notes identify where geometry is reconstructed.</p></div>
+        </div>}
       </aside>
 
       <footer className="statusbar"><span><i className="status-dot" /> LIVE MODEL</span><span>DRAG TO ORBIT</span><span>SCROLL TO ZOOM</span><span className="statusbar__right">PACT ARCHIVE / ACCESS 02</span></footer>

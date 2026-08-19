@@ -1,0 +1,33 @@
+name: Bug report
+description: Report a rendering, interaction or archive problem.
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for helping improve the Silo 18 archive.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Include the zone, view mode and what you expected.
+    validations:
+      required: true
+  - type: input
+    id: link
+    attributes:
+      label: Shareable archive link
+      description: Use “Share View” in the app when possible.
+  - type: dropdown
+    id: renderer
+    attributes:
+      label: Renderer
+      options: [WebGL 3D, CSS fallback, Not sure]
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Browser and device
+    validations:
+      required: true

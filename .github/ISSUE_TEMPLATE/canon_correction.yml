@@ -1,0 +1,25 @@
+name: Canon correction
+description: Propose a sourced correction to a room, route or evidence label.
+title: "[Canon]: "
+labels: [canon, documentation]
+body:
+  - type: textarea
+    id: correction
+    attributes:
+      label: Proposed correction
+      description: Explain what the archive currently says and what should change.
+    validations:
+      required: true
+  - type: dropdown
+    id: continuity
+    attributes:
+      label: Continuity
+      options: [Apple TV+ series, Hugh Howey books, Production source]
+    validations:
+      required: true
+  - type: input
+    id: citation
+    attributes:
+      label: Episode, chapter or official source
+    validations:
+      required: true

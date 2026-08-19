@@ -19,6 +19,7 @@
     <img alt="Three.js" src="https://img.shields.io/badge/Three.js-WebGL-11120F?logo=threedotjs&logoColor=white" />
     <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5.9-11120F?logo=typescript&logoColor=3178C6" />
     <img alt="Spoilers" src="https://img.shields.io/badge/SPOILERS-SERIES_%26_BOOKS-9B4938" />
+    <a href="https://github.com/armanjamshidi/silo-the-last-city/actions/workflows/ci.yml"><img alt="CI status" src="https://img.shields.io/github/actions/workflow/status/armanjamshidi/silo-the-last-city/ci.yml?branch=main&style=flat&label=CI&labelColor=11120F" /></a>
   </p>
 </div>
 
@@ -31,6 +32,8 @@ Silo 18 is usually experienced one stairwell, room, or secret at a time. This pr
 
 It does **not** present fan-made geometry as official fact. Every space is labeled as **Series**, **Book Canon**, or **Reconstruction**, and uncertain level numbers remain explicitly undisclosed.
 
+The current research ledger is reviewed through **Season 3, Episode 7 (20 August 2026)**. Season 3 is still airing, so the archive does not treat unreleased material as established canon.
+
 <div align="center">
   <h3>→ <a href="https://silo-the-last-city.vercel.app/">Enter Silo 18</a> ←</h3>
   <sub>Drag to orbit · Scroll to zoom · Open any section for a dedicated 3D diorama</sub>
@@ -41,13 +44,19 @@ It does **not** present fan-made geometry as official fact. Every space is label
 - **Full-silo cutaway** — explore the complete 144-level structure and the controlled void below it.
 - **Purpose-built 3D sections** — each major district opens into its own modeled room study instead of reusing a generic scene.
 - **Up Top reconstructed in detail** — the Cafeteria & Sensor Gallery, one-way Cleaning Facility, and Civic offices are separate spaces.
+- **The world above** — leave the outer hatch, cross the berm, inspect the sensor mast, prior cleaners and neighboring silo crowns.
 - **Deep infrastructure** — descend through Mechanical, the Digger cavern, George Wilkins' camp, the flooded Gap, pumps, mines, and the Algorithm access tunnel.
+- **Life-support reconstruction** — inspect the air-handling, water-treatment, heat-exchange, fire-water and waste-recovery systems a sealed city requires.
 - **Distinct hidden systems** — the I.T. external power feeder and Judicial Safeguard delivery line are shown as separate routes.
 - **Operation Fifty view** — inspect the 51-silo field and compare Silo 18, Silo 17, Silo 1, and Seed-related book continuity.
 - **Evidence-aware lore** — every facility and route carries an `ON SCREEN`, `BOOK CANON`, or `INFERRED` tag.
 - **Resilient rendering** — a detailed CSS cutaway remains usable inside WebGL-restricted browsers and embedded previews.
 - **Dark and light themes** — the interface remembers the viewer's preference locally.
-- **Responsive controls** — desktop and compact layouts retain the archive, scene controls, and evidence panel.
+- **Guided story routes** — follow the Cleaning route, Juliette's descent, George-to-Lukas investigation, or the hidden-systems trail.
+- **Source ledger** — every zone links to the official Apple series/episode index and relevant Hugh Howey book source.
+- **Shareable deep links** — copy the exact zone and 3D view using `#zone=…&view=…` URLs.
+- **Accessible controls** — keyboard orbit/zoom/reset, visible focus, reduced-motion behavior and readable mobile zone names.
+- **English / Persian chrome** — switch the navigation and core interface labels between English and فارسی.
 
 ## Explore the archive
 
@@ -56,6 +65,7 @@ It does **not** present fan-made geometry as official fact. Every space is label
 | **Up Top** | Cleaning Facility, suit-prep route, fire purge, outer hatch, exterior sensor, Cafeteria & Sensor Gallery, Sheriff and civic offices |
 | **Authority & systems** | Judicial, Safeguard delivery line, I.T. operations, server aisles, independent power feeder, Vault, Legacy, Algorithm chamber |
 | **Daily life** | Medical & Nursery, residential Mids, Farms, Supply workshops and storage |
+| **Life support** | Air handling, closed-loop water, waste recovery, heat exchange and vertical utility trunks |
 | **Down Deep** | Mechanical, generator hall, control deck, workshops and pump infrastructure |
 | **Below Level 144** | Digger cavern, George's camp, flooded Gap, Algorithm access tunnel and reconstructed mine routes |
 | **Beyond Silo 18** | 51-silo field, Silo 17, Silo 1, utility routes and book-canon Seed alignment |
@@ -82,6 +92,11 @@ This distinction is central to the project: the archive should make the world ea
 | Emphasize inhabited areas | Switch to **Life** |
 | Pause motion | Use the play/pause control |
 | Change appearance | Use the sun/moon theme toggle |
+| Orbit with a keyboard | Focus the 3D canvas and use arrow keys |
+| Keyboard zoom / reset | Use `+`, `-` and `R` |
+| Follow a story route | Choose a route from **Guided Routes**, then move between steps |
+| Share one exact view | Use **Share View**; the URL preserves zone and view mode |
+| Switch interface language | Use the **FA / EN** language control |
 
 ## Getting started
 
@@ -125,15 +140,21 @@ The default `npm run build` also produces and validates the Cloudflare/Vinext ar
 ```text
 app/
 ├── SiloExperience.tsx   # Archive data, interaction state and Three.js scenes
+├── ExperienceShell.tsx  # Lazy-loaded, resilient application shell
+├── archive-url.mjs      # Validated shareable deep-link helpers
 ├── globals.css          # Interface, themes and CSS fallback cutaways
 ├── layout.tsx           # Metadata and document shell
+├── manifest.ts          # Installable web-app metadata
+├── robots.ts            # Search crawler policy
+├── sitemap.ts           # Canonical route index
 └── page.tsx             # Main route
 
 public/
 └── favicon.svg          # Silo 18 archive mark
 
 scripts/                 # Verified build and artifact checks
-tests/                   # Rendered-output smoke tests
+tests/                   # Rendered output, archive contracts and URL tests
+.github/                 # CI, issue forms and pull-request template
 ```
 
 ## Deploy
@@ -146,18 +167,18 @@ The repository is ready for a native Next.js deployment on Vercel:
 
 Every push to `main` updates the public archive at [silo-the-last-city.vercel.app](https://silo-the-last-city.vercel.app/).
 
-## Roadmap
+## What is next
 
-- [ ] More screen-accurate props and room dressing for every department
-- [ ] Guided routes for important character journeys
-- [ ] Optional Persian interface localization
-- [ ] More accessible keyboard navigation and reduced-motion controls
-- [ ] Shareable deep links for individual sections
-- [ ] Performance-focused loading for the Three.js scene bundle
+- More screen-accurate props as official production references become available
+- A fuller Persian translation of the zone descriptions and evidence notes
+- Optional quality controls for low-power mobile GPUs
+- A visual source timeline that maps individual claims to episodes and chapters
 
 ## Contributing
 
 Corrections, scene improvements, accessibility fixes, and carefully sourced lore notes are welcome.
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md) for the archive standards, checks and evidence rules.
 
 1. Fork the repository.
 2. Create a focused branch.

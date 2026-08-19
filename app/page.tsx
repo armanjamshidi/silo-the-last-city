@@ -1,5 +1,5 @@
-import SiloExperience from "./SiloExperience";
+import ExperienceShell from "./ExperienceShell";
 
 export default function Home() {
-  return <SiloExperience />;
+  return <ExperienceShell />;
 }

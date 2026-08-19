@@ -31,6 +31,19 @@ import {
 } from "lucide-react";
 import * as THREE from "three";
 
+type DetailTag = "ON SCREEN" | "BOOK CANON" | "INFERRED";
+
+type Facility = {
+  name: string;
+  note: string;
+  tag: DetailTag;
+};
+
+type Telemetry = {
+  label: string;
+  value: string;
+};
+
 type Zone = {
   id: string;
   name: string;
@@ -43,7 +56,10 @@ type Zone = {
   scene: "civic" | "judicial" | "it" | "medical" | "residential" | "farm" | "industrial" | "mechanical" | "digger" | "gap" | "tunnel" | "mine" | "network";
   color: string;
   description: string;
-  details: string[];
+  details: Facility[];
+  people: string[];
+  telemetry: [Telemetry, Telemetry, Telemetry];
+  era: string;
   evidence: string;
   status: string;
 };
@@ -62,7 +78,16 @@ const ZONES: Zone[] = [
     color: "#d7b26d",
     description:
       "The visible seat of Silo 18: cafeteria, sensor wall, sheriff, mayor and the rooms where the Pact becomes daily life.",
-    details: ["Cafeteria display", "Sheriff station", "Airlock & holding"],
+    details: [
+      { name: "Cafeteria & sensor wall", note: "Circular exterior display, communal tables and the cleaning gallery.", tag: "ON SCREEN" },
+      { name: "Sheriff station", note: "Badge desk, clerical bay, interview room and holding cells.", tag: "ON SCREEN" },
+      { name: "Cleaning airlock", note: "Suit prep, inner seal, incinerator and the outer hatch.", tag: "ON SCREEN" },
+      { name: "Mayor / deputy offices", note: "The civic chain of command clustered near the upper landings.", tag: "INFERRED" },
+      { name: "Upper stair checkpoint", note: "A controlled landing able to channel crowds and raiders.", tag: "INFERRED" },
+    ],
+    people: ["Holston Becker", "Allison Becker", "Mayor Jahns", "Sam Marnes", "Juliette Nichols"],
+    telemetry: [{ label: "SENSOR", value: "EXTERNAL" }, { label: "AIRLOCK", value: "ARMED" }, { label: "ACCESS", value: "CIVIC" }],
+    era: "SEASONS 1—2",
     evidence: "The series repeatedly places civic authority, the cafeteria and cleaning infrastructure Up Top; the exact 1—22 band is a reconstruction.",
     status: "MONITORED",
   },
@@ -79,7 +104,16 @@ const ZONES: Zone[] = [
     color: "#b98a58",
     description:
       "Courtrooms, records and enforcement offices occupy a deliberately defensible band above the Mids.",
-    details: ["Judge's chambers", "Records hall", "Raider access"],
+    details: [
+      { name: "Judge Meadows' chamber", note: "Private office, hearing table and sealed personal archive.", tag: "ON SCREEN" },
+      { name: "Sims operations office", note: "Judicial command point for investigations and enforcement.", tag: "ON SCREEN" },
+      { name: "Raider ready room", note: "Protective equipment, weapons control and rapid stair access.", tag: "ON SCREEN" },
+      { name: "Interview & holding", note: "Controlled rooms for suspects before formal disposition.", tag: "INFERRED" },
+      { name: "Records / evidence hall", note: "Case files and relic seizures behind restricted counters.", tag: "INFERRED" },
+    ],
+    people: ["Mary Meadows", "Robert Sims", "Amundsen", "Paul Billings"],
+    telemetry: [{ label: "WATCH", value: "ACTIVE" }, { label: "RAIDERS", value: "READY" }, { label: "ACCESS", value: "JUDICIAL" }],
+    era: "SEASONS 1—2",
     evidence: "Judicial is visibly high in the social hierarchy. Its narrow level range is inferred from dialogue and travel patterns, not a published blueprint.",
     status: "RESTRICTED",
   },
@@ -95,9 +129,20 @@ const ZONES: Zone[] = [
     scene: "it",
     color: "#82b8bc",
     description:
-      "A hardened technical enclave with independent power, server rooms and a sealed vault hidden behind ordinary operations.",
-    details: ["Server hall", "Independent power", "The Vault"],
-    evidence: "Season 2 confirms an IT vault, independent power and hidden knowledge systems; schematics also show external lines entering IT.",
+      "A hardened technical enclave: public workstations at the threshold, dense server aisles behind them, an isolated power bus and the circular Vault containing the Legacy and Algorithm room.",
+    details: [
+      { name: "I.T. operations floor", note: "Public-facing terminals, repair desks and the controlled approach to the rear.", tag: "ON SCREEN" },
+      { name: "Server aisles", note: "Tall rack banks carry silo data, displays, cameras and internal systems.", tag: "ON SCREEN" },
+      { name: "Independent power bus", note: "I.T. stays illuminated when Mechanical cuts general power.", tag: "ON SCREEN" },
+      { name: "Secure bridge / checkpoint", note: "A narrow defensible approach; its broken Silo 17 counterpart is shown in Season 2.", tag: "ON SCREEN" },
+      { name: "The Vault", note: "Circular sealed threshold opened by the illuminated Silo 18 key and code.", tag: "ON SCREEN" },
+      { name: "Algorithm chamber", note: "A sparse Y-plan room aimed at one screen, flanked by stepped server and power banks.", tag: "ON SCREEN" },
+      { name: "The Legacy", note: "Pre-silo knowledge, models, books, relics, food stores and shadow quarters.", tag: "ON SCREEN" },
+    ],
+    people: ["Bernard Holland", "Lukas Kyle", "Mary Meadows", "Solo / Jimmy"],
+    telemetry: [{ label: "POWER", value: "ISOLATED" }, { label: "ARCHIVE", value: "LEGACY" }, { label: "ACCESS", value: "18-KEY" }],
+    era: "SEASON 2 / PRIORITY",
+    evidence: "Season 2 directly establishes the Vault, Legacy, independent power and Algorithm room. Its Y-shaped focal plan and stepped server/power banks follow the production designer's description; the exact outer rack layout is reconstructed.",
     status: "CLASSIFIED",
   },
   {
@@ -113,7 +158,17 @@ const ZONES: Zone[] = [
     color: "#a5aaa0",
     description:
       "Clinics, fertility rooms and the nursery sit inside the administrative health system where every birth is authorized and recorded.",
-    details: ["Surgical clinic", "Nursery", "Fertility records"],
+    details: [
+      { name: "Dr. Nichols' clinic", note: "Examination beds, imaging and day-to-day treatment rooms.", tag: "ON SCREEN" },
+      { name: "Surgical theatre", note: "Central operating table, overhead lamps and instrument prep.", tag: "ON SCREEN" },
+      { name: "Nursery", note: "Bassinet line, observation glazing and controlled family access.", tag: "ON SCREEN" },
+      { name: "Fertility procedure room", note: "The hidden population-control intervention behind approved removals.", tag: "ON SCREEN" },
+      { name: "Birth lottery records", note: "Authorized pregnancies and family histories kept under seal.", tag: "ON SCREEN" },
+      { name: "Pharmacy & cold store", note: "Finite medicines and sterile supplies under counted access.", tag: "INFERRED" },
+    ],
+    people: ["Dr. Pete Nichols", "Hanna Nichols", "Allison Becker", "Gloria Hildebrandt"],
+    telemetry: [{ label: "CLINIC", value: "STERILE" }, { label: "BIRTHS", value: "CONTROLLED" }, { label: "ACCESS", value: "MEDICAL" }],
+    era: "SEASONS 1—2",
     evidence: "The rooms and their institutional role are series canon. Their single combined location is a spatial reconstruction because the show withholds a complete level register.",
     status: "CONTROLLED",
   },
@@ -130,7 +185,17 @@ const ZONES: Zone[] = [
     color: "#c9a778",
     description:
       "Dense residential neighborhoods, clinics, schools and markets form the social hinge between power above and labor below.",
-    details: ["Residential rings", "Schools", "Markets & workshops"],
+    details: [
+      { name: "Residential rings", note: "Compact apartments opening onto shared landings and stair views.", tag: "ON SCREEN" },
+      { name: "Market arcade", note: "Food counters, tailors, repair stalls and ration exchange.", tag: "INFERRED" },
+      { name: "Schools", note: "Classrooms shaped by the Pact and a deliberately shortened history.", tag: "ON SCREEN" },
+      { name: "Public clinic", note: "Routine care between the specialist levels above and below.", tag: "INFERRED" },
+      { name: "Porter rest stop", note: "Message sorting, water and sleeping benches for vertical couriers.", tag: "INFERRED" },
+      { name: "Communal landing", note: "Dining, notices and neighborhood meetings beside the central stair.", tag: "ON SCREEN" },
+    ],
+    people: ["Lukas Kyle", "Patrick Kennedy", "Kathleen Billings", "Camille Sims"],
+    telemetry: [{ label: "DENSITY", value: "HIGH" }, { label: "MARKET", value: "OPEN" }, { label: "ACCESS", value: "PUBLIC" }],
+    era: "SEASONS 1—2",
     evidence: "Both versions place merchants, families and middle-class work between Up Top and the Down Deep; the numeric band is approximate.",
     status: "ACTIVE",
   },
@@ -147,7 +212,17 @@ const ZONES: Zone[] = [
     color: "#99ad73",
     description:
       "Stacked growing decks, livestock rooms and water lines keep ten thousand people alive without sunlight.",
-    details: ["Hydroponics", "Seed storage", "Water distribution"],
+    details: [
+      { name: "Stacked grow decks", note: "Long crop beds under the same grow-light logic used across the silo.", tag: "ON SCREEN" },
+      { name: "Livestock pens", note: "Protein and breeding stock isolated from the public corridors.", tag: "ON SCREEN" },
+      { name: "Irrigation manifold", note: "Measured water lines, drains and nutrient mixing tanks.", tag: "INFERRED" },
+      { name: "Seed vault", note: "Controlled seed inventory for replanting and crop recovery.", tag: "BOOK CANON" },
+      { name: "Grow-light gantries", note: "Artificial spectrum lighting over each production bed.", tag: "ON SCREEN" },
+      { name: "Wash & cold room", note: "Harvest cleaning, weighing and short-term food storage.", tag: "INFERRED" },
+    ],
+    people: ["Farm crews", "Livestock keepers", "Supply inspectors", "Porters"],
+    telemetry: [{ label: "LIGHT", value: "GROW" }, { label: "WATER", value: "RECYCLED" }, { label: "ACCESS", value: "CREW" }],
+    era: "SERIES + BOOKS",
     evidence: "Farms and hydroponics are core to book and series worldbuilding. Their precise grouping here follows the Silo's vertical class logic.",
     status: "NOMINAL",
   },
@@ -164,7 +239,17 @@ const ZONES: Zone[] = [
     color: "#c17b58",
     description:
       "Fabrication, recycling and porter depots convert finite material into an endlessly repaired civilization.",
-    details: ["Fabrication", "Recycling", "Porter depots"],
+    details: [
+      { name: "Warehouse aisles", note: "Counted shelves of tools, cloth, wire, seals and replacement stock.", tag: "ON SCREEN" },
+      { name: "Recycling intake", note: "Upper-level waste sorted into repairable material and scrap.", tag: "ON SCREEN" },
+      { name: "Fabrication benches", note: "Lathes, presses and hand tools keep obsolete systems alive.", tag: "ON SCREEN" },
+      { name: "Porter depot", note: "Packages, paper messages and route boards beside the stair.", tag: "INFERRED" },
+      { name: "Tool control cage", note: "High-risk parts and weapons-adjacent stock under lock.", tag: "INFERRED" },
+      { name: "Freight gate", note: "A choke point that can become a barricade during rebellion.", tag: "ON SCREEN" },
+    ],
+    people: ["Carla McLain", "Walker", "Knox", "Shirley Campbell"],
+    telemetry: [{ label: "STOCK", value: "COUNTED" }, { label: "RECYCLE", value: "ACTIVE" }, { label: "ACCESS", value: "SUPPLY" }],
+    era: "SEASONS 1—2",
     evidence: "Supply, fabrication, recycling and porters are established functions; exact floor boundaries are not publicly mapped.",
     status: "ACTIVE",
   },
@@ -181,8 +266,19 @@ const ZONES: Zone[] = [
     color: "#e06745",
     description:
       "At the bottom, the generator, steam feed and machine shops turn heat and pressure into the Silo's pulse.",
-    details: ["Main generator", "Steam feed", "Machine shop"],
-    evidence: "Mechanical occupies the Down Deep in both versions. The series explicitly ties Juliette and the main generator to the lowest inhabited levels.",
+    details: [
+      { name: "Main turbine generator", note: "Jet-engine-like rotor, removable panels and the silo's primary power train.", tag: "ON SCREEN" },
+      { name: "Steam bypass chamber", note: "Pressure diversion and the flooded repair pit used during shutdown.", tag: "ON SCREEN" },
+      { name: "Generator control", note: "Load board, pressure gauges, emergency signals and restart sequence.", tag: "ON SCREEN" },
+      { name: "Machine shop", note: "Heavy repair benches, hoists, welders and improvised replacement parts.", tag: "ON SCREEN" },
+      { name: "Walker's workshop", note: "Electronics bench, radio work and the camera hidden in the wall.", tag: "ON SCREEN" },
+      { name: "High gantries", note: "Hooks and lifting rails reach the upper turbine panels.", tag: "ON SCREEN" },
+      { name: "Cooling / water lines", note: "Dense pipework feeds the generator hall and adjacent systems.", tag: "INFERRED" },
+    ],
+    people: ["Juliette Nichols", "Knox", "Shirley Campbell", "Martha Walker", "Cooper"],
+    telemetry: [{ label: "STEAM", value: "CRITICAL" }, { label: "OUTPUT", value: "94.1%" }, { label: "ACCESS", value: "CREW" }],
+    era: "SEASON 1 / MACHINES",
+    evidence: "Mechanical and the lowest inhabited levels are series and book canon. The generator model follows the on-screen jet-engine-like turbine, removable panels, pipes, hoists and high repair positions described by the show's VFX team.",
     status: "HIGH LOAD",
   },
   {
@@ -198,7 +294,17 @@ const ZONES: Zone[] = [
     color: "#c87a4c",
     description:
       "A cathedral-scale excavation chamber holds the abandoned machine that cut the void for Silo 18. Mechanical built walkways and shelters around its fossilized frame.",
-    details: ["Primary excavator", "Mechanical catwalk", "George's hideout"],
+    details: [
+      { name: "Primary excavator", note: "The abandoned boring machine that cut the construction void.", tag: "ON SCREEN" },
+      { name: "Mechanical catwalk", note: "A later platform network suspended above the flooded undercroft.", tag: "ON SCREEN" },
+      { name: "George's hideout", note: "Bed, desk, relics, hard-drive work and concealed research space.", tag: "ON SCREEN" },
+      { name: "Rope anchor", note: "Juliette's descent point toward the water below the machine.", tag: "ON SCREEN" },
+      { name: "Construction power bay", note: "Dead conduits and panels left with the original excavator.", tag: "INFERRED" },
+      { name: "Service crane", note: "A heavy rail for cutter parts and later Mechanical salvage.", tag: "INFERRED" },
+    ],
+    people: ["George Wilkins", "Juliette Nichols", "Shirley Campbell", "Hank"],
+    telemetry: [{ label: "MACHINE", value: "DORMANT" }, { label: "VOID", value: "OPEN" }, { label: "ACCESS", value: "OFF-LEDGER" }],
+    era: "SEASONS 1—2",
     evidence: "The excavator cavern, George's living space and Juliette's descent are shown in Season 1. Its dimensions are reconstructed from screen scale.",
     status: "OFF-LEDGER",
   },
@@ -215,7 +321,17 @@ const ZONES: Zone[] = [
     color: "#668f95",
     description:
       "The apparent underground lake is a shallow flooded slab kept low by hidden outflow pumps. George crossed it; Lukas later confirmed the depth and continued beyond it.",
-    details: ["Shallow water shelf", "Hidden pumps", "Rope descent"],
+    details: [
+      { name: "Shallow water shelf", note: "A flooded slab that reads as a deep lake from the catwalk above.", tag: "ON SCREEN" },
+      { name: "Rope descent", note: "The vertical line used by George, Juliette and later Lukas.", tag: "ON SCREEN" },
+      { name: "Pump gallery", note: "Outflow equipment keeps the route passable and the water level low.", tag: "ON SCREEN" },
+      { name: "Concrete causeway", note: "A submerged walking surface leading away from the digger.", tag: "ON SCREEN" },
+      { name: "Tunnel mouth", note: "A dark lateral opening beyond the flooded chamber.", tag: "ON SCREEN" },
+      { name: "Drain / outflow pipes", note: "The physical path that prevents the undercroft from filling.", tag: "INFERRED" },
+    ],
+    people: ["George Wilkins", "Juliette Nichols", "Lukas Kyle"],
+    telemetry: [{ label: "DEPTH", value: "SHALLOW" }, { label: "PUMPS", value: "ACTIVE" }, { label: "ACCESS", value: "UNMAPPED" }],
+    era: "SEASON 2 / REVEALED",
     evidence: "Season 2 reveals that the water is far shallower than feared and leads toward the hidden tunnel. Pump placement remains inferred.",
     status: "UNMAPPED",
   },
@@ -232,7 +348,17 @@ const ZONES: Zone[] = [
     color: "#7caeb0",
     description:
       "Beyond the water, a concrete tunnel terminates at a circular intelligent door. It recognized Lukas Kyle and named Quinn, Meadows and George as prior visitors.",
-    details: ["Circular access door", "Legacy interface", "Safeguard feed"],
+    details: [
+      { name: "Circular intelligent door", note: "A sealed metal face that activates when a visitor approaches.", tag: "ON SCREEN" },
+      { name: "Algorithm voice interface", note: "The system identifies Lukas and issues the Safeguard warning.", tag: "ON SCREEN" },
+      { name: "Segmented tunnel shell", note: "Concrete rings, low service lights and a straight controlled approach.", tag: "ON SCREEN" },
+      { name: "Safeguard feed", note: "A lethal delivery system associated with the buried control route.", tag: "ON SCREEN" },
+      { name: "Power / data conduits", note: "Independent cables keep the door and voice alive below the silo.", tag: "INFERRED" },
+      { name: "Visitor trace", note: "Quinn, Meadows, George and Lukas reached the threshold at different times.", tag: "ON SCREEN" },
+    ],
+    people: ["Lukas Kyle", "Salvador Quinn", "Mary Meadows", "George Wilkins"],
+    telemetry: [{ label: "VOICE", value: "ALGORITHM" }, { label: "SAFEGUARD", value: "STANDBY" }, { label: "ACCESS", value: "BLACK" }],
+    era: "SEASON 2 / SAFEGUARD",
     evidence: "The tunnel, door and warning are Season 2 canon. Its ultimate destination and precise relationship to other silos remain unresolved on screen.",
     status: "BLACK LEVEL",
   },
@@ -249,7 +375,17 @@ const ZONES: Zone[] = [
     color: "#a58b6b",
     description:
       "A hard-labor extraction complex supplies raw material and punishment. It is mentioned often, yet the series avoids revealing how its shafts fit between tightly packed silos.",
-    details: ["Ore headings", "Penal lift", "Restricted lateral cuts"],
+    details: [
+      { name: "Ore headings", note: "Hard-rock work faces extending away from the occupied cylinder.", tag: "INFERRED" },
+      { name: "Penal cage lift", note: "A controlled descent for sentenced workers and guards.", tag: "INFERRED" },
+      { name: "Rail & ore carts", note: "Narrow-gauge haulage toward sorting and counted storage.", tag: "INFERRED" },
+      { name: "Ore sorting bay", note: "Rock, metal-bearing material and waste separated by hand.", tag: "INFERRED" },
+      { name: "Ventilation trunks", note: "Dust extraction and emergency air through sealed shafts.", tag: "INFERRED" },
+      { name: "Restricted lateral cuts", note: "Routes must avoid the tightly spaced neighboring silos.", tag: "INFERRED" },
+    ],
+    people: ["Penal crews", "Judicial guards", "Lukas Kyle (sentence commuted)"],
+    telemetry: [{ label: "AIR", value: "DUSTY" }, { label: "LIFT", value: "GUARDED" }, { label: "ACCESS", value: "PENAL" }],
+    era: "MENTIONED / UNSEEN",
     evidence: "The mines and Lukas's sentence are canon; their geometry is not. This model uses steep shafts below Supply and away from the confirmed tunnel corridor.",
     status: "INFERRED",
   },
@@ -266,7 +402,17 @@ const ZONES: Zone[] = [
     color: "#d0b070",
     description:
       "The show confirms fifty other silos beyond 18. The books provide the clearest connection model: Silo 18 tunnels to 17, while concealed diggers are aligned toward Seed.",
-    details: ["Silo 18 → 17 route", "Silo 1 control", "Seed alignment"],
+    details: [
+      { name: "51-silo field", note: "Silo 18 plus the fifty other structures confirmed in series dialogue.", tag: "ON SCREEN" },
+      { name: "Silo 18 → 17 route", note: "A concealed digger route completed in the book continuity.", tag: "BOOK CANON" },
+      { name: "Silo 1 control", note: "The book continuity's command silo and monitoring center.", tag: "BOOK CANON" },
+      { name: "Seed alignment", note: "Stored machines are oriented toward the long-term survival cache.", tag: "BOOK CANON" },
+      { name: "Surface exclusion field", note: "The circular rims remain separated above ground.", tag: "ON SCREEN" },
+      { name: "Universal transit grid", note: "Shown only as a hypothesis; no open all-silo metro is confirmed.", tag: "INFERRED" },
+    ],
+    people: ["Silo 18", "Silo 17", "Silo 1", "Seed"],
+    telemetry: [{ label: "FIELD", value: "51" }, { label: "ROUTE", value: "18→17" }, { label: "ACCESS", value: "SEALED" }],
+    era: "SERIES + BOOK SYNTHESIS",
     evidence: "The 51-silo count is series dialogue. The 18-to-17 excavation and Seed destination are book canon; a pre-opened universal transit network is not confirmed.",
     status: "SYNTHESIS",
   },
@@ -722,6 +868,9 @@ export default function SiloExperience() {
     const detailGroups = new Map<string, THREE.Group>();
     const detailWallMat = new THREE.MeshStandardMaterial({ color: 0x262923, roughness: 0.9, metalness: 0.08 });
     const detailMetalMat = new THREE.MeshStandardMaterial({ color: 0x5c5b53, roughness: 0.42, metalness: 0.72 });
+    const detailDarkMat = new THREE.MeshStandardMaterial({ color: 0x171a17, roughness: 0.72, metalness: 0.38 });
+    const detailConcreteMat = new THREE.MeshStandardMaterial({ color: 0x3a3d38, roughness: 0.96, metalness: 0.02 });
+    const detailGlassMat = new THREE.MeshPhysicalMaterial({ color: 0x8ca6a1, roughness: 0.2, metalness: 0.05, transparent: true, opacity: 0.36, transmission: 0.18, depthWrite: false });
     const addBox = (group: THREE.Group, size: [number, number, number], position: [number, number, number], material: THREE.Material, rotationY = 0) => {
       const mesh = new THREE.Mesh(new THREE.BoxGeometry(...size), material);
       mesh.position.set(...position);
@@ -730,6 +879,41 @@ export default function SiloExperience() {
       mesh.receiveShadow = true;
       group.add(mesh);
       return mesh;
+    };
+    const addCylinder = (
+      group: THREE.Group,
+      radius: number,
+      height: number,
+      position: [number, number, number],
+      material: THREE.Material,
+      rotation: [number, number, number] = [0, 0, 0],
+      segments = 24,
+    ) => {
+      const mesh = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, height, segments), material);
+      mesh.position.set(...position);
+      mesh.rotation.set(...rotation);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      group.add(mesh);
+      return mesh;
+    };
+    const addTube = (group: THREE.Group, points: Array<[number, number, number]>, radius: number, material: THREE.Material) => {
+      const curve = new THREE.CatmullRomCurve3(points.map((point) => new THREE.Vector3(...point)));
+      const mesh = new THREE.Mesh(new THREE.TubeGeometry(curve, 42, radius, 8, false), material);
+      mesh.castShadow = true;
+      group.add(mesh);
+      return mesh;
+    };
+    const addConsole = (group: THREE.Group, position: [number, number, number], material: THREE.Material, width = 1.65, rotationY = 0) => {
+      addBox(group, [width, 0.85, 0.65], position, detailDarkMat, rotationY);
+      const screen = addBox(group, [width * 0.72, 0.42, 0.035], [position[0], position[1] + 0.16, position[2] + 0.34], material, rotationY);
+      screen.material = material;
+      return screen;
+    };
+    const addRail = (group: THREE.Group, xStart: number, xEnd: number, y: number, z: number, material: THREE.Material) => {
+      addBox(group, [xEnd - xStart, 0.08, 0.08], [(xStart + xEnd) / 2, y + 0.72, z], material);
+      addBox(group, [xEnd - xStart, 0.06, 0.06], [(xStart + xEnd) / 2, y + 0.28, z], material);
+      for (let x = xStart; x <= xEnd + 0.01; x += 1.2) addBox(group, [0.06, 0.82, 0.06], [x, y + 0.36, z], material);
     };
     const addDetailTurbine = (group: THREE.Group, color: number, scale = 1) => {
       const machine = new THREE.Group();
@@ -752,57 +936,142 @@ export default function SiloExperience() {
       group.visible = false;
       const tint = new THREE.Color(zone.color);
       const accent = new THREE.MeshStandardMaterial({ color: tint, roughness: 0.48, metalness: 0.48, emissive: tint, emissiveIntensity: 0.12 });
+      const glow = new THREE.MeshBasicMaterial({ color: tint, toneMapped: false });
       addBox(group, [14, 0.36, 10], [0, -2.65, 0], detailWallMat);
       addBox(group, [14, 6, 0.35], [0, 0.2, -4.85], detailWallMat);
       addBox(group, [0.35, 6, 10], [-6.85, 0.2, 0], detailWallMat);
+      addBox(group, [14, 0.24, 10], [0, 3.08, 0], detailDarkMat);
+      for (let x = -6; x <= 6; x += 1.2) addBox(group, [0.035, 0.025, 9.2], [x, -2.44, 0], detailMetalMat);
+      for (let z = -4; z <= 4; z += 2) addBox(group, [13.2, 0.16, 0.22], [0, 2.86, z], detailMetalMat);
+      for (let x = -5.4; x <= 5.4; x += 2.7) addBox(group, [1.9, 0.045, 0.32], [x, 2.72, -0.25], glow);
+      addTube(group, [[-6.5, 2.48, -3.8], [-3, 2.48, -3.8], [0, 2.48, -4.1], [6.2, 2.48, -4.1]], 0.09, accent);
       const localLight = new THREE.PointLight(tint, 12, 18, 2);
       localLight.position.set(3.5, 3.8, 3.5);
       group.add(localLight);
 
       if (zone.scene === "civic") {
-        const display = new THREE.Mesh(new THREE.CircleGeometry(2.2, 48), new THREE.MeshBasicMaterial({ color: 0x718078 }));
-        display.position.set(0, 1.1, -4.62);
+        const display = new THREE.Mesh(new THREE.CircleGeometry(2.25, 48), new THREE.MeshBasicMaterial({ color: 0x718078, toneMapped: false }));
+        display.position.set(0.2, 0.95, -4.62);
         group.add(display);
+        const displayRim = new THREE.Mesh(new THREE.TorusGeometry(2.32, 0.14, 10, 48), detailMetalMat);
+        displayRim.position.copy(display.position);
+        group.add(displayRim);
         for (let i = -2; i <= 2; i += 1) {
           const table = new THREE.Mesh(new THREE.CylinderGeometry(0.58, 0.66, 0.18, 16), detailMetalMat);
-          table.position.set(i * 1.75, -1.65, 0.5 + Math.abs(i) * 0.35);
+          table.position.set(i * 1.65, -1.62, 0.6 + Math.abs(i) * 0.34);
           group.add(table);
+          for (const offset of [-0.82, 0.82]) addCylinder(group, 0.22, 0.35, [i * 1.65 + offset, -1.82, 0.6 + Math.abs(i) * 0.34], detailDarkMat);
         }
         const airlock = new THREE.Mesh(new THREE.TorusGeometry(1.15, 0.22, 10, 32), accent);
-        airlock.position.set(-4.9, 0, -4.58);
+        airlock.position.set(-5.05, 0.1, -4.58);
         group.add(airlock);
+        addCylinder(group, 1.05, 0.24, [-5.05, 0.1, -4.7], detailDarkMat, [Math.PI / 2, 0, 0]);
+        addBox(group, [3.5, 0.88, 1.35], [4.65, -1.75, -2.1], detailMetalMat);
+        addConsole(group, [4.65, -0.9, -2.25], accent, 2.15);
+        for (let x = 3.2; x <= 6; x += 0.38) addBox(group, [0.08, 3.1, 0.08], [x, -0.85, 2.85], detailMetalMat);
+        addRail(group, -6, 6, -2.38, 4.1, detailMetalMat);
       } else if (zone.scene === "judicial") {
-        for (let x = -5.2; x <= 5.2; x += 1.5) addBox(group, [1.1, 3.9, 0.7], [x, -0.55, -4.35], x % 3 === 0 ? accent : detailMetalMat);
-        addBox(group, [5.5, 0.85, 2], [1.2, -1.5, 0.8], detailMetalMat);
-        for (let x = -5; x <= -2; x += 1) addBox(group, [0.12, 4.2, 0.12], [x, -0.45, 2.4], accent);
+        addBox(group, [6.4, 0.65, 2.35], [1.1, -1.62, -2.9], detailMetalMat);
+        addBox(group, [3.5, 1.35, 1.2], [1.1, -0.7, -3.55], detailDarkMat);
+        addConsole(group, [1.1, 0.28, -3.65], accent, 2.5);
+        for (let x = -5.75; x <= -2.45; x += 1.1) {
+          addBox(group, [0.88, 3.7, 0.62], [x, -0.52, -4.35], detailMetalMat);
+          for (let y = -1.65; y <= 1.2; y += 0.62) addBox(group, [0.68, 0.045, 0.04], [x, y, -4.02], accent);
+        }
+        for (let x = 3.5; x <= 6.1; x += 0.42) addBox(group, [0.08, 3.9, 0.08], [x, -0.55, 2.55], detailMetalMat);
+        addBox(group, [3.2, 0.28, 1.25], [-3.9, -1.95, 0.5], detailDarkMat);
+        addConsole(group, [-3.9, -1.25, 0.25], accent, 2.5);
+        for (let x = -1.4; x <= 1.4; x += 1.4) addBox(group, [0.9, 1.7, 0.48], [x, 0.9, -4.46], detailDarkMat);
+        addRail(group, -6, 3.1, -2.38, 4.2, accent);
       } else if (zone.scene === "it") {
-        for (let x = -5.4; x <= 5.4; x += 1.55) {
-          const rack = addBox(group, [1.1, 4.2, 1.3], [x, -0.45, -3.8], detailMetalMat);
-          for (let y = -1.8; y <= 1.2; y += 0.65) addBox(group, [0.8, 0.06, 0.05], [x, y, -3.12], accent);
-          rack.castShadow = true;
+        // Season 2's Vault is deliberately unlike the rest of the silo: a Y-plan
+        // focused on the Algorithm screen with stepped server / power banks.
+        const bridge = addBox(group, [4.8, 0.18, 4.2], [0, -2.18, 2.55], detailMetalMat);
+        bridge.receiveShadow = true;
+        addRail(group, -2.35, 2.35, -2.22, 0.6, accent);
+        addRail(group, -2.35, 2.35, -2.22, 4.35, accent);
+        for (const side of [-1, 1]) {
+          for (let i = 0; i < 4; i += 1) {
+            const x = side * (2.75 + i * 0.82);
+            const z = -2.65 + i * 0.28;
+            const height = 1.25 + i * 0.55;
+            addBox(group, [0.65, height, 2.2], [x, -2.22 + height / 2, z], i % 2 ? detailMetalMat : detailDarkMat, side * -0.12);
+            for (let y = -1.88; y < -1.88 + height - 0.2; y += 0.42) addBox(group, [0.43, 0.035, 0.035], [x, y, z + 1.12], accent, side * -0.12);
+          }
+          addBox(group, [0.24, 0.06, 6.5], [side * 1.18, -2.23, -0.25], accent, side * 0.42);
+          addTube(group, [[side * 5.7, 2.15, -3.9], [side * 5.7, -1.65, -3.9], [side * 3.5, -1.65, -3.1]], 0.12, accent);
         }
-        const vault = new THREE.Mesh(new THREE.TorusGeometry(1.75, 0.24, 12, 48), accent);
-        vault.position.set(0, 0.1, -4.58);
-        group.add(vault);
+        for (const x of [-5.45, 5.45]) {
+          addBox(group, [1.05, 4.15, 1.4], [x, -0.45, -3.75], detailMetalMat);
+          for (let y = -1.85; y <= 1.25; y += 0.52) addBox(group, [0.72, 0.055, 0.05], [x, y, -3.02], accent);
+        }
+        const vaultRim = new THREE.Mesh(new THREE.TorusGeometry(2.05, 0.24, 12, 48), accent);
+        vaultRim.position.set(0, 0.25, -4.58);
+        group.add(vaultRim);
+        const vaultFace = new THREE.Mesh(new THREE.CircleGeometry(1.82, 48), detailDarkMat);
+        vaultFace.position.set(0, 0.25, -4.595);
+        group.add(vaultFace);
+        const algorithmScreen = addBox(group, [1.28, 1.55, 0.05], [0, 0.28, -4.64], glow);
+        algorithmScreen.material = glow;
+        addConsole(group, [0, -1.58, -2.55], accent, 2.1);
+        addBox(group, [0.2, 0.06, 4.5], [0, -2.27, -0.5], accent);
+        addBox(group, [0.95, 0.12, 0.55], [0, -1.05, -2.22], detailMetalMat);
+        addBox(group, [0.13, 0.06, 0.2], [0.28, -0.91, -1.92], new THREE.MeshBasicMaterial({ color: 0xd34d51, toneMapped: false }));
+        addBox(group, [2.7, 2.35, 1.55], [-4.45, -1.22, 1.65], detailDarkMat);
+        addBox(group, [1.8, 0.18, 0.75], [-4.45, 0.02, 1.92], detailGlassMat);
+        addBox(group, [2.35, 1.8, 1.5], [4.5, -1.45, 1.75], detailMetalMat);
+        for (let y = -2.1; y <= -0.9; y += 0.4) addBox(group, [1.7, 0.08, 0.08], [4.5, y, 2.52], accent);
       } else if (zone.scene === "medical") {
-        for (let x = -4.8; x <= 4.8; x += 3.2) {
-          addBox(group, [2.4, 0.35, 4.2], [x, -1.55, 0.3], new THREE.MeshStandardMaterial({ color: 0xb6b8ad, roughness: 0.82 }));
-          addBox(group, [1.4, 0.45, 0.6], [x, -1.05, -1.25], accent);
+        const cleanMat = new THREE.MeshStandardMaterial({ color: 0xb6b8ad, roughness: 0.82 });
+        for (let x = -4.8; x <= 1.2; x += 3) {
+          addBox(group, [2.35, 0.32, 3.7], [x, -1.55, 0.3], cleanMat);
+          addBox(group, [1.25, 0.38, 0.65], [x, -1.02, -1.18], accent);
+          const surgicalLamp = new THREE.Mesh(new THREE.TorusGeometry(0.68, 0.12, 8, 24), glow);
+          surgicalLamp.rotation.x = Math.PI / 2;
+          surgicalLamp.position.set(x, 1.1, 0.15);
+          group.add(surgicalLamp);
+          addCylinder(group, 0.05, 1.5, [x, 2.05, 0.15], detailMetalMat);
         }
-        for (let x = -4.5; x <= 4.5; x += 2.2) {
-          const pod = new THREE.Mesh(new THREE.CapsuleGeometry(0.5, 1.1, 4, 12), new THREE.MeshPhysicalMaterial({ color: 0x9ea9a0, transparent: true, opacity: 0.55, roughness: 0.25 }));
+        addBox(group, [0.12, 5.4, 8.6], [2.7, 0, -0.1], detailGlassMat);
+        for (let x = 3.45; x <= 5.65; x += 1.1) {
+          const pod = new THREE.Mesh(new THREE.CapsuleGeometry(0.38, 0.85, 4, 12), detailGlassMat);
           pod.rotation.z = Math.PI / 2;
-          pod.position.set(x, 1.4, -3.8);
+          pod.position.set(x, -1.45, -2.65);
           group.add(pod);
+          addBox(group, [0.9, 0.1, 1.4], [x, -2.02, -2.65], detailMetalMat);
         }
+        for (let y = -1.55; y <= 1.55; y += 0.78) addBox(group, [2.2, 0.08, 0.55], [4.55, y, -4.35], y > 0.7 ? accent : detailMetalMat);
+        addConsole(group, [4.5, -1.28, 1.75], accent, 2.25);
       } else if (zone.scene === "residential") {
         for (let floor = 0; floor < 2; floor += 1) {
-          for (let x = -5.2; x <= 5.2; x += 2.6) addBox(group, [2.2, 2.25, 2.2], [x, -1.35 + floor * 2.35, -3.55], floor ? accent : detailMetalMat);
+          for (let x = -5.2; x <= 5.2; x += 2.6) {
+            addBox(group, [2.2, 2.05, 2.1], [x, -1.38 + floor * 2.3, -3.55], floor ? detailDarkMat : detailMetalMat);
+            addBox(group, [0.72, 1.15, 0.04], [x, -1.35 + floor * 2.3, -2.47], (Math.round(x) + floor) % 2 ? accent : glow);
+          }
           addBox(group, [12.5, 0.13, 1.25], [0, -0.1 + floor * 2.35, -1.9], detailMetalMat);
+          addRail(group, -6, 6, -0.18 + floor * 2.35, -1.2, detailMetalMat);
         }
+        for (let x = -4.8; x <= 4.8; x += 2.4) {
+          addBox(group, [1.8, 1.1, 1.4], [x, -1.85, 1.8], detailDarkMat);
+          addBox(group, [2.05, 0.08, 1.7], [x, -1.2, 1.8], accent);
+        }
+        addBox(group, [12.4, 0.12, 0.15], [0, 1.9, 1.8], accent);
       } else if (zone.scene === "farm") {
-        for (let x = -5.4; x <= 5.4; x += 1.35) addBox(group, [0.72, 0.25, 7.5], [x, -2.15, 0], accent);
-        for (let x = -4.8; x <= 4.8; x += 2.4) addBox(group, [0.08, 0.08, 8], [x, 2.4, 0], detailMetalMat);
+        const plantMat = new THREE.MeshStandardMaterial({ color: 0x78965f, roughness: 0.82, emissive: 0x243719, emissiveIntensity: 0.42 });
+        for (let x = -5.35; x <= 2.5; x += 1.3) {
+          addBox(group, [0.78, 0.28, 7.4], [x, -2.12, 0], detailDarkMat);
+          for (let z = -3; z <= 3; z += 0.75) {
+            const plant = new THREE.Mesh(new THREE.IcosahedronGeometry(0.22 + seeded(Math.round((x + 6) * 10 + z * 4)) * 0.12, 1), plantMat);
+            plant.position.set(x, -1.78, z);
+            group.add(plant);
+          }
+          addBox(group, [0.72, 0.045, 7.1], [x, 1.95, 0], glow);
+        }
+        for (let x = -4.8; x <= 4.8; x += 2.4) addTube(group, [[x, 2.45, -4], [x, 2.45, 4], [x, -1.9, 4]], 0.06, accent);
+        addBox(group, [3.1, 1.2, 6.6], [4.45, -1.75, 0.15], detailConcreteMat);
+        for (let z = -2.6; z <= 2.8; z += 0.68) addBox(group, [3.05, 0.07, 0.07], [4.45, -1.05, z], detailMetalMat);
+        for (let x = 3; x <= 5.9; x += 0.75) addBox(group, [0.06, 1.4, 0.06], [x, -1.45, -3.12], detailMetalMat);
+        addCylinder(group, 0.62, 2.25, [5.45, -1.3, 3.35], detailMetalMat);
       } else if (zone.scene === "industrial") {
         addBox(group, [11.5, 0.3, 1.6], [0, -1.6, 0], detailMetalMat);
         for (let x = -5; x <= 5; x += 1) {
@@ -811,34 +1080,80 @@ export default function SiloExperience() {
           roller.position.set(x, -1.35, 0);
           group.add(roller);
         }
-        for (let i = 0; i < 11; i += 1) addBox(group, [0.9, 0.9, 0.9], [-5 + (i % 6) * 1.5, -0.7 + Math.floor(i / 6), -3.5], i % 3 === 0 ? accent : detailWallMat);
+        for (let i = 0; i < 14; i += 1) addBox(group, [0.9, 0.9, 0.9], [-5 + (i % 7) * 1.5, -0.7 + Math.floor(i / 7), -3.5], i % 3 === 0 ? accent : detailWallMat);
+        for (const x of [-4.7, 0, 4.7]) {
+          addBox(group, [1.35, 2.7, 1.25], [x, -1.15, 2.65], detailDarkMat);
+          addCylinder(group, 0.42, 1.4, [x, -0.42, 2.65], accent, [0, 0, Math.PI / 2]);
+          addConsole(group, [x, -1.15, 1.82], accent, 1.15);
+        }
+        addBox(group, [12.2, 0.2, 0.2], [0, 2.25, 2.8], detailMetalMat);
+        addCylinder(group, 0.11, 2.2, [2.25, 1.2, 2.8], detailMetalMat);
+        const hook = new THREE.Mesh(new THREE.TorusGeometry(0.34, 0.08, 8, 18, Math.PI * 1.45), accent);
+        hook.position.set(2.25, 0.1, 2.8);
+        group.add(hook);
       } else if (zone.scene === "mechanical") {
         const turbine = addDetailTurbine(group, 0xc0583c, 1.18);
-        turbine.position.set(0, -0.45, -0.4);
-        for (const x of [-5.8, 5.8]) addBox(group, [0.35, 5.4, 0.35], [x, 0, -3.6], accent);
+        turbine.position.set(0, -0.55, -0.65);
+        for (const x of [-5.8, 5.8]) {
+          addBox(group, [0.35, 5.4, 0.35], [x, 0, -3.6], accent);
+          addTube(group, [[x, 2.35, -3.6], [x, 2.35, 2.8], [x * 0.7, -1.5, 3.5]], 0.16, detailMetalMat);
+        }
+        const bladeDisc = new THREE.Group();
+        for (let i = 0; i < 10; i += 1) {
+          const blade = addBox(bladeDisc, [0.32, 1.85, 0.12], [0, 0.92, 0], accent, (i / 10) * TAU);
+          blade.rotation.z = (i / 10) * TAU;
+        }
+        bladeDisc.position.set(3.55, -0.55, -0.65);
+        bladeDisc.rotation.y = Math.PI / 2;
+        group.add(bladeDisc);
+        addBox(group, [12.2, 0.18, 1.1], [0, 1.65, 2.85], detailMetalMat);
+        addRail(group, -6, 6, 1.58, 3.3, accent);
+        addConsole(group, [-4.7, -1.15, 2.1], accent, 2.25);
+        addConsole(group, [4.7, -1.15, 2.1], accent, 2.25);
+        for (let x = -3.6; x <= 3.6; x += 1.8) addCylinder(group, 0.42, 2.1, [x, 1.65, -3.9], detailMetalMat, [0, 0, Math.PI / 2]);
       } else if (zone.scene === "digger") {
         const drillMachine = addDetailTurbine(group, 0xb85e3d, 1.32);
-        drillMachine.position.set(-0.7, -0.35, -0.2);
+        drillMachine.position.set(-0.8, -0.45, -0.45);
         const drillHead = new THREE.Mesh(new THREE.CylinderGeometry(0.65, 2.35, 1.8, 18), accent);
         drillHead.rotation.z = -Math.PI / 2;
-        drillHead.position.set(4.15, -0.35, -0.2);
+        drillHead.position.set(4.05, -0.45, -0.45);
         group.add(drillHead);
+        for (let i = 0; i < 12; i += 1) {
+          const tooth = addBox(group, [0.18, 0.42, 0.92], [5.02, -0.45 + Math.sin((i / 12) * TAU) * 2, -0.45 + Math.cos((i / 12) * TAU) * 2], detailMetalMat);
+          tooth.rotation.x = (i / 12) * TAU;
+        }
         addBox(group, [12, 0.16, 1], [0, 1.5, 3.3], detailMetalMat);
+        addRail(group, -5.8, 5.8, 1.42, 3.75, accent);
+        addBox(group, [3.1, 0.28, 1.2], [-4.45, -1.92, 2.2], detailDarkMat);
+        addBox(group, [1.65, 0.2, 0.8], [-4.45, -1.55, 2.2], new THREE.MeshStandardMaterial({ color: 0x6f563d, roughness: 0.94 }));
+        addConsole(group, [-4.3, -1.15, 0.9], accent, 2.1);
+        for (let i = 0; i < 5; i += 1) addBox(group, [0.65, 0.65, 0.65], [-5.4 + (i % 2) * 0.72, -2 + Math.floor(i / 2) * 0.68, -2.8], i % 2 ? detailMetalMat : detailDarkMat);
+        addCylinder(group, 0.035, 4.5, [5.5, -0.1, 3.65], new THREE.MeshStandardMaterial({ color: 0x8d7047, roughness: 1 }));
       } else if (zone.scene === "gap") {
         const basin = new THREE.Mesh(new THREE.BoxGeometry(13.2, 0.18, 9), new THREE.MeshPhysicalMaterial({ color: 0x35616a, transparent: true, opacity: 0.7, roughness: 0.12 }));
         basin.position.y = -2.35;
         group.add(basin);
-        addBox(group, [12, 0.16, 1.15], [0, -1.5, 2.7], detailMetalMat);
+        addBox(group, [12, 0.16, 1.15], [0, -2.15, 2.7], detailConcreteMat);
         for (let i = 0; i < 4; i += 1) {
           const pump = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.7, 2.2, 18), accent);
-          pump.position.set(-4.5 + i * 3, -1.2, -3.5);
+          pump.position.set(-4.5 + i * 3, -1.25, -3.5);
           group.add(pump);
+          addTube(group, [[-4.5 + i * 3, -0.15, -3.5], [-4.5 + i * 3, 1.1, -3.5], [-5.8 + i * 3.8, 1.1, -4.4]], 0.11, detailMetalMat);
         }
+        addCylinder(group, 0.04, 5.2, [-5.6, 0.1, 3.7], new THREE.MeshStandardMaterial({ color: 0x8d7047, roughness: 1 }));
+        for (let z = 2.4; z >= -2.4; z -= 0.72) addBox(group, [0.9, 0.06, 0.36], [0.2, -2.15, z], accent);
+        addBox(group, [1.4, 4.2, 0.12], [5.9, -0.15, -4.4], detailMetalMat);
+        for (let y = -1.8; y <= 1.6; y += 0.55) addBox(group, [0.65, 0.045, 0.05], [5.9, y, -4.3], glow);
       } else if (zone.scene === "tunnel") {
         const tunnel = new THREE.Mesh(new THREE.CylinderGeometry(3.5, 3.5, 11, 36, 1, true), new THREE.MeshStandardMaterial({ color: 0x41443e, side: THREE.BackSide, roughness: 0.9 }));
         tunnel.rotation.x = Math.PI / 2;
         tunnel.position.z = 0.3;
         group.add(tunnel);
+        for (let z = -3.8; z <= 4.5; z += 1.35) {
+          const brace = new THREE.Mesh(new THREE.TorusGeometry(3.42, 0.08, 8, 36), detailMetalMat);
+          brace.position.z = z;
+          group.add(brace);
+        }
         const smartDoor = new THREE.Mesh(new THREE.CylinderGeometry(3.25, 3.25, 0.4, 48), detailMetalMat);
         smartDoor.rotation.x = Math.PI / 2;
         smartDoor.position.z = -4.4;
@@ -846,6 +1161,15 @@ export default function SiloExperience() {
         const smartRing = new THREE.Mesh(new THREE.TorusGeometry(2.25, 0.17, 10, 48), accent);
         smartRing.position.z = -4.63;
         group.add(smartRing);
+        for (let i = 0; i < 8; i += 1) {
+          const angle = (i / 8) * TAU;
+          const spoke = addBox(group, [0.12, 2.2, 0.1], [Math.sin(angle) * 1.08, Math.cos(angle) * 1.08, -4.65], accent);
+          spoke.rotation.z = -angle;
+        }
+        addCylinder(group, 0.34, 0.32, [0, 0, -4.72], glow, [Math.PI / 2, 0, 0]);
+        addTube(group, [[-2.65, -2.15, 4.8], [-2.65, -2.15, -4.25], [-1.8, -1.55, -4.4]], 0.14, accent);
+        for (let z = -3.4; z <= 4.2; z += 1.9) addBox(group, [0.55, 0.08, 0.2], [0, 2.65, z], glow);
+        addConsole(group, [2.3, -1.55, -3.7], accent, 1.25, -0.15);
       } else if (zone.scene === "mine") {
         for (let z = -3.5; z <= 3.5; z += 1.75) {
           addBox(group, [11.5, 0.12, 0.12], [0, -2.2, z], detailMetalMat);
@@ -855,6 +1179,15 @@ export default function SiloExperience() {
         }
         for (const x of [-0.65, 0.65]) addBox(group, [0.12, 0.08, 9], [x, -2.02, 0], accent);
         addBox(group, [2.1, 1.2, 2.4], [2.4, -1.35, -0.5], detailMetalMat);
+        for (let i = 0; i < 7; i += 1) {
+          const ore = new THREE.Mesh(new THREE.DodecahedronGeometry(0.38 + seeded(i + 85) * 0.3, 0), mineMat);
+          ore.position.set(-4.7 + (i % 3) * 0.72, -1.95 + Math.floor(i / 3) * 0.38, -2.8 + seeded(i + 4) * 1.2);
+          group.add(ore);
+        }
+        for (const x of [3.75, 5.55]) for (const z of [1.8, 3.5]) addBox(group, [0.08, 4.1, 0.08], [x, -0.42, z], detailMetalMat);
+        for (let y = -2.25; y <= 1.6; y += 0.55) addBox(group, [1.85, 0.07, 0.07], [4.65, y, 1.8], detailMetalMat);
+        addCylinder(group, 0.42, 10.5, [-4.9, 1.85, 0], detailMetalMat, [0, 0, Math.PI / 2]);
+        for (let z = -3.2; z <= 3.2; z += 1.6) addBox(group, [0.5, 0.06, 0.18], [0, 2.2, z], glow);
       }
       detailGroups.set(zone.id, group);
       detailRoot.add(group);
@@ -1189,6 +1522,9 @@ export default function SiloExperience() {
                 {selected.scene === "mine" ? <Pickaxe size={58} /> : selected.scene === "tunnel" ? <DoorOpen size={58} /> : selected.scene === "gap" ? <Waves size={58} /> : selected.scene === "digger" ? <Drill size={58} /> : selected.scene === "it" ? <Database size={58} /> : selected.scene === "mechanical" ? <Gauge size={58} /> : selected.scene === "farm" ? <Activity size={58} /> : <Layers3 size={58} />}
               </div>
               <div className="fallback-section__rails"><i /><i /><i /><i /><i /></div>
+              <div className="fallback-section__stations">
+                {selected.details.slice(0, 4).map((detail, index) => <span key={detail.name}><i>{String(index + 1).padStart(2, "0")}</i>{detail.name}</span>)}
+              </div>
             </div>
             <div className="fallback-section__caption"><span>3D SECTION</span><b>{selected.name}</b><small>{selected.code} / {selected.canon}</small></div>
           </div>
@@ -1204,6 +1540,12 @@ export default function SiloExperience() {
         )}
         <div className="stage-vignette" /><div className="stage-grid" />
         <div className="model-label"><span>{viewMode === "overview" ? "ASSET" : viewMode === "section" ? "SECTION STUDY" : "OPERATION FIELD"}</span><b>{viewMode === "overview" ? "SILO 18 / EXTENDED CUTAWAY" : viewMode === "section" ? `${selected.code} / ${selected.name}` : "SILO GRID / SYNTHESIS"}</b><small>{viewMode === "overview" ? "144 LEVELS · SUB-FOUNDATION · SEALED" : viewMode === "section" ? `${selected.canon} EVIDENCE · INTERACTIVE DIORAMA` : "51 STRUCTURES · 18→17 · SEED ROUTE"}</small></div>
+        {viewMode === "section" && (
+          <div className="section-schematic" style={{ "--zone": selected.color } as React.CSSProperties}>
+            <div><span>DETAILED CUTAWAY</span><b>{selected.era}</b></div>
+            <ol>{selected.details.slice(0, 4).map((detail) => <li key={detail.name}>{detail.name}<i className={`detail-tag detail-tag--${detail.tag.toLowerCase().replace(" ", "-")}`}>{detail.tag}</i></li>)}</ol>
+          </div>
+        )}
         <div className="compass" aria-hidden="true"><span>N</span><i /><b>18</b></div>
         {!webglUnavailable && viewMode === "overview" && ZONES.filter((zone) => zone.group !== "network").map((zone) => (
           <button key={zone.id} ref={(node) => { hotspotRefs.current[zone.id] = node; }} className={`hotspot ${selected.id === zone.id ? "hotspot--active" : ""}`} style={{ "--zone": zone.color } as React.CSSProperties} onClick={() => chooseZone(zone)} aria-label={`Inspect ${zone.name}`}>
@@ -1232,18 +1574,18 @@ export default function SiloExperience() {
         <button className="intel-panel__close" onClick={() => setMobilePanel(false)} aria-label="Close detail panel"><X size={18} /></button>
         <div className="intel-panel__stripe" style={{ background: selected.color }} />
         <div className="intel-panel__topline"><span>{selected.kicker}</span><b className={`clearance clearance--${selected.status.toLowerCase().replace(" ", "-")}`}>{selected.status}</b></div>
-        <div className="zone-meta"><span className="zone-number">{selected.code}</span><b className={`canon-badge canon-badge--${selected.canon.toLowerCase()}`}>{selected.canon}</b></div>
+        <div className="zone-meta"><span className="zone-number">{selected.code}</span><b className={`canon-badge canon-badge--${selected.canon.toLowerCase()}`}>{selected.canon}</b><span className="zone-era">{selected.era}</span></div>
         <h1>{selected.name}</h1><p className="zone-levels">{selected.levels}</p><p className="zone-copy">{selected.description}</p>
         <div className="section-actions">
           {viewMode !== "overview" && <button className="section-actions__back" onClick={showOverview}><ArrowLeft size={15} /> FULL SILO</button>}
           <button className="section-actions__primary" onClick={selected.scene === "network" ? showNetwork : showSection}>{selected.scene === "network" ? <Network size={15} /> : <Box size={15} />}{selected.scene === "network" ? "OPEN NETWORK" : "OPEN 3D SECTION"}</button>
         </div>
-        <div className="intel-rule" /><span className="section-label">KNOWN INSTALLATIONS</span>
-        <ul className="installation-list">{selected.details.map((detail, index) => <li key={detail}><span>{String(index + 1).padStart(2, "0")}</span>{detail}</li>)}</ul>
+        <div className="intel-rule" /><span className="section-label">FACILITIES / SET ANCHORS</span>
+        <ul className="installation-list">{selected.details.map((detail, index) => <li key={detail.name}><span>{String(index + 1).padStart(2, "0")}</span><div><b>{detail.name}</b><small>{detail.note}</small></div><i className={`detail-tag detail-tag--${detail.tag.toLowerCase().replace(" ", "-")}`}>{detail.tag}</i></li>)}</ul>
+        <span className="section-label section-label--people">ASSOCIATED PERSONNEL</span>
+        <div className="people-strip">{selected.people.map((person) => <span key={person}>{person}</span>)}</div>
         <div className="system-card">
-          <div><Wind size={16} /><span>AIR</span><b>98.4%</b></div>
-          <div><Gauge size={16} /><span>POWER</span><b>{selected.id === "mechanical" ? "94.1%" : "87.2%"}</b></div>
-          <div><ShieldAlert size={16} /><span>ACCESS</span><b>{selected.status === "CLASSIFIED" ? "DENIED" : "PACT"}</b></div>
+          {selected.telemetry.map((item, index) => <div key={item.label}>{index === 0 ? <Wind size={16} /> : index === 1 ? <Gauge size={16} /> : <ShieldAlert size={16} />}<span>{item.label}</span><b>{item.value}</b></div>)}
         </div>
         <div className="intel-note"><BookOpen size={16} /><p><b>EVIDENCE LEDGER</b>{selected.evidence}</p></div>
         {selected.group === "below" && <div className="route-note"><Route size={15} /><span>SUB-FOUNDATION ROUTING SHOWN AT INFERRED SCALE</span></div>}

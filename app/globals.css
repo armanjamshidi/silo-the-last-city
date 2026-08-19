@@ -131,6 +131,13 @@ button { font: inherit; }
 .fallback-section__caption span, .fallback-section__caption small { color: #777269; font-size: 7px; letter-spacing: .17em; }
 .fallback-section__caption b { font: 20px Georgia,serif; letter-spacing: .06em; }
 .fallback-section--tunnel .fallback-section__room { border-radius: 42% 42% 5% 5% / 75% 75% 5% 5%; }
+.fallback-section--cafeteria .fallback-section__feature { width: 190px; height: 190px; color: #d5dfd4; border-width: 5px; border-color: #585d57; background: radial-gradient(circle at 50% 68%, #39423a 0 19%, #859189 20% 35%, #46524b 58%, #242b27 72%); box-shadow: 0 0 52px rgba(151,177,163,.22); }
+.fallback-section--cafeteria .fallback-section__rails i { height: 42px; border-radius: 50%; background: radial-gradient(circle at 50% 20%,#51534b 0 28%,#272923 30% 100%); }
+.fallback-section--airlock .fallback-section__room { background: repeating-linear-gradient(90deg, rgba(191,78,48,.08) 0 2px, transparent 2px 68px), linear-gradient(150deg,#2d2d27,#0e100d 70%); }
+.fallback-section--airlock .fallback-section__backwall { inset: 5% 3% 30%; border-color: rgba(197,83,53,.35); background: repeating-linear-gradient(0deg, transparent 0 26px, rgba(197,83,53,.12) 27px 28px), linear-gradient(90deg,rgba(255,255,255,.025),transparent); }
+.fallback-section--airlock .fallback-section__feature { left: 66%; top: 47%; width: 176px; height: 176px; border: 12px double #a65740; background: radial-gradient(circle,#191b18 0 54%,#393a33 55% 65%,#151714 66%); box-shadow: 0 0 48px rgba(197,83,53,.26); }
+.fallback-section--airlock .fallback-section__rails { left: 35%; right: 6%; }
+.fallback-section--airlock .fallback-section__rails i { width: 16%; height: 70px; border-color: #8b4937; background: repeating-linear-gradient(135deg,#2a2b26 0 9px,#9c4d37 10px 14px); transform: skewY(-2deg); }
 .fallback-section--gap .fallback-section__room { background: linear-gradient(180deg,#242a27 0 58%,#29484f 60% 100%); }
 .fallback-section--farm .fallback-section__rails i { background: linear-gradient(90deg,#31462b,#6e8a59,#24351f); }
 .fallback-section--mine .fallback-section__room { background: repeating-linear-gradient(100deg,#201f1c 0 30px,#302b24 31px 34px); }
@@ -219,6 +226,13 @@ button { font: inherit; }
 .intel-note svg { flex: 0 0 auto; color: #9a7f5b; }
 .intel-note p { margin: 0; font-size: 8px; line-height: 1.55; }
 .intel-note b { display: block; margin-bottom: 3px; color: #9c8768; letter-spacing: .12em; }
+.sequence-strip { display: flex; align-items: flex-start; gap: 9px; margin: 11px 0 2px; padding: 9px 10px; color: #b36c50; border: 1px solid rgba(187,91,61,.22); background: rgba(187,91,61,.045); }
+.sequence-strip > svg { flex: 0 0 auto; margin-top: 2px; }
+.sequence-strip__steps { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; min-width: 0; }
+.sequence-strip__steps span { color: #a9a39a; font-size: 6px; font-weight: 800; letter-spacing: .09em; }
+.sequence-strip__steps i { color: #705347; font: 8px ui-monospace,monospace; font-style: normal; }
+.sequence-strip--sensor { color: #7e9e95; border-color: rgba(111,151,141,.22); background: rgba(111,151,141,.045); }
+.sequence-strip--sensor .sequence-strip__steps i { color: #526d67; }
 .route-note { display: flex; align-items: center; gap: 8px; margin-top: 9px; padding: 8px 10px; color: #6f9295; font-size: 6px; font-weight: 800; letter-spacing: .11em; border: 1px dashed rgba(111,146,149,.22); }
 .statusbar { z-index: 20; grid-column: 1 / -1; grid-row: 3; display: flex; align-items: center; gap: 28px; padding: 0 18px; color: #615e57; font-size: 7px; font-weight: 700; letter-spacing: .17em; border-top: 1px solid var(--line); background: #080906; }
 .statusbar span { display: flex; align-items: center; gap: 7px; }
@@ -302,6 +316,9 @@ html[data-theme="light"], html[data-theme="light"] body {
 .silo-app[data-theme="light"] .people-strip span { color: #5f6058; border-color: rgba(61,58,50,.12); background: rgba(255,255,255,.25); }
 .silo-app[data-theme="light"] .system-card b { color: #4f5149; }
 .silo-app[data-theme="light"] .intel-note { color: #6e6252; background: rgba(148,113,63,.07); }
+.silo-app[data-theme="light"] .sequence-strip { background: rgba(172,78,51,.08); }
+.silo-app[data-theme="light"] .sequence-strip__steps span { color: #55574f; }
+.silo-app[data-theme="light"] .sequence-strip--sensor { background: rgba(78,124,114,.08); }
 .silo-app[data-theme="light"] .section-actions__back:hover { border-color: rgba(61,58,50,.32); }
 .silo-app[data-theme="light"] .modal-backdrop { background: rgba(79,72,62,.38); }
 .silo-app[data-theme="light"] .help-modal { background: linear-gradient(145deg, #fbf7ef, #e5ddcf); box-shadow: 0 30px 100px rgba(70,59,43,.28); }
@@ -315,6 +332,7 @@ html[data-theme="light"], html[data-theme="light"] body {
 .silo-app[data-theme="light"] .fallback-section__roof { background: linear-gradient(#aaa69a,#66645d); }
 .silo-app[data-theme="light"] .fallback-section__backwall { background: repeating-linear-gradient(90deg, transparent 0 35px, rgba(34,36,31,.08) 36px 37px), linear-gradient(rgba(255,255,255,.12), transparent); }
 .silo-app[data-theme="light"] .fallback-section__stations span { color: #454840; background: rgba(244,239,229,.86); }
+.silo-app[data-theme="light"] .fallback-section--airlock .fallback-section__room { background: repeating-linear-gradient(90deg, rgba(151,68,45,.09) 0 2px, transparent 2px 68px), linear-gradient(150deg,#c8c0b1,#7c7970 70%); }
 .silo-app[data-theme="light"] .fallback-network__grid { border-color: rgba(61,58,50,.16); background-image: linear-gradient(rgba(61,58,50,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(61,58,50,.08) 1px,transparent 1px); }
 .silo-app[data-theme="light"] .fallback-network__grid i { border-color: #7d7d74; background: radial-gradient(circle,#bbb8ad,#706f68); }
 .silo-app[data-theme="light"] .fallback-network__grid i span { color: #33362f; }

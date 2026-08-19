@@ -8,6 +8,7 @@ import {
   BookOpen,
   Box,
   Check,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   CircleHelp,
@@ -805,6 +806,7 @@ export default function SiloExperience() {
   const [detailTab, setDetailTab] = useState<"briefing" | "facilities" | "sources">("briefing");
   const [journeyId, setJourneyId] = useState(JOURNEYS[0].id);
   const [journeyStep, setJourneyStep] = useState(0);
+  const [journeyOpen, setJourneyOpen] = useState(false);
   const [shared, setShared] = useState(false);
   const copy = UI_COPY[language];
 
@@ -2306,19 +2308,24 @@ export default function SiloExperience() {
           <button className={mode === "systems" ? "active" : ""} onClick={() => setMode("systems")} aria-pressed={mode === "systems"}><Gauge size={14} /> {copy.systems}</button>
           <button className={mode === "life" ? "active" : ""} onClick={() => setMode("life")} aria-pressed={mode === "life"}><Aperture size={14} /> {copy.life}</button>
         </div>
-        <div className="journey-dock" aria-label="Guided archive routes">
-          <div className="journey-dock__title"><Route size={15} /><span>{copy.guided}</span><b>{journeyStep + 1}/{activeJourney.zones.length}</b></div>
-          <select value={journeyId} onChange={(event) => changeJourney(event.target.value)} aria-label="Choose a guided route">
-            {JOURNEYS.map((journey) => <option key={journey.id} value={journey.id}>{journey.name}</option>)}
-          </select>
-          <small>{activeJourney.subtitle}</small>
-          <div className="journey-dock__steps" role="list" aria-label={activeJourney.name}>
-            {activeJourney.zones.map((zoneId, index) => {
-              const zone = ZONES.find((item) => item.id === zoneId);
-              return <button key={zoneId} className={index === journeyStep ? "active" : ""} onClick={() => moveJourney(index)} aria-label={`Step ${index + 1}: ${zone?.name ?? zoneId}`} aria-current={index === journeyStep ? "step" : undefined}><i />{zone?.name ?? zoneId}</button>;
-            })}
+        <div className={`journey-dock ${journeyOpen ? "journey-dock--open" : "journey-dock--collapsed"}`} aria-label="Guided archive routes">
+          <button className="journey-dock__toggle" onClick={() => setJourneyOpen((value) => !value)} aria-expanded={journeyOpen} aria-controls="guided-routes-content" aria-label={journeyOpen ? "Hide guided routes" : "Open guided routes"} title={journeyOpen ? "Hide guided routes" : "Open guided routes"}>
+            <Route size={16} /><span>{copy.guided}</span>{journeyOpen && <b>{journeyStep + 1}/{activeJourney.zones.length}</b>}{journeyOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+          </button>
+          {journeyOpen && <div id="guided-routes-content" className="journey-dock__body">
+            <select value={journeyId} onChange={(event) => changeJourney(event.target.value)} aria-label="Choose a guided route">
+              {JOURNEYS.map((journey) => <option key={journey.id} value={journey.id}>{journey.name}</option>)}
+            </select>
+            <small>{activeJourney.subtitle}</small>
+            <div className="journey-dock__steps" role="list" aria-label={activeJourney.name}>
+              {activeJourney.zones.map((zoneId, index) => {
+                const zone = ZONES.find((item) => item.id === zoneId);
+                return <button key={zoneId} className={index === journeyStep ? "active" : ""} onClick={() => moveJourney(index)} aria-label={`Step ${index + 1}: ${zone?.name ?? zoneId}`} aria-current={index === journeyStep ? "step" : undefined}><i />{zone?.name ?? zoneId}</button>;
+              })}
+            </div>
+            <div className="journey-dock__nav"><button onClick={() => moveJourney(journeyStep - 1)} disabled={journeyStep === 0}><ChevronLeft size={15} /> PREV</button><button onClick={() => moveJourney(journeyStep + 1)} disabled={journeyStep === activeJourney.zones.length - 1}>NEXT <ChevronRight size={15} /></button></div>
           </div>
-          <div className="journey-dock__nav"><button onClick={() => moveJourney(journeyStep - 1)} disabled={journeyStep === 0}><ChevronLeft size={15} /> PREV</button><button onClick={() => moveJourney(journeyStep + 1)} disabled={journeyStep === activeJourney.zones.length - 1}>NEXT <ChevronRight size={15} /></button></div>
+          }
         </div>
       </section>
 

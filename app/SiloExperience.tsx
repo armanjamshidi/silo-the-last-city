@@ -123,6 +123,10 @@ const APPLE_EPISODES_URL = "https://www.apple.com/tv-pr/originals/silo/episodes-
 const APPLE_SEASON_THREE_URL = "https://www.apple.com/tv-pr/news/2026/04/apples-globally-acclaimed-drama-silo-starring-and-executive-produced-by-rebecca-ferguson-returns-for-season-three-on-july-3-2026/";
 const HOWEY_WOOL_URL = "https://hughhowey.com/books/wool/";
 const LUX_SILO_URL = "https://www.luxmc.com/silo";
+const TESTED_SILO_ART_DEPT_URL = "https://www.youtube.com/watch?v=LTn-KUxAJEA";
+const VFX_VOICE_SILO_URL = "https://vfxvoice.com/unraveling-the-mysteries-of-silo/";
+const GENERATOR_DESIGN_URL = "https://www.artstation.com/artwork/QXD6Yr";
+const JUDICIAL_SECLUSION_URL = "https://www.artstation.com/artwork/XJdYq3";
 
 const ZONES: Zone[] = [
   {
@@ -249,13 +253,14 @@ const ZONES: Zone[] = [
     scene: "judicial",
     color: "#b98a58",
     description:
-      "Courtrooms and enforcement offices conceal a second purpose: the externally supplied Safeguard delivery line passes through Judicial, physically separate from the buried Algorithm door.",
+      "An austere authority complex combining the public face of law with private chambers, Seclusion holding, Raider logistics and a concealed service wall carrying the externally supplied Safeguard line.",
     details: [
-      { name: "Judge Meadows' chamber", note: "Private office, hearing table and sealed personal archive.", tag: "ON SCREEN" },
-      { name: "Sims operations office", note: "Judicial command point for investigations and enforcement.", tag: "ON SCREEN" },
-      { name: "Raider ready room", note: "Protective equipment, weapons control and rapid stair access.", tag: "ON SCREEN" },
-      { name: "Interview & holding", note: "Controlled rooms for suspects before formal disposition.", tag: "INFERRED" },
-      { name: "Records / evidence hall", note: "Case files and relic seizures behind restricted counters.", tag: "INFERRED" },
+      { name: "Judicial threshold", note: "A monumental controlled entrance separates the authority district from the main stair.", tag: "ON SCREEN" },
+      { name: "Judge Meadows' chamber", note: "Dark green office, raised desk, private meeting table and sealed personal archive.", tag: "ON SCREEN" },
+      { name: "Sims operations office", note: "Judicial command point for investigations, case files and enforcement orders.", tag: "ON SCREEN" },
+      { name: "Raider ready room", note: "Lockers, protective equipment, weapons control and rapid stair access.", tag: "ON SCREEN" },
+      { name: "Seclusion holding", note: "A severe secure cell complex used for isolated detainees and controlled questioning.", tag: "ON SCREEN" },
+      { name: "Records & relic evidence", note: "Case files, seized relics and restricted evidence behind counted storage.", tag: "INFERRED" },
       { name: "Safeguard delivery line", note: "The lethal external line identified on the recovered drive enters through Judicial.", tag: "ON SCREEN" },
       { name: "Concealed service wall", note: "Juliette's group traces the line behind the Judicial fabric and plans a controlled breach.", tag: "ON SCREEN" },
       { name: "Isolation / capping point", note: "A proposed intervention point; striking the line itself could release the agent locally.", tag: "ON SCREEN" },
@@ -278,16 +283,19 @@ const ZONES: Zone[] = [
     scene: "it",
     color: "#82b8bc",
     description:
-      "A hardened technical enclave: public workstations at the threshold, dense server aisles behind them, an isolated power bus and the circular Vault containing the Legacy and Algorithm room.",
+      "A hardened technical enclave arranged in layers: public operations, the guarded server hall, an independent power spine and the circular Vault opening into the warm, impossible museum of the Legacy and its Algorithm interface.",
     details: [
-      { name: "I.T. operations floor", note: "Public-facing terminals, repair desks and the controlled approach to the rear.", tag: "ON SCREEN" },
-      { name: "Server aisles", note: "Tall rack banks carry silo data, displays, cameras and internal systems.", tag: "ON SCREEN" },
+      { name: "I.T. operations floor", note: "Public-facing terminals, repair desks and a guarded central route toward the restricted rear.", tag: "ON SCREEN" },
+      { name: "Server hall & checkpoint", note: "A reinforced SERVER ROOM threshold opens into dense, cool-lit rack aisles.", tag: "ON SCREEN" },
+      { name: "Server aisles", note: "Tall rack banks carry silo data, displays, cameras and internal systems behind locked cages.", tag: "ON SCREEN" },
       { name: "Independent power bus", note: "I.T. stays illuminated when Mechanical cuts general power.", tag: "ON SCREEN" },
       { name: "External Silo 1 feeder", note: "A separate line on the recovered schematic supplies I.T. from Silo 1's generators.", tag: "ON SCREEN" },
       { name: "Secure bridge / checkpoint", note: "A narrow defensible approach; its broken Silo 17 counterpart is shown in Season 2.", tag: "ON SCREEN" },
       { name: "The Vault", note: "Circular sealed threshold opened by the illuminated Silo 18 key and code.", tag: "ON SCREEN" },
-      { name: "Algorithm chamber", note: "A sparse Y-plan room aimed at one screen, flanked by stepped server and power banks.", tag: "ON SCREEN" },
-      { name: "The Legacy", note: "Pre-silo knowledge, models, books, relics, food stores and shadow quarters.", tag: "ON SCREEN" },
+      { name: "Legacy / Algorithm interface", note: "A transparent responsive screen recognizes the authorized shadow and answers spoken queries.", tag: "ON SCREEN" },
+      { name: "Legacy library & artifacts", note: "Pre-silo books, paintings, instruments, models, relics and working historic devices.", tag: "ON SCREEN" },
+      { name: "Solar-system model", note: "A large orbital model hangs above the Legacy's central study like a preserved universe.", tag: "ON SCREEN" },
+      { name: "Vault stores & shadow quarters", note: "Food, medical stock, living space and supplies support long isolation inside the sealed complex.", tag: "ON SCREEN" },
     ],
     people: ["Bernard Holland", "Lukas Kyle", "Mary Meadows", "Solo / Jimmy"],
     telemetry: [{ label: "POWER", value: "SILO 1 FEED" }, { label: "ARCHIVE", value: "LEGACY" }, { label: "ACCESS", value: "18-KEY" }],
@@ -443,14 +451,15 @@ const ZONES: Zone[] = [
     scene: "mechanical",
     color: "#e06745",
     description:
-      "At the bottom, the generator, steam feed and machine shops turn heat and pressure into the Silo's pulse.",
+      "At the bottom, a jet-engine-like turbine sits opened inside a cathedral of gantries, steam trunks, cranes, control boards, repair pits and workshops—the part of the silo designed to be maintained by hand forever.",
     details: [
       { name: "Main turbine generator", note: "Jet-engine-like rotor, removable panels and the silo's primary power train.", tag: "ON SCREEN" },
+      { name: "Exposed rotor & casing rings", note: "The shutdown reveals blades, shaft stages and separated outer panels at human scale.", tag: "ON SCREEN" },
       { name: "Steam bypass chamber", note: "Pressure diversion and the flooded repair pit used during shutdown.", tag: "ON SCREEN" },
       { name: "Generator control", note: "Load board, pressure gauges, emergency signals and restart sequence.", tag: "ON SCREEN" },
       { name: "Machine shop", note: "Heavy repair benches, hoists, welders and improvised replacement parts.", tag: "ON SCREEN" },
       { name: "Walker's workshop", note: "Electronics bench, radio work and the camera hidden in the wall.", tag: "ON SCREEN" },
-      { name: "High gantries", note: "Hooks and lifting rails reach the upper turbine panels.", tag: "ON SCREEN" },
+      { name: "High gantries & service crane", note: "Catwalks, hooks, chains and lifting rails reach the upper turbine panels.", tag: "ON SCREEN" },
       { name: "Cooling / water lines", note: "Dense pipework feeds the generator hall and adjacent systems.", tag: "INFERRED" },
     ],
     people: ["Juliette Nichols", "Knox", "Shirley Campbell", "Martha Walker", "Cooper"],
@@ -634,19 +643,47 @@ const CAFETERIA_PRODUCTION_SOURCE: SourceReference = {
   url: LUX_SILO_URL,
 };
 
+const IT_VAULT_PRODUCTION_SOURCE: SourceReference = {
+  label: "Tested — Silo art department & Algorithm room",
+  coverage: "Vault / Legacy production design",
+  kind: "PRODUCTION",
+  url: TESTED_SILO_ART_DEPT_URL,
+};
+
+const SILO_VFX_SOURCE: SourceReference = {
+  label: "VFX Voice — Building Silo",
+  coverage: "Generator, environments and practical-set extensions",
+  kind: "PRODUCTION",
+  url: VFX_VOICE_SILO_URL,
+};
+
+const GENERATOR_PRODUCTION_SOURCE: SourceReference = {
+  label: "Arnaud Valette — Generator room design",
+  coverage: "Season 1 generator set development",
+  kind: "PRODUCTION",
+  url: GENERATOR_DESIGN_URL,
+};
+
+const JUDICIAL_PRODUCTION_SOURCE: SourceReference = {
+  label: "Judicial Seclusion Holding — set concept",
+  coverage: "Season 2 Judicial production design",
+  kind: "PRODUCTION",
+  url: JUDICIAL_SECLUSION_URL,
+};
+
 const ZONE_REFERENCES: Record<string, SourceReference[]> = {
   surface: [EPISODE_SOURCE, SERIES_SOURCE],
   "cleaning-facility": [EPISODE_SOURCE, SERIES_SOURCE],
   cafeteria: [EPISODE_SOURCE, CAFETERIA_PRODUCTION_SOURCE, SERIES_SOURCE],
   "up-top": [EPISODE_SOURCE, SERIES_SOURCE],
-  judicial: [EPISODE_SOURCE, SEASON_THREE_SOURCE],
-  it: [EPISODE_SOURCE, SEASON_THREE_SOURCE],
+  judicial: [EPISODE_SOURCE, JUDICIAL_PRODUCTION_SOURCE, SEASON_THREE_SOURCE],
+  it: [EPISODE_SOURCE, IT_VAULT_PRODUCTION_SOURCE, SEASON_THREE_SOURCE],
   medical: [EPISODE_SOURCE, SERIES_SOURCE],
   mids: [EPISODE_SOURCE, BOOK_SOURCE],
   farms: [EPISODE_SOURCE, BOOK_SOURCE],
   "life-support": [SERIES_SOURCE, BOOK_SOURCE],
   supply: [EPISODE_SOURCE, BOOK_SOURCE],
-  mechanical: [EPISODE_SOURCE, SERIES_SOURCE],
+  mechanical: [EPISODE_SOURCE, GENERATOR_PRODUCTION_SOURCE, SILO_VFX_SOURCE],
   digger: [EPISODE_SOURCE, SERIES_SOURCE],
   gap: [EPISODE_SOURCE, SERIES_SOURCE],
   tunnel: [EPISODE_SOURCE, SEASON_THREE_SOURCE],
@@ -1526,6 +1563,44 @@ export default function SiloExperience() {
     const cafeteriaFeedTexture = new THREE.CanvasTexture(cafeteriaFeedCanvas);
     cafeteriaFeedTexture.colorSpace = THREE.SRGBColorSpace;
     cafeteriaFeedTexture.anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 4);
+    const detailTextures: THREE.Texture[] = [cafeteriaFeedTexture];
+    const animatedDetailRotors: THREE.Object3D[] = [];
+    const addPlacard = (
+      group: THREE.Group,
+      text: string,
+      position: [number, number, number],
+      size: [number, number],
+      color = "#c7a96f",
+      rotationY = 0,
+    ) => {
+      const canvas = document.createElement("canvas");
+      canvas.width = 512;
+      canvas.height = 128;
+      const context = canvas.getContext("2d");
+      if (context) {
+        context.fillStyle = "rgba(8,10,9,.94)";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.strokeStyle = color;
+        context.lineWidth = 4;
+        context.strokeRect(5, 5, canvas.width - 10, canvas.height - 10);
+        context.fillStyle = color;
+        context.font = `700 ${text.length > 18 ? 36 : text.length > 11 ? 44 : 52}px ui-monospace, monospace`;
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        context.fillText(text, canvas.width / 2, canvas.height / 2 + 2);
+      }
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.colorSpace = THREE.SRGBColorSpace;
+      detailTextures.push(texture);
+      const placard = new THREE.Mesh(
+        new THREE.PlaneGeometry(size[0], size[1]),
+        new THREE.MeshBasicMaterial({ map: texture, toneMapped: false }),
+      );
+      placard.position.set(...position);
+      placard.rotation.y = rotationY;
+      group.add(placard);
+      return placard;
+    };
 
     ZONES.filter((zone) => zone.scene !== "network").forEach((zone) => {
       const group = new THREE.Group();
@@ -1802,69 +1877,224 @@ export default function SiloExperience() {
         for (let y = -0.15; y <= 1.45; y += 0.4) addBox(group, [2.25, 0.045, 0.04], [4.7, y, -4.46], y > 1 ? accent : detailMetalMat);
         addRail(group, -6, 3.05, -2.38, 4.2, detailMetalMat);
       } else if (zone.scene === "judicial") {
-        addBox(group, [6.4, 0.65, 2.35], [1.1, -1.62, -2.9], detailMetalMat);
-        addBox(group, [3.5, 1.35, 1.2], [1.1, -0.7, -3.55], detailDarkMat);
-        addConsole(group, [1.1, 0.28, -3.65], accent, 2.5);
-        for (let x = -5.75; x <= -2.45; x += 1.1) {
-          addBox(group, [0.88, 3.7, 0.62], [x, -0.52, -4.35], detailMetalMat);
-          for (let y = -1.65; y <= 1.2; y += 0.62) addBox(group, [0.68, 0.045, 0.04], [x, y, -4.02], accent);
+        const judicialGreen = new THREE.MeshStandardMaterial({ color: 0x344139, roughness: 0.9, metalness: 0.08 });
+        const judicialTile = new THREE.MeshStandardMaterial({ color: 0x3e5047, roughness: 0.82, metalness: 0.12 });
+        const judicialBrass = new THREE.MeshStandardMaterial({ color: 0x8f734a, roughness: 0.52, metalness: 0.62 });
+        const judicialWood = new THREE.MeshStandardMaterial({ color: 0x4b392d, roughness: 0.88, metalness: 0.04 });
+        const paperMat = new THREE.MeshStandardMaterial({ color: 0xc1b69a, roughness: 1 });
+        const lampMat = new THREE.MeshStandardMaterial({ color: 0xd9b06b, emissive: 0x8d5826, emissiveIntensity: 1.5, roughness: 0.5 });
+        const safeguardMat = new THREE.MeshStandardMaterial({ color: 0x8f3f2f, emissive: 0x4f0e09, emissiveIntensity: 0.9, roughness: 0.36, metalness: 0.8 });
+
+        addBox(group, [14, 0.16, 10], [0, -2.36, 0], new THREE.MeshStandardMaterial({ color: 0x302f2a, roughness: 0.96 }));
+        addBox(group, [4.1, 0.025, 7.8], [0, -2.24, 0.15], new THREE.MeshStandardMaterial({ color: 0x493c31, roughness: 0.95 }));
+        addBox(group, [13.1, 4.75, 0.24], [0, -0.02, -4.56], judicialGreen);
+        for (let x = -6.2; x <= 6.2; x += 0.58) addBox(group, [0.025, 4.55, 0.025], [x, -0.04, -4.39], judicialTile);
+        for (let y = -2.05; y <= 2.05; y += 0.5) addBox(group, [12.75, 0.025, 0.025], [0, y, -4.38], judicialTile);
+        addPlacard(group, "JUDICIAL", [0, 2.18, -4.3], [3.5, 0.72], "#b99560");
+
+        addBox(group, [6.2, 0.82, 1.35], [0, -1.48, -3.55], judicialWood);
+        addBox(group, [5.7, 0.15, 1.72], [0, -0.98, -3.38], judicialBrass);
+        addBox(group, [1.05, 1.45, 0.82], [0, -0.17, -4.08], detailDarkMat);
+        addBox(group, [0.86, 0.88, 0.28], [0, -0.02, -3.58], judicialGreen);
+        for (const x of [-1.58, 1.58]) {
+          addCylinder(group, 0.18, 0.5, [x, -0.69, -3.08], judicialBrass, [0, 0, 0], 16);
+          addCylinder(group, 0.36, 0.08, [x, -0.4, -3.08], lampMat, [0, 0, 0], 18);
         }
-        for (let x = 3.5; x <= 6.1; x += 0.42) addBox(group, [0.08, 3.9, 0.08], [x, -0.55, 2.55], detailMetalMat);
-        addBox(group, [3.2, 0.28, 1.25], [-3.9, -1.95, 0.5], detailDarkMat);
-        addConsole(group, [-3.9, -1.25, 0.25], accent, 2.5);
-        for (let x = -1.4; x <= 1.4; x += 1.4) addBox(group, [0.9, 1.7, 0.48], [x, 0.9, -4.46], detailDarkMat);
-        addRail(group, -6, 3.1, -2.38, 4.2, accent);
-        const safeguardMat = new THREE.MeshStandardMaterial({ color: 0x8f3f2f, emissive: 0x4f0e09, emissiveIntensity: 0.75, roughness: 0.36, metalness: 0.8 });
-        addTube(group, [[6.45, 2.25, -4.1], [4.75, 2.25, -4.1], [4.75, -1.75, -4.1], [2.8, -1.75, -4.1]], 0.24, safeguardMat);
-        for (let y = -1.65; y <= 2.15; y += 0.56) addBox(group, [1.25, 0.045, 0.04], [4.75, y, -3.92], safeguardMat);
-        const valve = new THREE.Mesh(new THREE.TorusGeometry(0.58, 0.09, 8, 28), safeguardMat);
-        valve.position.set(3.55, -1.72, -4.28);
+        const judgeLight = new THREE.PointLight(0xd5ae70, 4.2, 7, 2);
+        judgeLight.position.set(0, 1.35, -2.8);
+        group.add(judgeLight);
+
+        for (const x of [-2.05, 2.05]) {
+          addBox(group, [2.9, 0.25, 1.18], [x, -1.55, -0.75], judicialWood);
+          addBox(group, [2.55, 0.09, 0.9], [x, -1.32, -0.75], judicialBrass);
+          addBox(group, [0.58, 1.02, 0.58], [x, -1.76, 0.15], detailDarkMat);
+          addBox(group, [0.48, 0.7, 0.16], [x, -1.2, 0.2], judicialGreen);
+          for (const paperX of [-0.55, 0.1, 0.58]) addBox(group, [0.44, 0.018, 0.31], [x + paperX, -1.18, -0.65 + Math.abs(paperX) * 0.12], paperMat, paperX * 0.08);
+        }
+
+        addBox(group, [3.35, 0.76, 1.22], [-4.55, -1.58, 1.8], judicialWood);
+        addBox(group, [2.8, 0.12, 0.92], [-4.55, -1.12, 1.62], judicialBrass);
+        addConsole(group, [-4.55, -0.73, 1.25], accent, 1.9);
+        for (let z = -0.15; z <= 3.5; z += 0.92) {
+          addBox(group, [0.72, 2.9, 0.75], [-6.25, -0.62, z], detailMetalMat);
+          for (let y = -1.68; y <= 0.6; y += 0.48) addBox(group, [0.5, 0.05, 0.04], [-5.86, y, z], judicialBrass);
+        }
+
+        addBox(group, [3.35, 4.55, 3.65], [4.88, -0.2, 1.5], new THREE.MeshStandardMaterial({ color: 0x252a26, transparent: true, opacity: 0.2, roughness: 0.18, metalness: 0.15, depthWrite: false }));
+        for (const x of [3.35, 4.15, 4.95, 5.75, 6.35]) addBox(group, [0.075, 4.35, 0.075], [x, -0.2, 3.18], detailMetalMat);
+        for (const z of [0.0, 3.1]) for (const x of [3.35, 6.35]) addBox(group, [0.1, 4.35, 0.1], [x, -0.2, z], detailMetalMat);
+        addBox(group, [2.35, 0.32, 0.82], [4.82, -1.9, 1.52], judicialWood);
+        addBox(group, [0.86, 2.55, 0.16], [6.28, -0.25, 1.52], detailDarkMat, Math.PI / 2);
+        addPlacard(group, "SECLUSION", [4.85, 1.62, 3.24], [2.4, 0.52], "#a58b65");
+        const cellLight = new THREE.PointLight(0x9ca7a0, 3.5, 5.5, 2);
+        cellLight.position.set(4.8, 1.9, 1.45);
+        group.add(cellLight);
+
+        for (const x of [-5.5, -4.5, -3.5]) {
+          addBox(group, [0.82, 2.8, 0.76], [x, -0.72, -3.85], detailDarkMat);
+          for (let y = -1.7; y <= 0.3; y += 0.48) addBox(group, [0.58, 0.055, 0.05], [x, y, -3.43], x === -4.5 ? accent : judicialBrass);
+        }
+
+        addTube(group, [[6.42, 2.2, -4.08], [5.48, 2.2, -4.08], [5.48, -1.72, -4.08], [3.5, -1.72, -4.08]], 0.23, safeguardMat);
+        for (let y = -1.65; y <= 2.08; y += 0.56) addBox(group, [1.0, 0.045, 0.04], [5.48, y, -3.9], safeguardMat);
+        const valve = new THREE.Mesh(new THREE.TorusGeometry(0.54, 0.085, 8, 28), safeguardMat);
+        valve.position.set(4.2, -1.68, -4.28);
         group.add(valve);
-        addBox(group, [0.08, 4.55, 2.4], [2.35, -0.25, -3.55], detailConcreteMat);
-        addConsole(group, [5.4, -1.05, -2.9], safeguardMat, 1.2);
-      } else if (zone.scene === "it") {
-        // Season 2's Vault is deliberately unlike the rest of the silo: a Y-plan
-        // focused on the Algorithm screen with stepped server / power banks.
-        const bridge = addBox(group, [4.8, 0.18, 4.2], [0, -2.18, 2.55], detailMetalMat);
-        bridge.receiveShadow = true;
-        addRail(group, -2.35, 2.35, -2.22, 0.6, accent);
-        addRail(group, -2.35, 2.35, -2.22, 4.35, accent);
-        for (const side of [-1, 1]) {
-          for (let i = 0; i < 4; i += 1) {
-            const x = side * (2.75 + i * 0.82);
-            const z = -2.65 + i * 0.28;
-            const height = 1.25 + i * 0.55;
-            addBox(group, [0.65, height, 2.2], [x, -2.22 + height / 2, z], i % 2 ? detailMetalMat : detailDarkMat, side * -0.12);
-            for (let y = -1.88; y < -1.88 + height - 0.2; y += 0.42) addBox(group, [0.43, 0.035, 0.035], [x, y, z + 1.12], accent, side * -0.12);
+        addBox(group, [0.16, 4.55, 2.5], [3.15, -0.12, -3.58], detailConcreteMat);
+        addBox(group, [0.16, 2.05, 1.0], [3.0, -0.6, -2.98], judicialGreen, -0.18);
+        addPlacard(group, "SAFEGUARD / SEALED", [5.25, 1.46, -3.78], [2.25, 0.46], "#b35645");
+        addConsole(group, [5.45, -1.12, -2.92], safeguardMat, 1.2);
+
+        const addOfficer = (x: number) => {
+          const officer = new THREE.Group();
+          const uniform = new THREE.MeshStandardMaterial({ color: 0x252c29, roughness: 0.92 });
+          const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.28, 0.9, 8), uniform);
+          torso.position.y = 0.95;
+          officer.add(torso);
+          const head = new THREE.Mesh(new THREE.SphereGeometry(0.2, 10, 8), paperMat);
+          head.position.y = 1.55;
+          officer.add(head);
+          for (const side of [-1, 1]) {
+            const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.09, 0.82, 8), uniform);
+            leg.position.set(side * 0.11, 0.35, 0);
+            officer.add(leg);
           }
-          addBox(group, [0.24, 0.06, 6.5], [side * 1.18, -2.23, -0.25], accent, side * 0.42);
-          addTube(group, [[side * 5.7, 2.15, -3.9], [side * 5.7, -1.65, -3.9], [side * 3.5, -1.65, -3.1]], 0.12, accent);
+          officer.position.set(x, -2.28, 3.55);
+          group.add(officer);
+        };
+        addOfficer(-1.05);
+        addOfficer(1.05);
+        addRail(group, -6, 3.1, -2.34, 4.22, judicialBrass);
+      } else if (zone.scene === "it") {
+        const serverMetal = new THREE.MeshStandardMaterial({ color: 0x303b3d, roughness: 0.52, metalness: 0.72 });
+        const serverDark = new THREE.MeshStandardMaterial({ color: 0x101718, roughness: 0.64, metalness: 0.48 });
+        const vaultMetal = new THREE.MeshStandardMaterial({ color: 0x59666a, roughness: 0.35, metalness: 0.82 });
+        const legacyGold = new THREE.MeshStandardMaterial({ color: 0xb9985f, emissive: 0x6c4820, emissiveIntensity: 0.82, roughness: 0.5, metalness: 0.46 });
+        const legacyWood = new THREE.MeshStandardMaterial({ color: 0x45362b, roughness: 0.88, metalness: 0.05 });
+        const feederMat = new THREE.MeshStandardMaterial({ color: 0x548e9a, emissive: 0x173e49, emissiveIntensity: 0.92, roughness: 0.34, metalness: 0.82 });
+        const redIndicator = new THREE.MeshBasicMaterial({ color: 0xd34d51, toneMapped: false });
+        const greenIndicator = new THREE.MeshBasicMaterial({ color: 0x78b895, toneMapped: false });
+
+        addBox(group, [14, 0.18, 10], [0, -2.37, 0], new THREE.MeshStandardMaterial({ color: 0x20292a, roughness: 0.9, metalness: 0.2 }));
+        addBox(group, [2.6, 0.045, 9.15], [0, -2.23, 0], serverMetal);
+        for (const x of [-1.18, 1.18]) addBox(group, [0.08, 0.035, 8.8], [x, -2.18, 0], accent);
+
+        for (const x of [-4.75, -1.58, 1.58, 4.75]) {
+          addBox(group, [2.35, 0.76, 1.25], [x, -1.72, 3.22], serverMetal);
+          addConsole(group, [x, -0.93, 2.95], accent, 1.55);
+          addBox(group, [0.62, 0.92, 0.62], [x, -1.82, 4.0], serverDark);
         }
-        for (const x of [-5.45, 5.45]) {
-          addBox(group, [1.05, 4.15, 1.4], [x, -0.45, -3.75], detailMetalMat);
-          for (let y = -1.85; y <= 1.25; y += 0.52) addBox(group, [0.72, 0.055, 0.05], [x, y, -3.02], accent);
+
+        for (const side of [-1, 1]) {
+          for (let row = 0; row < 3; row += 1) {
+            const x = side * (4.35 + (row % 2) * 1.12);
+            const z = 1.55 - row * 1.48;
+            addBox(group, [1.02, 3.65, 1.25], [x, -0.42, z], row % 2 ? serverMetal : serverDark, side * -0.05);
+            for (let y = -1.82; y <= 1.0; y += 0.38) {
+              addBox(group, [0.68, 0.06, 0.04], [x, y, z + 0.64], Math.round((y + row) * 10) % 4 === 0 ? redIndicator : accent, side * -0.05);
+              for (const lightX of [-0.22, 0.22]) addBox(group, [0.045, 0.045, 0.045], [x + lightX, y + 0.13, z + 0.67], (row + Math.round(y * 10)) % 3 === 0 ? greenIndicator : glow, side * -0.05);
+            }
+          }
+          addTube(group, [[side * 6.2, 2.28, 2.6], [side * 6.2, -1.78, 2.6], [side * 4.8, -1.78, 1.85]], 0.13, feederMat);
         }
-        const vaultRim = new THREE.Mesh(new THREE.TorusGeometry(2.05, 0.24, 12, 48), accent);
-        vaultRim.position.set(0, 0.25, -4.58);
+
+        addBox(group, [5.2, 0.2, 2.25], [0, -2.15, 1.1], serverMetal);
+        addBox(group, [0.32, 4.45, 0.55], [-2.72, -0.2, 0.25], vaultMetal);
+        addBox(group, [0.32, 4.45, 0.55], [2.72, -0.2, 0.25], vaultMetal);
+        addBox(group, [5.7, 0.34, 0.62], [0, 2.05, 0.25], vaultMetal);
+        addPlacard(group, "SERVER ROOM", [0, 1.78, 0.58], [2.55, 0.54], "#8fc1c4");
+        addRail(group, -2.4, 2.4, -2.2, 2.18, accent);
+
+        const vaultRim = new THREE.Mesh(new THREE.TorusGeometry(2.14, 0.25, 12, 64), vaultMetal);
+        vaultRim.position.set(0, 0.12, -1.12);
         group.add(vaultRim);
-        const vaultFace = new THREE.Mesh(new THREE.CircleGeometry(1.82, 48), detailDarkMat);
-        vaultFace.position.set(0, 0.25, -4.595);
-        group.add(vaultFace);
-        const algorithmScreen = addBox(group, [1.28, 1.55, 0.05], [0, 0.28, -4.64], glow);
-        algorithmScreen.material = glow;
-        addConsole(group, [0, -1.58, -2.55], accent, 2.1);
-        addBox(group, [0.2, 0.06, 4.5], [0, -2.27, -0.5], accent);
-        addBox(group, [0.95, 0.12, 0.55], [0, -1.05, -2.22], detailMetalMat);
-        addBox(group, [0.13, 0.06, 0.2], [0.28, -0.91, -1.92], new THREE.MeshBasicMaterial({ color: 0xd34d51, toneMapped: false }));
-        addBox(group, [2.7, 2.35, 1.55], [-4.45, -1.22, 1.65], detailDarkMat);
-        addBox(group, [1.8, 0.18, 0.75], [-4.45, 0.02, 1.92], detailGlassMat);
-        addBox(group, [2.35, 1.8, 1.5], [4.5, -1.45, 1.75], detailMetalMat);
-        for (let y = -2.1; y <= -0.9; y += 0.4) addBox(group, [1.7, 0.08, 0.08], [4.5, y, 2.52], accent);
-        const feederMat = new THREE.MeshStandardMaterial({ color: 0x548e9a, emissive: 0x173e49, emissiveIntensity: 0.72, roughness: 0.34, metalness: 0.82 });
-        addTube(group, [[-6.5, 2.52, -4.25], [-5.8, 2.52, -4.25], [-5.8, -1.72, -4.25], [-3.6, -1.72, -3.55]], 0.2, feederMat);
-        for (let y = -1.65; y <= 2.2; y += 0.52) addBox(group, [0.9, 0.045, 0.04], [-5.8, y, -4.02], feederMat);
-        addBox(group, [1.35, 2.5, 0.82], [-5.75, -1.1, 2.85], detailDarkMat);
-        for (let y = -2.05; y <= -0.25; y += 0.38) addBox(group, [0.95, 0.05, 0.05], [-5.75, y, 3.28], feederMat);
+        const vaultInnerRim = new THREE.Mesh(new THREE.TorusGeometry(1.84, 0.08, 10, 64), accent);
+        vaultInnerRim.position.set(0, 0.12, -1.05);
+        group.add(vaultInnerRim);
+        addPlacard(group, "VAULT / LEGACY", [0, 2.45, -1.0], [2.8, 0.56], "#8fc8cc");
+
+        const vaultDoor = new THREE.Group();
+        const vaultDoorDisc = new THREE.Mesh(new THREE.CylinderGeometry(1.92, 1.92, 0.34, 48), vaultMetal);
+        vaultDoorDisc.rotation.x = Math.PI / 2;
+        vaultDoor.add(vaultDoorDisc);
+        const vaultDoorRing = new THREE.Mesh(new THREE.TorusGeometry(1.58, 0.12, 10, 48), accent);
+        vaultDoorRing.position.z = 0.19;
+        vaultDoor.add(vaultDoorRing);
+        for (let spoke = 0; spoke < 8; spoke += 1) {
+          const rib = addBox(vaultDoor, [0.11, 3.05, 0.12], [0, 0, 0.2], vaultMetal);
+          rib.rotation.z = (TAU / 8) * spoke;
+        }
+        const doorHub = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.38, 0.27, 24), serverDark);
+        doorHub.rotation.x = Math.PI / 2;
+        doorHub.position.z = 0.27;
+        vaultDoor.add(doorHub);
+        vaultDoor.position.set(2.72, 0.12, -0.58);
+        vaultDoor.rotation.y = -0.63;
+        group.add(vaultDoor);
+
+        addBox(group, [1.2, 1.28, 0.7], [-2.62, -1.52, -0.42], serverDark);
+        addBox(group, [0.78, 0.38, 0.05], [-2.62, -1.06, -0.03], accent);
+        addBox(group, [0.16, 0.16, 0.06], [-2.32, -0.8, 0.01], redIndicator);
+        addBox(group, [0.16, 0.16, 0.06], [-2.62, -0.8, 0.01], greenIndicator);
+
+        addBox(group, [7.8, 0.16, 3.2], [0, -2.28, -3.15], legacyWood);
+        for (const x of [-4.35, -3.15, 3.15, 4.35]) {
+          addBox(group, [1.05, 2.65, 0.62], [x, -0.78, -4.16], legacyWood);
+          for (let y = -1.8; y <= 0.22; y += 0.48) {
+            addBox(group, [0.9, 0.06, 0.52], [x, y, -4.08], legacyGold);
+            for (let book = -0.34; book <= 0.34; book += 0.17) {
+              const bookMat = new THREE.MeshStandardMaterial({ color: Math.round((book + x) * 10) % 2 === 0 ? 0x6e3e36 : 0x394f4b, roughness: 0.95 });
+              addBox(group, [0.12, 0.32 + seeded(Math.round((book + x) * 90)) * 0.11, 0.22], [x + book, y + 0.22, -3.72], bookMat);
+            }
+          }
+        }
+
+        const legacyScreen = addBox(group, [2.75, 1.72, 0.045], [0, 0.18, -4.3], detailGlassMat);
+        legacyScreen.material = detailGlassMat;
+        const legacyHalo = new THREE.Mesh(new THREE.TorusGeometry(0.55, 0.045, 8, 42), accent);
+        legacyHalo.position.set(0, 0.25, -4.24);
+        group.add(legacyHalo);
+        for (const y of [-0.3, 0.25, 0.8]) addBox(group, [2.18 - Math.abs(y) * 0.36, 0.025, 0.02], [0, y, -4.21], y === 0.25 ? legacyGold : glow);
+        addPlacard(group, "LEGACY // SILO 18", [0, -0.92, -4.18], [2.35, 0.44], "#c6a365");
+        addConsole(group, [0, -1.42, -2.75], legacyGold, 1.85);
+        addBox(group, [0.86, 0.14, 0.48], [0, -0.84, -2.43], detailGlassMat);
+
+        const orrery = new THREE.Group();
+        const sun = new THREE.Mesh(new THREE.SphereGeometry(0.19, 16, 12), legacyGold);
+        orrery.add(sun);
+        [0.48, 0.78, 1.08].forEach((radius, index) => {
+          const orbit = new THREE.Mesh(new THREE.TorusGeometry(radius, 0.018, 6, 48), legacyGold);
+          orbit.rotation.x = Math.PI / 2 + index * 0.13;
+          orbit.rotation.y = index * 0.2;
+          orrery.add(orbit);
+          const planet = new THREE.Mesh(new THREE.SphereGeometry(0.07 + index * 0.018, 10, 8), index === 1 ? accent : vaultMetal);
+          planet.position.set(radius * 0.72, index * 0.08, radius * 0.56);
+          orrery.add(planet);
+        });
+        orrery.position.set(0, 2.03, -3.05);
+        group.add(orrery);
+
+        for (const side of [-1, 1]) {
+          addBox(group, [0.9, 1.18, 0.9], [side * 2.35, -1.67, -2.9], legacyWood);
+          const relic = side < 0
+            ? new THREE.Mesh(new THREE.SphereGeometry(0.34, 18, 12), new THREE.MeshStandardMaterial({ color: 0x5f766f, roughness: 0.5, metalness: 0.2 }))
+            : new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.32, 0.62, 16), legacyGold);
+          relic.position.set(side * 2.35, -0.82, -2.9);
+          group.add(relic);
+        }
+        addBox(group, [1.45, 2.35, 1.05], [5.45, -1.08, -2.6], serverDark);
+        for (let y = -2.0; y <= -0.25; y += 0.36) addBox(group, [1.08, 0.055, 0.05], [5.45, y, -2.02], legacyGold);
+
+        const legacyLight = new THREE.PointLight(0xd2ac6b, 7, 8.5, 2);
+        legacyLight.position.set(0, 1.5, -2.9);
+        group.add(legacyLight);
+        const serverLight = new THREE.PointLight(0x75b8c1, 6.5, 10, 2);
+        serverLight.position.set(0, 1.4, 1.6);
+        group.add(serverLight);
+
+        addTube(group, [[-6.5, 2.5, -4.2], [-5.75, 2.5, -4.2], [-5.75, -1.72, -4.2], [-4.0, -1.72, -3.35]], 0.21, feederMat);
+        for (let y = -1.65; y <= 2.18; y += 0.52) addBox(group, [0.9, 0.045, 0.04], [-5.75, y, -4.0], feederMat);
+        addPlacard(group, "INDEPENDENT POWER", [-5.72, 1.65, -3.86], [1.92, 0.43], "#71b6bd");
       } else if (zone.scene === "medical") {
         const cleanMat = new THREE.MeshStandardMaterial({ color: 0xb6b8ad, roughness: 0.82 });
         for (let x = -4.8; x <= 1.2; x += 3) {
@@ -1987,25 +2217,138 @@ export default function SiloExperience() {
         addConsole(group, [-4.5, -1.18, 2.15], accent, 1.9);
         for (let x = 3.4; x <= 5.8; x += 0.8) for (let y = -1.8; y <= 1.45; y += 0.65) addBox(group, [0.55, 0.44, 0.65], [x, y, -4.18], (Math.round(x * 10 + y * 10) % 3 === 0) ? accent : detailWallMat);
       } else if (zone.scene === "mechanical") {
-        const turbine = addDetailTurbine(group, 0xc0583c, 1.18);
-        turbine.position.set(0, -0.55, -0.65);
-        for (const x of [-5.8, 5.8]) {
-          addBox(group, [0.35, 5.4, 0.35], [x, 0, -3.6], accent);
-          addTube(group, [[x, 2.35, -3.6], [x, 2.35, 2.8], [x * 0.7, -1.5, 3.5]], 0.16, detailMetalMat);
+        const iron = new THREE.MeshStandardMaterial({ color: 0x383a35, roughness: 0.62, metalness: 0.72 });
+        const casingMat = new THREE.MeshStandardMaterial({ color: 0x55554b, roughness: 0.5, metalness: 0.76 });
+        const rotorMat = new THREE.MeshStandardMaterial({ color: 0xa84e37, emissive: 0x48140c, emissiveIntensity: 0.62, roughness: 0.38, metalness: 0.82 });
+        const steamMat = new THREE.MeshStandardMaterial({ color: 0x6d7875, roughness: 0.34, metalness: 0.84 });
+        const warningMat = new THREE.MeshStandardMaterial({ color: 0xd06a3f, emissive: 0x6e240f, emissiveIntensity: 0.85, roughness: 0.42, metalness: 0.65 });
+        const waterMat = new THREE.MeshPhysicalMaterial({ color: 0x315b63, transparent: true, opacity: 0.68, roughness: 0.16, metalness: 0.1 });
+        const weldingMat = new THREE.MeshBasicMaterial({ color: 0x74c7d3, toneMapped: false });
+
+        addBox(group, [14, 0.2, 10], [0, -2.38, 0], new THREE.MeshStandardMaterial({ color: 0x2c2c27, roughness: 0.98 }));
+        addBox(group, [5.2, 0.16, 3.15], [0, -2.24, 2.35], detailDarkMat);
+        addBox(group, [4.55, 0.035, 2.55], [0, -2.14, 2.35], waterMat);
+        for (const x of [-2.45, 2.45]) addBox(group, [0.18, 0.3, 3.25], [x, -2.15, 2.35], warningMat);
+
+        const generatorAssembly = new THREE.Group();
+        const innerCore = new THREE.Mesh(new THREE.CylinderGeometry(1.16, 1.3, 7.05, 32), iron);
+        innerCore.rotation.z = Math.PI / 2;
+        generatorAssembly.add(innerCore);
+        const casing = new THREE.Mesh(new THREE.CylinderGeometry(1.64, 1.82, 6.4, 36, 1, true, 0.22, TAU * 0.72), casingMat);
+        casing.rotation.z = Math.PI / 2;
+        generatorAssembly.add(casing);
+        const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.24, 7.85, 20), rotorMat);
+        shaft.rotation.z = Math.PI / 2;
+        generatorAssembly.add(shaft);
+        for (const x of [-2.7, -1.35, 0, 1.35, 2.7]) {
+          const ring = new THREE.Mesh(new THREE.TorusGeometry(1.69 - Math.abs(x) * 0.04, 0.11, 8, 36), x === 0 ? rotorMat : casingMat);
+          ring.rotation.y = Math.PI / 2;
+          ring.position.x = x;
+          generatorAssembly.add(ring);
         }
-        const bladeDisc = new THREE.Group();
-        for (let i = 0; i < 10; i += 1) {
-          const blade = addBox(bladeDisc, [0.32, 1.85, 0.12], [0, 0.92, 0], accent, (i / 10) * TAU);
-          blade.rotation.z = (i / 10) * TAU;
+        generatorAssembly.position.set(-0.15, -0.4, -0.95);
+        group.add(generatorAssembly);
+
+        const rotor = new THREE.Group();
+        const rotorRim = new THREE.Mesh(new THREE.TorusGeometry(1.55, 0.16, 10, 42), rotorMat);
+        rotorRim.rotation.y = Math.PI / 2;
+        rotor.add(rotorRim);
+        const rotorHub = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 0.52, 24), iron);
+        rotorHub.rotation.z = Math.PI / 2;
+        rotor.add(rotorHub);
+        for (let bladeIndex = 0; bladeIndex < 14; bladeIndex += 1) {
+          const angle = (TAU / 14) * bladeIndex;
+          const blade = addBox(rotor, [0.2, 1.34, 0.22], [0, Math.sin(angle) * 0.76, Math.cos(angle) * 0.76], rotorMat);
+          blade.rotation.x = angle;
         }
-        bladeDisc.position.set(3.55, -0.55, -0.65);
-        bladeDisc.rotation.y = Math.PI / 2;
-        group.add(bladeDisc);
-        addBox(group, [12.2, 0.18, 1.1], [0, 1.65, 2.85], detailMetalMat);
-        addRail(group, -6, 6, 1.58, 3.3, accent);
-        addConsole(group, [-4.7, -1.15, 2.1], accent, 2.25);
-        addConsole(group, [4.7, -1.15, 2.1], accent, 2.25);
-        for (let x = -3.6; x <= 3.6; x += 1.8) addCylinder(group, 0.42, 2.1, [x, 1.65, -3.9], detailMetalMat, [0, 0, Math.PI / 2]);
+        rotor.position.set(3.45, -0.4, -0.95);
+        group.add(rotor);
+        animatedDetailRotors.push(rotor);
+
+        for (const x of [-4.85, -3.75, 3.9, 5.05]) {
+          const panel = addBox(group, [0.82, 0.16, 2.5], [x, -2.0, 0.05 + Math.abs(x) * 0.08], casingMat, x < 0 ? -0.28 : 0.28);
+          panel.rotation.z = x < 0 ? -0.1 : 0.1;
+          for (let rib = -0.75; rib <= 0.75; rib += 0.5) addBox(group, [0.62, 0.08, 0.08], [x + rib * 0.2, -1.86, 0.1 + Math.abs(x) * 0.08 + rib], warningMat, x < 0 ? -0.28 : 0.28);
+        }
+
+        addTube(group, [[-6.4, 2.35, -3.75], [-4.8, 2.35, -3.75], [-4.8, 0.35, -2.1], [-3.45, -0.35, -1.25]], 0.42, steamMat);
+        addTube(group, [[-6.35, 1.35, -4.05], [-5.55, 1.35, -4.05], [-5.55, -1.35, -2.2], [-3.25, -1.35, -1.4]], 0.22, warningMat);
+        addTube(group, [[6.35, 2.0, -3.8], [5.05, 2.0, -3.8], [5.05, -1.15, -2.05], [3.3, -1.15, -1.35]], 0.28, steamMat);
+        for (const x of [-4.8, 5.05]) {
+          const valve = new THREE.Mesh(new THREE.TorusGeometry(0.58, 0.09, 8, 28), warningMat);
+          valve.position.set(x, 0.25, -3.72);
+          group.add(valve);
+          for (let spoke = 0; spoke < 6; spoke += 1) {
+            const handle = addBox(group, [0.05, 0.92, 0.05], [x, 0.25, -3.68], warningMat);
+            handle.rotation.z = (TAU / 6) * spoke;
+          }
+        }
+
+        addBox(group, [12.4, 0.2, 1.18], [0, 1.46, 2.85], iron);
+        addRail(group, -6.05, 6.05, 1.38, 3.36, warningMat);
+        for (const x of [-5.75, -2.9, 0, 2.9, 5.75]) addBox(group, [0.22, 4.45, 0.22], [x, -0.55, 2.85], iron);
+        for (let step = 0; step < 7; step += 1) addBox(group, [1.55, 0.14, 0.55], [-5.35, -2.08 + step * 0.5, 3.6 - step * 0.18], iron);
+
+        addBox(group, [12.5, 0.28, 0.32], [0, 2.5, 0.3], casingMat);
+        addBox(group, [1.0, 0.45, 0.78], [1.85, 2.22, 0.3], warningMat);
+        addCylinder(group, 0.055, 3.15, [1.85, 0.55, 0.3], iron);
+        const craneHook = new THREE.Mesh(new THREE.TorusGeometry(0.33, 0.08, 8, 20, Math.PI * 1.5), warningMat);
+        craneHook.position.set(1.85, -1.02, 0.3);
+        group.add(craneHook);
+
+        for (const x of [-4.75, 4.75]) {
+          addBox(group, [2.65, 1.65, 0.9], [x, -1.3, 2.0], detailDarkMat);
+          addBox(group, [2.35, 0.65, 0.1], [x, -0.75, 1.5], warningMat);
+          for (const gaugeX of [-0.72, 0, 0.72]) {
+            const gauge = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.04, 8, 24), gaugeX === 0 ? accent : casingMat);
+            gauge.position.set(x + gaugeX, -0.52, 1.42);
+            group.add(gauge);
+            addBox(group, [0.025, 0.18, 0.035], [x + gaugeX, -0.52, 1.37], warningMat, gaugeX * 0.4);
+          }
+          for (let lever = -0.75; lever <= 0.75; lever += 0.5) addBox(group, [0.07, 0.42, 0.07], [x + lever, -1.14, 1.43], iron, lever * 0.25);
+        }
+
+        addBox(group, [3.15, 0.32, 1.2], [-4.8, -1.75, -1.95], detailMetalMat);
+        addBox(group, [2.85, 1.8, 0.16], [-4.8, -0.67, -2.5], detailDarkMat);
+        for (let tool = -1.05; tool <= 1.05; tool += 0.42) {
+          addBox(group, [0.06, 0.62, 0.05], [-4.8 + tool, -0.72 + Math.abs(tool) * 0.08, -2.38], tool > 0.4 ? warningMat : casingMat, tool * 0.08);
+        }
+        addBox(group, [0.72, 0.62, 0.5], [-5.65, -1.22, -1.72], detailDarkMat);
+        addBox(group, [0.48, 0.3, 0.04], [-5.65, -1.08, -1.45], weldingMat);
+        addCylinder(group, 0.035, 1.25, [-5.38, -0.4, -1.72], iron, [0, 0, -0.22]);
+        addPlacard(group, "WALKER / ELECTRICAL", [-4.8, 0.62, -2.3], [2.55, 0.47], "#d27a50");
+
+        const addMechanic = (x: number, z: number, index: number) => {
+          const mechanic = new THREE.Group();
+          const workwear = new THREE.MeshStandardMaterial({ color: index % 2 ? 0x6c4938 : 0x3f4e4d, roughness: 1 });
+          const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.21, 0.29, 0.84, 8), workwear);
+          torso.position.y = 0.98;
+          mechanic.add(torso);
+          const head = new THREE.Mesh(new THREE.SphereGeometry(0.19, 10, 8), new THREE.MeshStandardMaterial({ color: 0x98745d, roughness: 0.96 }));
+          head.position.y = 1.55;
+          mechanic.add(head);
+          for (const side of [-1, 1]) {
+            const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.09, 0.8, 8), detailDarkMat);
+            leg.position.set(side * 0.11, 0.35, 0);
+            mechanic.add(leg);
+          }
+          mechanic.position.set(x, -2.28, z);
+          mechanic.rotation.y = index % 2 ? 0.45 : -0.45;
+          group.add(mechanic);
+        };
+        addMechanic(-2.85, 1.0, 0);
+        addMechanic(2.9, 1.0, 1);
+        addMechanic(-4.0, -0.75, 2);
+        addMechanic(4.15, -1.25, 3);
+
+        const generatorGlow = new THREE.PointLight(0xd45a37, 12, 13, 2);
+        generatorGlow.position.set(2.6, 0.4, 0.2);
+        group.add(generatorGlow);
+        const weldGlow = new THREE.PointLight(0x62c1d2, 5.5, 6, 2);
+        weldGlow.position.set(-5.2, -0.3, -1.6);
+        group.add(weldGlow);
+        addPlacard(group, "GENERATOR 18 / HIGH LOAD", [0, 2.12, -4.38], [4.15, 0.58], "#dc704a");
+        addPlacard(group, "STEAM BYPASS", [-4.85, 1.45, -3.62], [2.0, 0.44], "#d16c48");
       } else if (zone.scene === "digger") {
         const drillMachine = addDetailTurbine(group, 0xb85e3d, 1.32);
         drillMachine.position.set(-0.8, -0.45, -0.45);
@@ -2194,9 +2537,13 @@ export default function SiloExperience() {
       cameraState.targetZ = 0;
       cameraState.targetY = 0;
       if (mode === "section") {
-        cameraState.targetDistance = zone.scene === "tunnel" ? 13.5 : zone.scene === "cafeteria" ? 19.2 : 17.5;
-        cameraState.targetYaw = zone.scene === "mine" ? 0.28 : 0.06;
-        cameraState.targetPitch = zone.scene === "cafeteria" ? 0.045 : 0.08;
+        cameraState.targetDistance = zone.scene === "tunnel" ? 13.5
+          : zone.scene === "mechanical" || zone.scene === "it" ? 20.5
+            : zone.scene === "judicial" ? 19.4
+              : zone.scene === "cafeteria" ? 19.2
+                : 17.5;
+        cameraState.targetYaw = zone.scene === "mine" ? 0.28 : zone.scene === "mechanical" ? 0.12 : 0.06;
+        cameraState.targetPitch = zone.scene === "cafeteria" || zone.scene === "it" ? 0.045 : 0.08;
       } else if (mode === "network") {
         cameraState.targetDistance = 34;
         cameraState.targetYaw = -0.38;
@@ -2319,6 +2666,7 @@ export default function SiloExperience() {
       if (!reducedMotion.matches) {
         dust.rotation.y += delta * 0.012;
         generator.rotation.x += delta * 0.18;
+        animatedDetailRotors.forEach((rotor, index) => { rotor.rotation.x += delta * (0.3 + index * 0.04); });
       }
       frame += 1;
       if (frame % 2 === 0) {
@@ -2368,7 +2716,7 @@ export default function SiloExperience() {
         }
       });
       screenTexture.dispose();
-      cafeteriaFeedTexture.dispose();
+      detailTextures.forEach((texture) => texture.dispose());
       renderer.dispose();
       renderer.domElement.remove();
       visualRef.current = {};

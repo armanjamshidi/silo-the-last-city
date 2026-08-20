@@ -3,8 +3,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Activity,
-  Aperture,
+  ArrowDown,
   ArrowLeft,
+  ArrowUp,
   BookOpen,
   Box,
   Check,
@@ -22,8 +23,14 @@ import {
   Layers3,
   Languages,
   Map as MapIcon,
+  Maximize2,
+  Minimize2,
   Moon,
   Network,
+  PanelLeftClose,
+  PanelLeftOpen,
+  PanelRightClose,
+  PanelRightOpen,
   Pause,
   Pickaxe,
   Play,
@@ -38,6 +45,7 @@ import {
   Wind,
   X,
   ZoomIn,
+  ZoomOut,
 } from "lucide-react";
 import * as THREE from "three";
 import { makeArchiveHash, parseArchiveHash } from "./archive-url.mjs";
@@ -773,10 +781,13 @@ function SiloMark() {
 
 export default function SiloExperience() {
   const mountRef = useRef<HTMLDivElement>(null);
+  const viewerRef = useRef<HTMLElement>(null);
   const hotspotRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const focusRef = useRef<(zone: Zone) => void>(() => undefined);
   const sceneModeRef = useRef<(mode: "overview" | "section" | "network", zone: Zone) => void>(() => undefined);
   const resetRef = useRef<() => void>(() => undefined);
+  const panRef = useRef<(delta: number) => void>(() => undefined);
+  const zoomRef = useRef<(delta: number) => void>(() => undefined);
   const autoRotateRef = useRef(true);
   const visualRef = useRef<{
     cutShell?: THREE.Object3D;
@@ -792,7 +803,6 @@ export default function SiloExperience() {
   const [selected, setSelected] = useState(ZONES[0]);
   const [sectorTab, setSectorTab] = useState<"internal" | "below" | "network">("internal");
   const [viewMode, setViewMode] = useState<"overview" | "section" | "network">("overview");
-  const [mode, setMode] = useState<"structure" | "systems" | "life">("structure");
   const [cutaway, setCutaway] = useState(true);
   const [autoRotate, setAutoRotate] = useState(true);
   // Start with the CSS cutaway visible so server-rendered previews and
@@ -808,6 +818,9 @@ export default function SiloExperience() {
   const [journeyStep, setJourneyStep] = useState(0);
   const [journeyOpen, setJourneyOpen] = useState(false);
   const [shared, setShared] = useState(false);
+  const [leftPanelOpen, setLeftPanelOpen] = useState(true);
+  const [rightPanelOpen, setRightPanelOpen] = useState(true);
+  const [focusMode, setFocusMode] = useState(false);
   const copy = UI_COPY[language];
 
   const activeJourney = JOURNEYS.find((journey) => journey.id === journeyId) ?? JOURNEYS[0];
@@ -891,16 +904,34 @@ export default function SiloExperience() {
   }, [autoRotate]);
 
   useEffect(() => {
+    const onFullscreenChange = () => {
+      if (!document.fullscreenElement) setFocusMode(false);
+      else if (document.fullscreenElement === viewerRef.current) setFocusMode(true);
+    };
+    document.addEventListener("fullscreenchange", onFullscreenChange);
+    return () => document.removeEventListener("fullscreenchange", onFullscreenChange);
+  }, []);
+
+  useEffect(() => {
+    if (!focusMode) return;
+    const onEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setFocusMode(false);
+    };
+    window.addEventListener("keydown", onEscape);
+    return () => window.removeEventListener("keydown", onEscape);
+  }, [focusMode]);
+
+  useEffect(() => {
     const visuals = visualRef.current;
     if (visuals.cutShell) visuals.cutShell.visible = cutaway;
     if (visuals.fullShell) visuals.fullShell.visible = !cutaway;
-    if (visuals.utility) visuals.utility.visible = mode !== "life";
-    if (visuals.population) visuals.population.visible = mode !== "systems";
+    if (visuals.utility) visuals.utility.visible = true;
+    if (visuals.population) visuals.population.visible = true;
     visuals.floorMaterials?.forEach((material, index) => {
-      material.opacity = mode === "systems" ? 0.2 : mode === "life" ? 0.38 : 0.72;
-      material.emissiveIntensity = mode === "life" && index === 3 ? 0.12 : 0.035;
+      material.opacity = 0.72;
+      material.emissiveIntensity = index === 3 ? 0.05 : 0.035;
     });
-  }, [cutaway, mode]);
+  }, [cutaway]);
 
   useEffect(() => {
     const mount = mountRef.current;
@@ -936,7 +967,7 @@ export default function SiloExperience() {
     renderer.domElement.setAttribute("aria-label", "Interactive 3D cutaway of Silo 18");
     renderer.domElement.setAttribute("role", "application");
     renderer.domElement.setAttribute("tabindex", "0");
-    renderer.domElement.setAttribute("aria-description", "Use arrow keys to orbit, plus and minus to zoom, and R to reset the view.");
+    renderer.domElement.setAttribute("aria-description", "Drag to orbit, Shift-drag to move vertically, scroll or plus and minus to zoom, and R to reset the view.");
     mount.appendChild(renderer.domElement);
     const onContextLost = (event: Event) => {
       event.preventDefault();
@@ -1932,6 +1963,12 @@ export default function SiloExperience() {
       targetY: -5,
       targetZ: 0,
     };
+    panRef.current = (delta: number) => {
+      cameraState.targetY = THREE.MathUtils.clamp(cameraState.targetY + delta, -30, 24);
+    };
+    zoomRef.current = (delta: number) => {
+      cameraState.targetDistance = THREE.MathUtils.clamp(cameraState.targetDistance + delta, 10, 120);
+    };
     focusRef.current = (zone: Zone) => {
       cameraState.targetY = zoneViewY(zone);
       cameraState.targetX = 0;
@@ -1975,35 +2012,50 @@ export default function SiloExperience() {
     };
 
     let dragging = false;
+    let panning = false;
     let pointerX = 0;
     let pointerY = 0;
     const onPointerDown = (event: PointerEvent) => {
       dragging = true;
       pointerX = event.clientX;
       pointerY = event.clientY;
+      panning = event.shiftKey || event.button === 1 || event.button === 2;
       renderer.domElement.setPointerCapture(event.pointerId);
       setAutoRotate(false);
     };
     const onPointerMove = (event: PointerEvent) => {
       if (!dragging) return;
-      cameraState.targetYaw -= (event.clientX - pointerX) * 0.005;
-      cameraState.targetPitch = THREE.MathUtils.clamp(cameraState.targetPitch + (event.clientY - pointerY) * 0.003, -0.48, 0.48);
+      const deltaX = event.clientX - pointerX;
+      const deltaY = event.clientY - pointerY;
+      if (panning || event.shiftKey) {
+        cameraState.targetY = THREE.MathUtils.clamp(cameraState.targetY + deltaY * 0.055, -30, 24);
+        cameraState.targetX = THREE.MathUtils.clamp(cameraState.targetX - deltaX * 0.035, -14, 14);
+      } else {
+        cameraState.targetYaw -= deltaX * 0.005;
+        cameraState.targetPitch = THREE.MathUtils.clamp(cameraState.targetPitch + deltaY * 0.003, -0.48, 0.48);
+      }
       pointerX = event.clientX;
       pointerY = event.clientY;
     };
-    const onPointerUp = () => { dragging = false; };
+    const onPointerUp = () => { dragging = false; panning = false; };
+    const onContextMenu = (event: MouseEvent) => event.preventDefault();
     const onWheel = (event: WheelEvent) => {
       event.preventDefault();
-      cameraState.targetDistance = THREE.MathUtils.clamp(cameraState.targetDistance + event.deltaY * 0.025, 10, 72);
+      if (event.shiftKey) cameraState.targetY = THREE.MathUtils.clamp(cameraState.targetY + event.deltaY * 0.02, -30, 24);
+      else cameraState.targetDistance = THREE.MathUtils.clamp(cameraState.targetDistance + event.deltaY * 0.04, 10, 120);
     };
     const onKeyDown = (event: KeyboardEvent) => {
-      if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "+", "=", "-", "_", "r", "R"].includes(event.key)) event.preventDefault();
+      if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "PageUp", "PageDown", "+", "=", "-", "_", "r", "R"].includes(event.key)) event.preventDefault();
       if (event.key === "ArrowLeft") cameraState.targetYaw -= 0.12;
       if (event.key === "ArrowRight") cameraState.targetYaw += 0.12;
-      if (event.key === "ArrowUp") cameraState.targetPitch = THREE.MathUtils.clamp(cameraState.targetPitch + 0.08, -0.48, 0.48);
-      if (event.key === "ArrowDown") cameraState.targetPitch = THREE.MathUtils.clamp(cameraState.targetPitch - 0.08, -0.48, 0.48);
+      if (event.key === "ArrowUp" && event.shiftKey) panRef.current(2.8);
+      else if (event.key === "ArrowUp") cameraState.targetPitch = THREE.MathUtils.clamp(cameraState.targetPitch + 0.08, -0.48, 0.48);
+      if (event.key === "ArrowDown" && event.shiftKey) panRef.current(-2.8);
+      else if (event.key === "ArrowDown") cameraState.targetPitch = THREE.MathUtils.clamp(cameraState.targetPitch - 0.08, -0.48, 0.48);
+      if (event.key === "PageUp") panRef.current(3.5);
+      if (event.key === "PageDown") panRef.current(-3.5);
       if (event.key === "+" || event.key === "=") cameraState.targetDistance = Math.max(10, cameraState.targetDistance - 2.5);
-      if (event.key === "-" || event.key === "_") cameraState.targetDistance = Math.min(72, cameraState.targetDistance + 2.5);
+      if (event.key === "-" || event.key === "_") cameraState.targetDistance = Math.min(120, cameraState.targetDistance + 3.5);
       if (event.key === "r" || event.key === "R") resetRef.current();
       if (event.key !== "Tab") setAutoRotate(false);
     };
@@ -2011,6 +2063,7 @@ export default function SiloExperience() {
     renderer.domElement.addEventListener("pointermove", onPointerMove);
     renderer.domElement.addEventListener("pointerup", onPointerUp);
     renderer.domElement.addEventListener("pointercancel", onPointerUp);
+    renderer.domElement.addEventListener("contextmenu", onContextMenu);
     renderer.domElement.addEventListener("wheel", onWheel, { passive: false });
     renderer.domElement.addEventListener("keydown", onKeyDown);
 
@@ -2094,6 +2147,7 @@ export default function SiloExperience() {
       renderer.domElement.removeEventListener("pointermove", onPointerMove);
       renderer.domElement.removeEventListener("pointerup", onPointerUp);
       renderer.domElement.removeEventListener("pointercancel", onPointerUp);
+      renderer.domElement.removeEventListener("contextmenu", onContextMenu);
       renderer.domElement.removeEventListener("wheel", onWheel);
       renderer.domElement.removeEventListener("keydown", onKeyDown);
       document.removeEventListener("visibilitychange", onVisibilityChange);
@@ -2116,6 +2170,7 @@ export default function SiloExperience() {
     setSelected(zone);
     setDetailTab("briefing");
     setSectorTab(zone.group);
+    if (window.matchMedia("(max-width: 780px)").matches) setRightPanelOpen(true);
     if (zone.scene === "network") {
       setViewMode("network");
       sceneModeRef.current("network", zone);
@@ -2186,8 +2241,20 @@ export default function SiloExperience() {
     }
   };
 
+  const toggleFocusMode = async () => {
+    if (focusMode) {
+      setFocusMode(false);
+      if (document.fullscreenElement) {
+        try { await document.exitFullscreen(); } catch { /* CSS focus mode still exits. */ }
+      }
+      return;
+    }
+    setFocusMode(true);
+    try { await viewerRef.current?.requestFullscreen?.(); } catch { /* CSS focus mode remains available. */ }
+  };
+
   return (
-    <main className="silo-app" data-theme={theme} data-language={language} dir={language === "fa" ? "rtl" : "ltr"}>
+    <main className={`silo-app ${leftPanelOpen ? "" : "silo-app--left-collapsed"} ${rightPanelOpen ? "" : "silo-app--right-collapsed"} ${focusMode ? "silo-app--focus" : ""}`} data-theme={theme} data-language={language} dir={language === "fa" ? "rtl" : "ltr"}>
       <a className="skip-link" href="#archive-details">Skip to archive details</a>
       <header className="topbar">
         <div className="brand-lockup"><SiloMark /><div><span className="eyebrow">THE LAST CITY</span><strong>SILO</strong></div></div>
@@ -2207,7 +2274,7 @@ export default function SiloExperience() {
         </div>
       </header>
 
-      <aside className="level-index" aria-label="Silo sectors">
+      <aside className="level-index" aria-label="Silo sectors" aria-hidden={!leftPanelOpen || focusMode}>
         <div className="level-index__head"><span>{copy.archive}</span><b>{sectorTab === "internal" ? `${ZONES.filter((zone) => zone.group === "internal").length} SECTIONS` : sectorTab === "below" ? "SUB-FOUNDATION" : "OP. FIFTY"}</b></div>
         <div className="sector-tabs" role="tablist" aria-label="Archive layer">
           <button className={sectorTab === "internal" ? "active" : ""} onClick={() => setSectorTab("internal")} role="tab" aria-selected={sectorTab === "internal"} tabIndex={sectorTab === "internal" ? 0 : -1}>{copy.inside}</button>
@@ -2230,7 +2297,7 @@ export default function SiloExperience() {
         <div className="depth-readout"><span>{sectorTab === "network" ? "KNOWN FIELD" : "EST. VERTICAL REACH"}</span><strong>{sectorTab === "network" ? "51" : ">1,440"}<small>{sectorTab === "network" ? " silos" : " m"}</small></strong><div className="depth-scale"><i /></div><small>{sectorTab === "network" ? "18 / 17 / 1 / SEED" : "BEDROCK / CONTROLLED VOID"}</small></div>
       </aside>
 
-      <section className="viewer-shell" aria-label="Silo 18 3D viewer">
+      <section ref={viewerRef} className="viewer-shell" aria-label="Silo 18 3D viewer">
         <div ref={mountRef} className="three-stage" />
         {webglUnavailable && viewMode === "overview" && (
           <div className="fallback-silo" aria-label="Silo 18 structural cutaway fallback">
@@ -2280,12 +2347,6 @@ export default function SiloExperience() {
         )}
         <div className="stage-vignette" /><div className="stage-grid" />
         <div className="model-label"><span>{viewMode === "overview" ? "ASSET" : viewMode === "section" ? "SECTION STUDY" : "OPERATION FIELD"}</span><b>{viewMode === "overview" ? "SILO 18 / EXTENDED CUTAWAY" : viewMode === "section" ? `${selected.code} / ${selected.name}` : "SILO GRID / SYNTHESIS"}</b><small>{viewMode === "overview" ? "144 LEVELS · SUB-FOUNDATION · SEALED" : viewMode === "section" ? `${selected.canon} EVIDENCE · INTERACTIVE DIORAMA` : "51 STRUCTURES · 18→17 · SEED ROUTE"}</small></div>
-        {viewMode === "section" && (
-          <div className="section-schematic" style={{ "--zone": selected.color } as React.CSSProperties}>
-            <div><span>DETAILED CUTAWAY</span><b>{selected.era}</b></div>
-            <ol>{selected.details.slice(0, 4).map((detail) => <li key={detail.name}>{detail.name}<i className={`detail-tag detail-tag--${detail.tag.toLowerCase().replace(" ", "-")}`}>{detail.tag}</i></li>)}</ol>
-          </div>
-        )}
         <div className="compass" aria-hidden="true"><span>N</span><i /><b>18</b></div>
         {!webglUnavailable && viewMode === "overview" && ZONES.filter((zone) => zone.group !== "network").map((zone) => (
           <button key={zone.id} ref={(node) => { hotspotRefs.current[zone.id] = node; }} className={`hotspot ${selected.id === zone.id ? "hotspot--active" : ""}`} style={{ "--zone": zone.color } as React.CSSProperties} onClick={() => chooseZone(zone)} aria-label={`Inspect ${zone.name}`}>
@@ -2296,17 +2357,18 @@ export default function SiloExperience() {
           <button onClick={() => setAutoRotate((value) => !value)} title="Toggle auto rotation" aria-pressed={autoRotate}>{autoRotate ? <Pause size={17} /> : <Play size={17} />}</button>
           <button onClick={() => resetRef.current()} title="Reset view"><RotateCcw size={17} /></button><span />
           <button onClick={() => setCutaway((value) => !value)} className={cutaway ? "is-active" : ""} title="Toggle cutaway" aria-pressed={cutaway}>{cutaway ? <Eye size={17} /> : <EyeOff size={17} />}</button>
-          <button onClick={() => setHelp(true)} title="Controls"><ZoomIn size={17} /></button>
+          <button onClick={() => panRef.current(3.5)} title="Move view up" aria-label="Move view up"><ArrowUp size={17} /></button>
+          <button onClick={() => panRef.current(-3.5)} title="Move view down" aria-label="Move view down"><ArrowDown size={17} /></button><span />
+          <button onClick={() => zoomRef.current(7)} title="Zoom out" aria-label="Zoom out"><ZoomOut size={17} /></button>
+          <button onClick={() => zoomRef.current(-7)} title="Zoom in" aria-label="Zoom in"><ZoomIn size={17} /></button>
+          <button onClick={toggleFocusMode} className={focusMode ? "is-active" : ""} title={focusMode ? "Exit full-screen viewer" : "Open full-screen viewer"} aria-label={focusMode ? "Exit full-screen viewer" : "Open full-screen viewer"} aria-pressed={focusMode}>{focusMode ? <Minimize2 size={17} /> : <Maximize2 size={17} />}</button>
         </div>
+        <button className="side-panel-toggle side-panel-toggle--left" onClick={() => setLeftPanelOpen((value) => !value)} aria-label={leftPanelOpen ? "Hide archive panel" : "Show archive panel"} title={leftPanelOpen ? "Hide archive panel" : "Show archive panel"}>{leftPanelOpen ? <PanelLeftClose size={17} /> : <PanelLeftOpen size={17} />}</button>
+        <button className="side-panel-toggle side-panel-toggle--right" onClick={() => setRightPanelOpen((value) => !value)} aria-label={rightPanelOpen ? "Hide details panel" : "Show details panel"} title={rightPanelOpen ? "Hide details panel" : "Show details panel"}>{rightPanelOpen ? <PanelRightClose size={17} /> : <PanelRightOpen size={17} />}</button>
         <div className="view-switch" aria-label="Scene view">
           <button className={viewMode === "overview" ? "active" : ""} onClick={showOverview} aria-pressed={viewMode === "overview"}><MapIcon size={14} /> {copy.overview}</button>
           <button className={viewMode === "section" ? "active" : ""} onClick={showSection} aria-pressed={viewMode === "section"}><Box size={14} /> {copy.section}</button>
           <button className={viewMode === "network" ? "active" : ""} onClick={showNetwork} aria-pressed={viewMode === "network"}><Network size={14} /> {copy.network}</button>
-        </div>
-        <div className="mode-switch" aria-label="Visualization layer">
-          <button className={mode === "structure" ? "active" : ""} onClick={() => setMode("structure")} aria-pressed={mode === "structure"}><Box size={14} /> {copy.structure}</button>
-          <button className={mode === "systems" ? "active" : ""} onClick={() => setMode("systems")} aria-pressed={mode === "systems"}><Gauge size={14} /> {copy.systems}</button>
-          <button className={mode === "life" ? "active" : ""} onClick={() => setMode("life")} aria-pressed={mode === "life"}><Aperture size={14} /> {copy.life}</button>
         </div>
         <div className={`journey-dock ${journeyOpen ? "journey-dock--open" : "journey-dock--collapsed"}`} aria-label="Guided archive routes">
           <button className="journey-dock__toggle" onClick={() => setJourneyOpen((value) => !value)} aria-expanded={journeyOpen} aria-controls="guided-routes-content" aria-label={journeyOpen ? "Hide guided routes" : "Open guided routes"} title={journeyOpen ? "Hide guided routes" : "Open guided routes"}>
@@ -2329,7 +2391,7 @@ export default function SiloExperience() {
         </div>
       </section>
 
-      <aside id="archive-details" className={`intel-panel ${mobilePanel ? "intel-panel--mobile-open" : ""}`} aria-label={`${selected.name} archive details`}>
+      <aside id="archive-details" className={`intel-panel ${mobilePanel ? "intel-panel--mobile-open" : ""}`} aria-label={`${selected.name} archive details`} aria-hidden={!rightPanelOpen || focusMode}>
         <button className="intel-panel__close" onClick={() => setMobilePanel(false)} aria-label="Close detail panel"><X size={18} /></button>
         <div className="intel-panel__stripe" style={{ background: selected.color }} />
         <div className="intel-panel__topline"><span>{selected.kicker}</span><b className={`clearance clearance--${selected.status.toLowerCase().replace(" ", "-")}`}>{selected.status}</b></div>
@@ -2385,13 +2447,13 @@ export default function SiloExperience() {
         </div>}
       </aside>
 
-      <footer className="statusbar"><span><i className="status-dot" /> LIVE MODEL</span><span>DRAG TO ORBIT</span><span>SCROLL TO ZOOM</span><span className="statusbar__right">PACT ARCHIVE / ACCESS 02</span></footer>
+      <footer className="statusbar"><span><i className="status-dot" /> LIVE MODEL</span><span>DRAG TO ORBIT · SHIFT-DRAG TO PAN</span><span>SCROLL TO ZOOM · FOCUS FOR FULL VIEW</span><span className="statusbar__right">PACT ARCHIVE / ACCESS 02</span></footer>
       {help && (
         <div className="modal-backdrop" role="presentation" onMouseDown={() => setHelp(false)}>
           <div className="help-modal" role="dialog" aria-modal="true" aria-labelledby="help-title" onMouseDown={(event) => event.stopPropagation()}>
             <button className="help-modal__close" onClick={() => setHelp(false)} aria-label="Close"><X size={19} /></button>
             <Layers3 size={24} /><span className="eyebrow">ARCHIVE INTERFACE / SPOILERS</span><h2 id="help-title">Explore the city—and what lies beneath it</h2>
-            <div className="help-grid"><div><b>OVERVIEW</b><span>144 levels plus the buried undercroft</span></div><div><b>SECTION</b><span>Enter a purpose-built 3D diorama</span></div><div><b>UP TOP</b><span>Cafeteria and the one-way cleaning facility are separate sections</span></div><div><b>BELOW</b><span>Digger, water, Algorithm door and mines</span></div><div><b>UTILITY</b><span>I.T. power and Judicial Safeguard are separate lines</span></div><div><b>SERIES / INFERRED</b><span>Every detail carries an evidence label</span></div></div>
+            <div className="help-grid"><div><b>OVERVIEW</b><span>144 levels plus the buried undercroft</span></div><div><b>SECTION</b><span>Enter a purpose-built 3D diorama</span></div><div><b>FOCUS MODE</b><span>Hide both panels and expand the 3D viewer</span></div><div><b>PAN</b><span>Use the up/down controls or Shift-drag the model</span></div><div><b>ZOOM</b><span>Scroll or use the −/+ controls for a wider range</span></div><div><b>SERIES / INFERRED</b><span>Every detail carries an evidence label</span></div></div>
             <button className="primary-button" onClick={() => setHelp(false)}>ENTER ARCHIVE <ChevronRight size={16} /></button>
           </div>
         </div>

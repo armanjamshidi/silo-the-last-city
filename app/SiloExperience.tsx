@@ -817,6 +817,101 @@ function writeArchiveHash(zone: Zone, view: "overview" | "section" | "network") 
   window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}${makeArchiveHash(zone.id, view)}`);
 }
 
+type ThemeableMaterial = THREE.Material & {
+  color?: THREE.Color;
+  emissive?: THREE.Color;
+  emissiveIntensity?: number;
+  opacity?: number;
+  map?: THREE.Texture | null;
+  toneMapped?: boolean;
+};
+
+type ThemeMaterialSnapshot = {
+  material: ThemeableMaterial;
+  color?: THREE.Color;
+  emissive?: THREE.Color;
+  emissiveIntensity?: number;
+  opacity?: number;
+};
+
+type SceneVisuals = {
+  cutShell?: THREE.Object3D;
+  fullShell?: THREE.Object3D;
+  utility?: THREE.Object3D;
+  population?: THREE.Object3D;
+  floorMaterials?: THREE.MeshStandardMaterial[];
+  scene?: THREE.Scene;
+  renderer?: THREE.WebGLRenderer;
+  hemisphere?: THREE.HemisphereLight;
+  key?: THREE.DirectionalLight;
+  fill?: THREE.DirectionalLight;
+  ambient?: THREE.AmbientLight;
+  materials?: ThemeMaterialSnapshot[];
+};
+
+function toLightArchiveColor(source: THREE.Color) {
+  const hsl = { h: 0, s: 0, l: 0 };
+  source.getHSL(hsl);
+  const isNeutral = hsl.s < 0.16;
+  const lightness = hsl.l < 0.12
+    ? 0.5
+    : hsl.l < 0.24
+      ? 0.58
+      : hsl.l < 0.42
+        ? Math.max(0.64, hsl.l + 0.25)
+        : Math.min(0.82, hsl.l + 0.14);
+  const saturation = isNeutral ? Math.min(0.1, hsl.s * 0.72) : Math.max(0.18, hsl.s * 0.78);
+  const lifted = new THREE.Color().setHSL(hsl.h, saturation, lightness);
+  return lifted.lerp(new THREE.Color(0xc9c0b1), isNeutral ? 0.16 : 0.06);
+}
+
+function applySceneTheme(visuals: SceneVisuals, theme: "dark" | "light") {
+  const light = theme === "light";
+  if (visuals.scene?.fog instanceof THREE.FogExp2) {
+    visuals.scene.fog.color.set(light ? 0xe7e1d5 : 0x070806);
+    visuals.scene.fog.density = light ? 0.0095 : 0.0155;
+  }
+  if (visuals.renderer) visuals.renderer.toneMappingExposure = light ? 1.32 : 1.08;
+  if (visuals.hemisphere) {
+    visuals.hemisphere.color.set(light ? 0xfff5e2 : 0x9aa7a1);
+    visuals.hemisphere.groundColor.set(light ? 0x9a8e7b : 0x17130e);
+    visuals.hemisphere.intensity = light ? 3.15 : 1.5;
+  }
+  if (visuals.key) {
+    visuals.key.color.set(light ? 0xffedcc : 0xe2c99e);
+    visuals.key.intensity = light ? 5.1 : 3.4;
+  }
+  if (visuals.fill) {
+    visuals.fill.color.set(light ? 0xc9e0e2 : 0x708d91);
+    visuals.fill.intensity = light ? 2.35 : 0.7;
+  }
+  if (visuals.ambient) {
+    visuals.ambient.color.set(light ? 0xfff1d8 : 0x8f8879);
+    visuals.ambient.intensity = light ? 1.45 : 0.22;
+  }
+  visuals.materials?.forEach((snapshot) => {
+    const { material } = snapshot;
+    // Video feeds and placards carry their own authored contrast and should not
+    // be recolored with the surrounding concrete and metalwork.
+    const authoredTexture = Boolean(material.map);
+    if (snapshot.color && material.color && !authoredTexture) {
+      material.color.copy(light ? toLightArchiveColor(snapshot.color) : snapshot.color);
+    }
+    if (snapshot.emissive && material.emissive) {
+      material.emissive.copy(snapshot.emissive);
+    }
+    if (snapshot.emissiveIntensity !== undefined && material.emissiveIntensity !== undefined) {
+      material.emissiveIntensity = light ? snapshot.emissiveIntensity * 0.72 : snapshot.emissiveIntensity;
+    }
+    if (snapshot.opacity !== undefined && material.opacity !== undefined) {
+      material.opacity = light && snapshot.opacity < 0.75
+        ? Math.min(0.82, snapshot.opacity + 0.14)
+        : snapshot.opacity;
+    }
+    material.needsUpdate = true;
+  });
+}
+
 function SiloMark() {
   return (
     <div className="silo-mark" aria-label="Silo 18">
@@ -836,17 +931,7 @@ export default function SiloExperience() {
   const panRef = useRef<(delta: number) => void>(() => undefined);
   const zoomRef = useRef<(delta: number) => void>(() => undefined);
   const autoRotateRef = useRef(true);
-  const visualRef = useRef<{
-    cutShell?: THREE.Object3D;
-    fullShell?: THREE.Object3D;
-    utility?: THREE.Object3D;
-    population?: THREE.Object3D;
-    floorMaterials?: THREE.MeshStandardMaterial[];
-    scene?: THREE.Scene;
-    renderer?: THREE.WebGLRenderer;
-    hemisphere?: THREE.HemisphereLight;
-    key?: THREE.DirectionalLight;
-  }>({});
+  const visualRef = useRef<SceneVisuals>({});
   const [selected, setSelected] = useState(ZONES[0]);
   const [sectorTab, setSectorTab] = useState<"internal" | "below" | "network">("internal");
   const [viewMode, setViewMode] = useState<"overview" | "section" | "network">("overview");
@@ -929,21 +1014,7 @@ export default function SiloExperience() {
   useEffect(() => {
     window.localStorage.setItem("silo-theme", theme);
     document.documentElement.dataset.theme = theme;
-    const visuals = visualRef.current;
-    if (visuals.scene?.fog instanceof THREE.FogExp2) {
-      visuals.scene.fog.color.set(theme === "light" ? 0xe7e1d5 : 0x070806);
-      visuals.scene.fog.density = theme === "light" ? 0.012 : 0.0155;
-    }
-    if (visuals.renderer) visuals.renderer.toneMappingExposure = theme === "light" ? 1.24 : 1.08;
-    if (visuals.hemisphere) {
-      visuals.hemisphere.color.set(theme === "light" ? 0xf5ead4 : 0x9aa7a1);
-      visuals.hemisphere.groundColor.set(theme === "light" ? 0x6f6658 : 0x17130e);
-      visuals.hemisphere.intensity = theme === "light" ? 2.25 : 1.5;
-    }
-    if (visuals.key) {
-      visuals.key.color.set(theme === "light" ? 0xffefd1 : 0xe2c99e);
-      visuals.key.intensity = theme === "light" ? 4.2 : 3.4;
-    }
+    applySceneTheme(visualRef.current, theme);
   }, [theme]);
 
   useEffect(() => {
@@ -1032,10 +1103,17 @@ export default function SiloExperience() {
     key.castShadow = true;
     key.shadow.mapSize.set(1024, 1024);
     scene.add(key);
+    const fill = new THREE.DirectionalLight(0x708d91, 0.7);
+    fill.position.set(-16, 8, 10);
+    scene.add(fill);
+    const ambient = new THREE.AmbientLight(0x8f8879, 0.22);
+    scene.add(ambient);
     visualRef.current.scene = scene;
     visualRef.current.renderer = renderer;
     visualRef.current.hemisphere = hemisphere;
     visualRef.current.key = key;
+    visualRef.current.fill = fill;
+    visualRef.current.ambient = ambient;
     const redLight = new THREE.PointLight(0xd7502e, 24, 18, 2);
     redLight.position.set(2, -14, 7);
     scene.add(redLight);
@@ -2500,7 +2578,34 @@ export default function SiloExperience() {
       new THREE.PointsMaterial({ color: 0xd6bf91, size: 0.045, transparent: true, opacity: 0.42, depthWrite: false }),
     );
     scene.add(dust);
-    visualRef.current = { cutShell: shellCut, fullShell, utility, population, floorMaterials };
+    const materials: ThemeMaterialSnapshot[] = [];
+    const seenMaterials = new Set<THREE.Material>();
+    scene.traverse((object) => {
+      if (!(object instanceof THREE.Mesh || object instanceof THREE.Points || object instanceof THREE.Line)) return;
+      const objectMaterials = Array.isArray(object.material) ? object.material : [object.material];
+      objectMaterials.forEach((baseMaterial) => {
+        if (!baseMaterial || seenMaterials.has(baseMaterial)) return;
+        seenMaterials.add(baseMaterial);
+        const material = baseMaterial as ThemeableMaterial;
+        materials.push({
+          material,
+          color: material.color?.clone(),
+          emissive: material.emissive?.clone(),
+          emissiveIntensity: material.emissiveIntensity,
+          opacity: material.opacity,
+        });
+      });
+    });
+    visualRef.current = {
+      ...visualRef.current,
+      cutShell: shellCut,
+      fullShell,
+      utility,
+      population,
+      floorMaterials,
+      materials,
+    };
+    applySceneTheme(visualRef.current, document.documentElement.dataset.theme === "light" ? "light" : "dark");
 
     const target = new THREE.Vector3(0, -5, 0);
     const cameraState = {

@@ -122,6 +122,7 @@ const APPLE_SERIES_URL = "https://www.apple.com/tv-pr/originals/silo/";
 const APPLE_EPISODES_URL = "https://www.apple.com/tv-pr/originals/silo/episodes-images/";
 const APPLE_SEASON_THREE_URL = "https://www.apple.com/tv-pr/news/2026/04/apples-globally-acclaimed-drama-silo-starring-and-executive-produced-by-rebecca-ferguson-returns-for-season-three-on-july-3-2026/";
 const HOWEY_WOOL_URL = "https://hughhowey.com/books/wool/";
+const LUX_SILO_URL = "https://www.luxmc.com/silo";
 
 const ZONES: Zone[] = [
   {
@@ -192,19 +193,21 @@ const ZONES: Zone[] = [
     scene: "cafeteria",
     color: "#c9aa72",
     description:
-      "A communal dining hall organized around the giant circular feed from the exterior sensor—the place residents gather to eat, watch a cleaning, and read the outside world through a controlled image.",
+      "A broad communal mess hall organized around the curved exterior-feed wall—the place residents eat beneath aging disc lights, gather for a cleaning, and read the outside world through a controlled, visibly weathered image.",
     details: [
-      { name: "Circular exterior display", note: "The dominant wall-sized screen carries the live feed from the sensor above the silo.", tag: "ON SCREEN" },
-      { name: "Communal table field", note: "Dense shared tables turn the room into both a dining hall and an assembly space.", tag: "ON SCREEN" },
+      { name: "Curved exterior display wall", note: "The dominant wide LED surface carries the live feed from the sensor above the silo.", tag: "ON SCREEN" },
+      { name: "Dust & damaged LED modules", note: "The production display accumulates dust and failed panels as the silo ages.", tag: "ON SCREEN" },
+      { name: "Long communal tables", note: "Rows of hard-wearing tables and benches make the room both mess hall and assembly space.", tag: "ON SCREEN" },
+      { name: "Disc ceiling luminaires", note: "Low, warm circular fixtures break up the heavy industrial ceiling above the dining floor.", tag: "ON SCREEN" },
       { name: "Cleaning observation floor", note: "Residents gather here as the outer hatch opens and the cleaner approaches the lens.", tag: "ON SCREEN" },
-      { name: "Serving counter & kitchen", note: "A practical food-service edge supports the cafeteria's daily civic role.", tag: "INFERRED" },
+      { name: "Serving line & kitchen edge", note: "A practical food-service counter, trays and storage support the room's daily civic role.", tag: "INFERRED" },
       { name: "Sensor feed conduit", note: "A protected signal path links the exterior lens to the public display system.", tag: "INFERRED" },
-      { name: "Upper stair landing", note: "The main circulation route spills people directly into the public gallery.", tag: "INFERRED" },
+      { name: "Upper landing & entries", note: "Controlled side entries spill residents from the main circulation route into the gallery.", tag: "INFERRED" },
     ],
     people: ["Holston Becker", "Allison Becker", "Juliette Nichols", "Mayor Jahns", "Silo 18 residents"],
-    telemetry: [{ label: "DISPLAY", value: "LIVE" }, { label: "SOURCE", value: "EXT. SENSOR" }, { label: "ACCESS", value: "PUBLIC" }],
+    telemetry: [{ label: "DISPLAY", value: "CURVED LED" }, { label: "SOURCE", value: "EXT. SENSOR" }, { label: "ACCESS", value: "PUBLIC" }],
     era: "SEASONS 1—2",
-    evidence: "The display, tables and use of the room during cleanings are directly shown. The signal conduit, service edge and exact numbered level are reconstructed because the series withholds a complete upper-level plan.",
+    evidence: "The wide curved display, communal furniture, disc lighting and use of the room during cleanings are shown on screen and documented by the LED-wall production team. The service edge, signal conduit and exact numbered level remain reconstructed because the series withholds a complete upper-level plan.",
     status: "PUBLIC",
   },
   {
@@ -624,10 +627,17 @@ const SEASON_THREE_SOURCE: SourceReference = {
   url: APPLE_SEASON_THREE_URL,
 };
 
+const CAFETERIA_PRODUCTION_SOURCE: SourceReference = {
+  label: "Lux Machina — Silo LED wall",
+  coverage: "Season 1 cafeteria production design",
+  kind: "PRODUCTION",
+  url: LUX_SILO_URL,
+};
+
 const ZONE_REFERENCES: Record<string, SourceReference[]> = {
   surface: [EPISODE_SOURCE, SERIES_SOURCE],
   "cleaning-facility": [EPISODE_SOURCE, SERIES_SOURCE],
-  cafeteria: [EPISODE_SOURCE, SERIES_SOURCE],
+  cafeteria: [EPISODE_SOURCE, CAFETERIA_PRODUCTION_SOURCE, SERIES_SOURCE],
   "up-top": [EPISODE_SOURCE, SERIES_SOURCE],
   judicial: [EPISODE_SOURCE, SEASON_THREE_SOURCE],
   it: [EPISODE_SOURCE, SEASON_THREE_SOURCE],
@@ -1429,6 +1439,94 @@ export default function SiloExperience() {
       return machine;
     };
 
+    const cafeteriaFeedCanvas = document.createElement("canvas");
+    cafeteriaFeedCanvas.width = 1024;
+    cafeteriaFeedCanvas.height = 384;
+    const cafeteriaFeedContext = cafeteriaFeedCanvas.getContext("2d");
+    if (cafeteriaFeedContext) {
+      const sky = cafeteriaFeedContext.createLinearGradient(0, 0, 0, cafeteriaFeedCanvas.height);
+      sky.addColorStop(0, "#717d76");
+      sky.addColorStop(0.52, "#56615b");
+      sky.addColorStop(1, "#222925");
+      cafeteriaFeedContext.fillStyle = sky;
+      cafeteriaFeedContext.fillRect(0, 0, cafeteriaFeedCanvas.width, cafeteriaFeedCanvas.height);
+
+      cafeteriaFeedContext.fillStyle = "rgba(196,205,195,.09)";
+      for (let band = 0; band < 6; band += 1) {
+        cafeteriaFeedContext.fillRect(0, 74 + band * 31, cafeteriaFeedCanvas.width, 10 + band * 4);
+      }
+
+      cafeteriaFeedContext.beginPath();
+      cafeteriaFeedContext.moveTo(0, 284);
+      for (let x = 0; x <= cafeteriaFeedCanvas.width; x += 42) {
+        const ridge = 252 + Math.sin(x * 0.019) * 17 + Math.sin(x * 0.051) * 8;
+        cafeteriaFeedContext.lineTo(x, ridge);
+      }
+      cafeteriaFeedContext.lineTo(cafeteriaFeedCanvas.width, cafeteriaFeedCanvas.height);
+      cafeteriaFeedContext.lineTo(0, cafeteriaFeedCanvas.height);
+      cafeteriaFeedContext.closePath();
+      cafeteriaFeedContext.fillStyle = "#252c28";
+      cafeteriaFeedContext.fill();
+
+      cafeteriaFeedContext.strokeStyle = "rgba(25,30,27,.72)";
+      cafeteriaFeedContext.lineWidth = 5;
+      for (let tree = 0; tree < 11; tree += 1) {
+        const x = 55 + tree * 94 + seeded(tree + 340) * 28;
+        const baseY = 292 + seeded(tree + 390) * 26;
+        const height = 24 + seeded(tree + 410) * 42;
+        cafeteriaFeedContext.beginPath();
+        cafeteriaFeedContext.moveTo(x, baseY);
+        cafeteriaFeedContext.lineTo(x + 2, baseY - height);
+        cafeteriaFeedContext.moveTo(x + 1, baseY - height * 0.55);
+        cafeteriaFeedContext.lineTo(x - 13, baseY - height * 0.76);
+        cafeteriaFeedContext.moveTo(x + 1, baseY - height * 0.7);
+        cafeteriaFeedContext.lineTo(x + 14, baseY - height * 0.9);
+        cafeteriaFeedContext.stroke();
+      }
+
+      const haze = cafeteriaFeedContext.createLinearGradient(0, 185, 0, 342);
+      haze.addColorStop(0, "rgba(190,199,190,.16)");
+      haze.addColorStop(1, "rgba(70,78,72,0)");
+      cafeteriaFeedContext.fillStyle = haze;
+      cafeteriaFeedContext.fillRect(0, 170, cafeteriaFeedCanvas.width, 180);
+
+      cafeteriaFeedContext.strokeStyle = "rgba(22,26,23,.28)";
+      cafeteriaFeedContext.lineWidth = 2;
+      for (let x = 0; x <= cafeteriaFeedCanvas.width; x += 64) {
+        cafeteriaFeedContext.beginPath();
+        cafeteriaFeedContext.moveTo(x, 0);
+        cafeteriaFeedContext.lineTo(x, cafeteriaFeedCanvas.height);
+        cafeteriaFeedContext.stroke();
+      }
+      for (let y = 0; y <= cafeteriaFeedCanvas.height; y += 48) {
+        cafeteriaFeedContext.beginPath();
+        cafeteriaFeedContext.moveTo(0, y);
+        cafeteriaFeedContext.lineTo(cafeteriaFeedCanvas.width, y);
+        cafeteriaFeedContext.stroke();
+      }
+
+      cafeteriaFeedContext.fillStyle = "rgba(8,10,9,.72)";
+      [[65, 38], [129, 38], [833, 278], [897, 278], [705, 86]].forEach(([x, y], index) => {
+        cafeteriaFeedContext.fillRect(x, y, index === 4 ? 61 : 62, index === 4 ? 46 : 45);
+      });
+      cafeteriaFeedContext.fillStyle = "rgba(222,207,168,.13)";
+      for (let speck = 0; speck < 260; speck += 1) {
+        const radius = 0.4 + seeded(speck + 810) * 2.5;
+        cafeteriaFeedContext.beginPath();
+        cafeteriaFeedContext.arc(
+          seeded(speck + 910) * cafeteriaFeedCanvas.width,
+          seeded(speck + 1010) * cafeteriaFeedCanvas.height,
+          radius,
+          0,
+          TAU,
+        );
+        cafeteriaFeedContext.fill();
+      }
+    }
+    const cafeteriaFeedTexture = new THREE.CanvasTexture(cafeteriaFeedCanvas);
+    cafeteriaFeedTexture.colorSpace = THREE.SRGBColorSpace;
+    cafeteriaFeedTexture.anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 4);
+
     ZONES.filter((zone) => zone.scene !== "network").forEach((zone) => {
       const group = new THREE.Group();
       group.visible = false;
@@ -1488,35 +1586,145 @@ export default function SiloExperience() {
         haze.position.set(0, 5, 2);
         group.add(haze);
       } else if (zone.scene === "cafeteria") {
-        const exteriorFeed = new THREE.MeshBasicMaterial({ color: 0x77877c, toneMapped: false });
-        const display = new THREE.Mesh(new THREE.CircleGeometry(2.52, 64), exteriorFeed);
-        display.position.set(0, 0.55, -4.62);
+        const cafeteriaConcrete = new THREE.MeshStandardMaterial({ color: 0x34352f, roughness: 0.98, metalness: 0.02 });
+        const agedSteel = new THREE.MeshStandardMaterial({ color: 0x484840, roughness: 0.64, metalness: 0.58 });
+        const tableTopMat = new THREE.MeshStandardMaterial({ color: 0x3f3a30, roughness: 0.86, metalness: 0.22 });
+        const warmFixture = new THREE.MeshStandardMaterial({ color: 0xc6a56d, emissive: 0x8f5d27, emissiveIntensity: 1.35, roughness: 0.5, metalness: 0.38 });
+        const screenSeam = new THREE.MeshBasicMaterial({ color: 0x111512, transparent: true, opacity: 0.32, toneMapped: false });
+        const failedPanel = new THREE.MeshStandardMaterial({ color: 0x090b09, roughness: 0.93, metalness: 0.18 });
+        const aisleMat = new THREE.MeshStandardMaterial({ color: 0x7d6c4f, transparent: true, opacity: 0.22, roughness: 1 });
+        const screenMaterial = new THREE.MeshBasicMaterial({ map: cafeteriaFeedTexture, color: 0xe0e6df, toneMapped: false });
+
+        addBox(group, [14, 0.22, 10], [0, -2.38, 0], cafeteriaConcrete);
+        addBox(group, [2.05, 0.025, 8.2], [0, -2.25, 0.42], aisleMat);
+        for (let x = -6.2; x <= 6.2; x += 1.55) addBox(group, [0.035, 0.028, 9.2], [x, -2.24, 0.05], agedSteel);
+
+        const display = new THREE.Mesh(new THREE.CircleGeometry(1, 96), screenMaterial);
+        display.position.set(0, 0.35, -4.6);
+        display.scale.set(5.32, 1.84, 1);
+        display.receiveShadow = false;
         group.add(display);
-        const displayRim = new THREE.Mesh(new THREE.TorusGeometry(2.61, 0.16, 12, 64), detailMetalMat);
-        displayRim.position.copy(display.position);
+        const displayRim = new THREE.Mesh(new THREE.TorusGeometry(1, 0.055, 10, 96), agedSteel);
+        displayRim.position.set(0, 0.35, -4.53);
+        displayRim.scale.set(5.47, 1.99, 1);
         group.add(displayRim);
-        const falseHorizon = addBox(group, [4.35, 0.055, 0.03], [0, 0.1, -4.57], glow);
-        falseHorizon.material = glow;
-        for (let ring = 0; ring < 3; ring += 1) {
-          const feedRing = new THREE.Mesh(new THREE.TorusGeometry(0.48 + ring * 0.48, 0.018, 6, 48), new THREE.MeshBasicMaterial({ color: 0xa9b6aa, transparent: true, opacity: 0.34, toneMapped: false }));
-          feedRing.position.set(0, 0.55, -4.57);
-          group.add(feedRing);
+        const innerRim = new THREE.Mesh(new THREE.TorusGeometry(1, 0.018, 8, 96), warmFixture);
+        innerRim.position.set(0, 0.35, -4.48);
+        innerRim.scale.set(5.28, 1.81, 1);
+        group.add(innerRim);
+
+        for (let x = -4.45; x <= 4.45; x += 0.67) {
+          const height = 3.36 * Math.sqrt(Math.max(0, 1 - (x / 5.28) ** 2));
+          addBox(group, [0.018, height, 0.012], [x, 0.35, -4.46], screenSeam);
         }
-        for (let row = 0; row < 2; row += 1) {
-          for (let i = -2; i <= 2; i += 1) {
-            const x = i * 2.05 + (row ? 0.5 : 0);
-            const z = 0.35 + row * 2.15 + Math.abs(i) * 0.12;
-            const table = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.7, 0.18, 18), detailMetalMat);
-            table.position.set(x, -1.55, z);
-            group.add(table);
-            addCylinder(group, 0.12, 0.82, [x, -2.03, z], detailDarkMat);
-            for (const offset of [-0.83, 0.83]) addCylinder(group, 0.22, 0.34, [x + offset, -1.82, z], detailDarkMat);
+        for (let y = -1.02; y <= 1.72; y += 0.46) {
+          const width = 10.08 * Math.sqrt(Math.max(0, 1 - ((y - 0.35) / 1.8) ** 2));
+          addBox(group, [width, 0.018, 0.012], [0, y, -4.46], screenSeam);
+        }
+        [[-4.25, 1.28], [-3.58, 1.28], [3.86, -0.62], [4.53, -0.62], [2.56, 1.02]].forEach(([x, y], index) => {
+          addBox(group, [index === 4 ? 0.61 : 0.62, index === 4 ? 0.43 : 0.41, 0.026], [x, y, -4.41], failedPanel);
+        });
+        addBox(group, [11.45, 0.38, 0.58], [0, 2.36, -4.38], detailDarkMat);
+        addBox(group, [11.2, 0.26, 0.52], [0, -1.62, -4.4], agedSteel);
+        for (const x of [-5.92, 5.92]) {
+          addBox(group, [0.6, 5.18, 0.75], [x, 0.12, -4.35], cafeteriaConcrete);
+          addBox(group, [0.18, 4.55, 0.82], [x * 0.99, 0.1, -4.28], agedSteel);
+        }
+
+        const screenSpill = new THREE.PointLight(0x9db1aa, 13, 12, 2);
+        screenSpill.position.set(0, 0.65, -2.7);
+        group.add(screenSpill);
+
+        const addCeilingFixture = (x: number, z: number, radius: number) => {
+          addCylinder(group, radius, 0.13, [x, 2.62, z], agedSteel);
+          addCylinder(group, radius * 0.74, 0.06, [x, 2.53, z], warmFixture);
+          for (let petal = 0; petal < 8; petal += 1) {
+            const angle = (TAU / 8) * petal;
+            addCylinder(group, radius * 0.13, 0.035, [x + Math.cos(angle) * radius * 0.38, 2.48, z + Math.sin(angle) * radius * 0.38], warmFixture, [0, 0, 0], 10);
           }
+        };
+        [[-4.55, -1.55, 0.7], [-2.28, -1.55, 0.7], [0, -1.55, 0.76], [2.28, -1.55, 0.7], [4.55, -1.55, 0.7], [-3.45, 1.35, 0.66], [-1.15, 1.35, 0.66], [1.15, 1.35, 0.66], [3.45, 1.35, 0.66]].forEach(([x, z, radius]) => addCeilingFixture(x, z, radius));
+        for (const x of [-3.4, 0, 3.4]) {
+          const pool = new THREE.PointLight(0xd2aa6a, 3.1, 7.5, 2);
+          pool.position.set(x, 2.15, 0.65);
+          group.add(pool);
         }
-        addBox(group, [3.6, 1.05, 1.15], [-4.75, -1.75, -2.55], detailMetalMat);
-        addConsole(group, [-4.75, -0.83, -2.72], accent, 2.15);
-        addTube(group, [[5.85, 2.3, -4.12], [3.25, 2.3, -4.12], [3.25, 0.7, -4.12], [2.65, 0.7, -4.12]], 0.12, accent);
-        addRail(group, -6, 6, -2.38, 4.25, detailMetalMat);
+
+        const addMessTable = (x: number, z: number) => {
+          const table = new THREE.Group();
+          addBox(table, [2.85, 0.13, 0.76], [0, 1.08, 0], tableTopMat);
+          for (const legX of [-1.05, 1.05]) {
+            for (const legZ of [-0.23, 0.23]) addBox(table, [0.12, 0.93, 0.12], [legX, 0.55, legZ], agedSteel);
+          }
+          for (const benchZ of [-0.69, 0.69]) {
+            addBox(table, [2.55, 0.13, 0.3], [0, 0.76, benchZ], tableTopMat);
+            for (const legX of [-0.92, 0.92]) addBox(table, [0.1, 0.67, 0.1], [legX, 0.38, benchZ], agedSteel);
+          }
+          for (const cupX of [-0.72, 0.08, 0.78]) addCylinder(table, 0.095, 0.15, [cupX, 1.23, cupX === 0.08 ? -0.14 : 0.12], agedSteel, [0, 0, 0], 12);
+          table.position.set(x, -2.3, z);
+          group.add(table);
+        };
+        for (const z of [0.05, 2.18]) {
+          for (const x of [-3.75, 0, 3.75]) addMessTable(x, z);
+        }
+
+        const clothing = [
+          new THREE.MeshStandardMaterial({ color: 0x625342, roughness: 1 }),
+          new THREE.MeshStandardMaterial({ color: 0x4c594a, roughness: 1 }),
+          new THREE.MeshStandardMaterial({ color: 0x5b504d, roughness: 1 }),
+          new THREE.MeshStandardMaterial({ color: 0x6b624e, roughness: 1 }),
+        ];
+        const skin = new THREE.MeshStandardMaterial({ color: 0x9a7960, roughness: 0.95 });
+        const addResident = (x: number, z: number, index: number, seated = false) => {
+          const resident = new THREE.Group();
+          const outfit = clothing[index % clothing.length];
+          const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.29, seated ? 0.68 : 0.82, 8), outfit);
+          torso.position.y = seated ? 1.08 : 1.0;
+          torso.castShadow = true;
+          resident.add(torso);
+          const head = new THREE.Mesh(new THREE.SphereGeometry(0.2, 10, 8), skin);
+          head.position.y = seated ? 1.6 : 1.56;
+          head.castShadow = true;
+          resident.add(head);
+          for (const side of [-1, 1]) {
+            const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.075, 0.58, 8), outfit);
+            arm.position.set(side * 0.28, seated ? 0.98 : 0.95, seated ? -0.12 : 0);
+            arm.rotation.z = side * (seated ? 0.46 : 0.12);
+            arm.castShadow = true;
+            resident.add(arm);
+            const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.09, seated ? 0.62 : 0.78, 8), detailDarkMat);
+            leg.position.set(side * 0.12, seated ? 0.38 : 0.4, seated ? -0.2 : 0);
+            leg.rotation.x = seated ? Math.PI * 0.34 : 0;
+            resident.add(leg);
+          }
+          resident.position.set(x, -2.28, z);
+          resident.rotation.y = Math.PI + (seeded(index + 1600) - 0.5) * 0.16;
+          group.add(resident);
+        };
+        [[-4.45, 0.73], [-3.1, -0.64], [-0.65, 0.74], [0.72, -0.64], [3.1, 0.74], [4.48, -0.64], [-4.42, 2.88], [-3.08, 1.48], [-0.68, 2.88], [0.7, 1.48], [3.08, 2.88], [4.46, 1.48]].forEach(([x, z], index) => addResident(x, z, index, true));
+        [-4.7, -3.15, -1.55, 0, 1.62, 3.18, 4.72].forEach((x, index) => addResident(x, -2.4 + Math.abs(x) * 0.035, index + 20));
+
+        addBox(group, [1.25, 1.18, 5.5], [-5.93, -1.72, 0.58], detailConcreteMat);
+        addBox(group, [1.55, 0.14, 5.72], [-5.93, -1.08, 0.58], agedSteel);
+        addBox(group, [0.32, 2.65, 5.5], [-6.48, -0.36, 0.58], detailDarkMat);
+        for (const z of [-1.45, -0.1, 1.25, 2.6]) {
+          addBox(group, [0.72, 0.12, 0.88], [-5.68, -0.92, z], tableTopMat);
+          addCylinder(group, 0.18, 0.3, [-5.65, -0.82, z], agedSteel, [0, 0, 0], 16);
+        }
+        addBox(group, [0.12, 0.16, 4.8], [-5.28, 1.22, 0.58], warmFixture);
+
+        for (let step = 0; step < 5; step += 1) {
+          addBox(group, [1.35, 0.2, 0.72], [5.55, -2.16 + step * 0.22, 3.42 - step * 0.58], cafeteriaConcrete);
+        }
+        addBox(group, [1.48, 0.18, 2.15], [5.55, -1.19, 0.42], agedSteel);
+        addRail(group, 4.86, 6.24, -1.2, 1.46, agedSteel);
+        addBox(group, [0.16, 2.62, 1.62], [6.5, -0.18, 0.38], detailDarkMat);
+        addBox(group, [0.18, 2.25, 1.25], [6.39, -0.22, 0.38], agedSteel);
+        addBox(group, [0.21, 0.12, 1.02], [6.27, 0.72, 0.38], warmFixture);
+
+        addTube(group, [[-6.25, 2.32, 3.86], [-1.4, 2.32, 3.86], [1.5, 2.15, 3.55], [6.15, 2.15, 3.55]], 0.17, agedSteel);
+        addTube(group, [[-6.25, 2.05, 4.22], [-2.2, 2.05, 4.22], [1.2, 1.9, 4.05], [5.95, 1.9, 4.05]], 0.09, accent);
+        addRail(group, -6, 6, -2.32, 4.25, agedSteel);
       } else if (zone.scene === "airlock") {
         const warningMat = new THREE.MeshStandardMaterial({ color: 0xd15e3e, emissive: 0x6e170a, emissiveIntensity: 0.82, roughness: 0.4, metalness: 0.62 });
         const suitMat = new THREE.MeshStandardMaterial({ color: 0xd7d5c8, roughness: 0.72, metalness: 0.12 });
@@ -1986,9 +2194,9 @@ export default function SiloExperience() {
       cameraState.targetZ = 0;
       cameraState.targetY = 0;
       if (mode === "section") {
-        cameraState.targetDistance = zone.scene === "tunnel" ? 13.5 : 17.5;
+        cameraState.targetDistance = zone.scene === "tunnel" ? 13.5 : zone.scene === "cafeteria" ? 19.2 : 17.5;
         cameraState.targetYaw = zone.scene === "mine" ? 0.28 : 0.06;
-        cameraState.targetPitch = 0.08;
+        cameraState.targetPitch = zone.scene === "cafeteria" ? 0.045 : 0.08;
       } else if (mode === "network") {
         cameraState.targetDistance = 34;
         cameraState.targetYaw = -0.38;
@@ -2160,6 +2368,7 @@ export default function SiloExperience() {
         }
       });
       screenTexture.dispose();
+      cafeteriaFeedTexture.dispose();
       renderer.dispose();
       renderer.domElement.remove();
       visualRef.current = {};

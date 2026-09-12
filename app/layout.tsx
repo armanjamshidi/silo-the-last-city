@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     template: "%s · SILO — The Last City",
   },
   description:
-    "An interactive 3D archive of Silo 18: the cafeteria sensor gallery, one-way cleaning airlock, 144 levels, digger cavern, Algorithm tunnel, mines and inter-silo network.",
+    "An interactive 3D archive of Silo 18 and a Season 3 atlas of all 50 silos, their control systems, floor maps and fan reconstructions.",
   applicationName: "SILO — The Last City",
   authors: [{ name: "Arman Jamshidi" }],
   creator: "Arman Jamshidi",
@@ -19,17 +19,17 @@ export const metadata: Metadata = {
     url: "/",
     siteName: "SILO — The Last City",
     title: "SILO — The Last City",
-    description: "Explore a sourced, interactive 3D cutaway of Silo 18—from the surface sensor to the buried Algorithm door.",
+    description: "Explore a sourced 3D cutaway of Silo 18 and a Season 3 atlas of all 50 silos, their control systems and competing fan maps.",
   },
   twitter: {
     card: "summary",
     title: "SILO — The Last City",
-    description: "An interactive 3D structural archive of Silo 18.",
+    description: "A 3D structural archive of Silo 18 and the complete fifty-silo network revealed in Season 3.",
   },
   robots: { index: true, follow: true },
   other: {
     "codex-preview": "development",
-    "archive-coverage": "Silo series through Season 3 Episode 7; reviewed 2026-08-20",
+    "archive-coverage": "Silo series through Season 3 Episode 10; reviewed 2026-09-12",
   },
   icons: {
     icon: "/favicon.svg",

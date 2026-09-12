@@ -5,8 +5,8 @@
 
   <h1>SILO — The Last City</h1>
 
-  <p><strong>An interactive 3D structural archive of Silo 18.</strong></p>
-  <p>Descend through 144 levels, enter purpose-built room cutaways, trace the systems beneath Mechanical, and compare what is shown on screen with book canon and spatial reconstruction.</p>
+  <p><strong>An interactive 3D structural archive of Silo 18 and the complete fifty-silo field.</strong></p>
+  <p>Descend through 144 levels, trace the systems beneath Mechanical, and compare the Season 3 network reveal with book canon and clearly labeled fan reconstructions.</p>
 
   <p>
     <a href="https://silo-the-last-city.vercel.app/"><img alt="Open live archive" src="https://img.shields.io/badge/OPEN_LIVE_ARCHIVE-VERCEL-C9A66B?style=for-the-badge&labelColor=11120F" /></a>
@@ -32,7 +32,7 @@ Silo 18 is usually experienced one stairwell, room, or secret at a time. This pr
 
 It does **not** present fan-made geometry as official fact. Every space is labeled as **Series**, **Book Canon**, or **Reconstruction**, and uncertain level numbers remain explicitly undisclosed.
 
-The current research ledger is reviewed through **Season 3, Episode 7 (20 August 2026)**. Season 3 is still airing, so the archive does not treat unreleased material as established canon.
+The current research ledger is reviewed through the **Season 3 finale (12 September 2026)**. Finale revelations are included; television, book and fan-map continuities remain separate.
 
 <div align="center">
   <h3>→ <a href="https://silo-the-last-city.vercel.app/">Enter Silo 18</a> ←</h3>
@@ -45,11 +45,13 @@ The current research ledger is reviewed through **Season 3, Episode 7 (20 August
 - **Purpose-built 3D sections** — each major district opens into its own modeled room study instead of reusing a generic scene.
 - **Up Top reconstructed in detail** — the Cafeteria & Sensor Gallery, one-way Cleaning Facility, and Civic offices are separate spaces.
 - **The world above** — leave the outer hatch, cross the berm, inspect the sensor mast, prior cleaners and neighboring silo crowns.
-- **Deep infrastructure** — descend through Mechanical, the Digger cavern, George Wilkins' camp, the flooded Gap, pumps, mines, and the Algorithm access tunnel.
+- **Deep infrastructure** — descend through Mechanical, the Digger cavern, George Wilkins' camp, the flooded Gap, pumps, mines, and the Silo 1 voice-link tunnel.
 - **Life-support reconstruction** — inspect the air-handling, water-treatment, heat-exchange, fire-water and waste-recovery systems a sealed city requires.
 - **Distinct hidden systems** — the I.T. external power feeder and Judicial Safeguard delivery line are shown as separate routes.
-- **Operation Fifty view** — inspect the 51-silo field and compare Silo 18, Silo 17, Silo 1, and Seed-related book continuity.
-- **Evidence-aware lore** — every facility and route carries an `ON SCREEN`, `BOOK CANON`, or `INFERRED` tag.
+- **Operation Fifty atlas** — inspect all 50 silos as either Bernard's functional 7×7 model or the competing 8/8/7/7/7/7/5 fan count of the on-screen grouping.
+- **Connection map** — separate command, monitoring, I.T. power, Safeguard, bottom-door data, the Silo 17 drone event and book-only transit routes.
+- **Level atlas** — switch between TV Silo 18, TV Silo 17, the reader reconstruction for Silos 2–50 and the book-continuity Silo 1 map.
+- **Evidence-aware lore** — every facility and route carries an `ON SCREEN`, `BOOK CANON`, `CHARACTER THEORY`, `FAN RECON`, or `INFERRED` tag.
 - **Resilient rendering** — a detailed CSS cutaway remains usable inside WebGL-restricted browsers and embedded previews.
 - **Dark and light themes** — the interface remembers the viewer's preference locally.
 - **Guided story routes** — follow the Cleaning route, Juliette's descent, George-to-Lukas investigation, or the hidden-systems trail.
@@ -67,8 +69,8 @@ The current research ledger is reviewed through **Season 3, Episode 7 (20 August
 | **Daily life** | Medical & Nursery, residential Mids, Farms, Supply workshops and storage |
 | **Life support** | Air handling, closed-loop water, waste recovery, heat exchange and vertical utility trunks |
 | **Down Deep** | Mechanical, generator hall, control deck, workshops and pump infrastructure |
-| **Below Level 144** | Digger cavern, George's camp, flooded Gap, Algorithm access tunnel and reconstructed mine routes |
-| **Beyond Silo 18** | 51-silo field, Silo 17, Silo 1, utility routes and book-canon Seed alignment |
+| **Below Level 144** | Digger cavern, George's camp, flooded Gap, Silo 1 voice-link tunnel and reconstructed mine routes |
+| **Beyond Silo 18** | 50-silo field, seven functional clusters, visual fan grouping, Silo 17/18 status, utility links and book-canon routes |
 
 ### The evidence model
 
@@ -76,6 +78,8 @@ The current research ledger is reviewed through **Season 3, Episode 7 (20 August
 | --- | --- |
 | `SERIES` / `ON SCREEN` | Directly established by the television series |
 | `BOOKS` / `BOOK CANON` | Drawn from Hugh Howey's book continuity, which may differ from the adaptation |
+| `CHARACTER THEORY` | An explanation stated by a character but not yet independently verified |
+| `FAN RECON` | A sourced reader count or map kept visibly separate from screen canon |
 | `RECONSTRUCTION` / `INFERRED` | A spatial interpretation used only where no complete official plan is available |
 
 This distinction is central to the project: the archive should make the world easier to understand without turning speculation into canon.

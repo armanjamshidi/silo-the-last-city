@@ -5,6 +5,7 @@ import ts from "typescript";
 import { makeArchiveHash, parseArchiveHash } from "../app/archive-url.mjs";
 
 const sourcePath = new URL("../app/SiloExperience.tsx", import.meta.url);
+const atlasPath = new URL("../app/SiloAtlas.tsx", import.meta.url);
 
 function propertyValue(object, name) {
   const property = object.properties.find((item) => ts.isPropertyAssignment(item) && item.name.getText().replaceAll(/['"]/g, "") === name);
@@ -56,4 +57,19 @@ test("archive deep links validate zones and views", () => {
   assert.deepEqual(parseArchiveHash("#zone=tunnel&view=unknown", valid), { zoneId: "tunnel", view: "overview" });
   assert.equal(parseArchiveHash("#zone=judicial&view=section", valid), null);
   assert.equal(makeArchiveHash("surface", "section"), "#zone=surface&view=section");
+});
+
+test("season three atlas preserves counts, continuities and connection layers", async () => {
+  const [archive, atlas] = await Promise.all([
+    readFile(sourcePath, "utf8"),
+    readFile(atlasPath, "utf8"),
+  ]);
+
+  assert.match(archive, /SERIES THROUGH S3E10/);
+  assert.match(archive, /50 structures · Silo 1 \+ forty-nine outer silos/);
+  assert.doesNotMatch(archive, /51-silo field|51 structures in series continuity/);
+  assert.match(atlas, /OPERATIONAL_GROUPS = \[7, 7, 7, 7, 7, 7, 7\]/);
+  assert.match(atlas, /VISUAL_GROUPS = \[8, 8, 7, 7, 7, 7, 5\]/);
+  for (const layer of ["COMMAND", "SAFEGUARD", "S3 EVENTS", "BOOK ROUTE"]) assert.match(atlas, new RegExp(layer));
+  for (const plan of ["tv18", "tv17", "book", "silo1"]) assert.match(atlas, new RegExp(`id: "${plan}"`));
 });

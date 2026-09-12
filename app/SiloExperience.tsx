@@ -49,8 +49,9 @@ import {
 } from "lucide-react";
 import * as THREE from "three";
 import { makeArchiveHash, parseArchiveHash } from "./archive-url.mjs";
+import SiloAtlas from "./SiloAtlas";
 
-type DetailTag = "ON SCREEN" | "BOOK CANON" | "INFERRED";
+type DetailTag = "ON SCREEN" | "BOOK CANON" | "CHARACTER THEORY" | "FAN RECON" | "INFERRED";
 
 type Facility = {
   name: string;
@@ -105,7 +106,7 @@ type Zone = {
 type SourceReference = {
   label: string;
   coverage: string;
-  kind: "SERIES" | "BOOKS" | "PRODUCTION";
+  kind: "SERIES" | "BOOKS" | "PRODUCTION" | "FAN";
   url: string;
 };
 
@@ -116,8 +117,8 @@ type Journey = {
   zones: string[];
 };
 
-const ARCHIVE_UPDATED = "20 AUG 2026";
-const SERIES_COVERAGE = "SERIES THROUGH S3E7";
+const ARCHIVE_UPDATED = "12 SEP 2026";
+const SERIES_COVERAGE = "SERIES THROUGH S3E10";
 const APPLE_SERIES_URL = "https://www.apple.com/tv-pr/originals/silo/";
 const APPLE_EPISODES_URL = "https://www.apple.com/tv-pr/originals/silo/episodes-images/";
 const APPLE_SEASON_THREE_URL = "https://www.apple.com/tv-pr/news/2026/04/apples-globally-acclaimed-drama-silo-starring-and-executive-produced-by-rebecca-ferguson-returns-for-season-three-on-july-3-2026/";
@@ -127,6 +128,12 @@ const TESTED_SILO_ART_DEPT_URL = "https://www.youtube.com/watch?v=LTn-KUxAJEA";
 const VFX_VOICE_SILO_URL = "https://vfxvoice.com/unraveling-the-mysteries-of-silo/";
 const GENERATOR_DESIGN_URL = "https://www.artstation.com/artwork/QXD6Yr";
 const JUDICIAL_SECLUSION_URL = "https://www.artstation.com/artwork/XJdYq3";
+const SEASON_THREE_FINALE_URL = "https://people.com/silo-season-3-ending-explained-12075887";
+const SEASON_THREE_EPISODE_EIGHT_URL = "https://www.thenationalnews.com/arts-culture/film-tv/2026/08/21/silo-season-3-episode-8-review-apple-tv/";
+const FAN_CLUSTER_MAP_URL = "https://www.reddit.com/r/SiloSeries/comments/1vvf5t0/question_about_the_silo_clusters_the_season_3/";
+const FAN_LEVEL_MAP_URL = "https://www.reddit.com/r/Wool/comments/hcgi99/a_map_of_the_silos_levels/";
+const FAN_STANDARD_SILO_SHEET_URL = "https://docs.google.com/spreadsheets/u/1/d/e/2PACX-1vSk-59vlgNPof72ZBrRf-7wHEYZov-b759Wqqs1hdWzRcRDaZbchIjkshF6j7JcanSutFFnG-Gp8UdO/pubhtml?gid=1697089586&single=true";
+const FAN_SILO_ONE_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSk-59vlgNPof72ZBrRf-7wHEYZov-b759Wqqs1hdWzRcRDaZbchIjkshF6j7JcanSutFFnG-Gp8UdO/pubhtml?gid=187975468&single=true";
 
 const ZONES: Zone[] = [
   {
@@ -262,8 +269,8 @@ const ZONES: Zone[] = [
       { name: "Seclusion holding", note: "A severe secure cell complex used for isolated detainees and controlled questioning.", tag: "ON SCREEN" },
       { name: "Records & relic evidence", note: "Case files, seized relics and restricted evidence behind counted storage.", tag: "INFERRED" },
       { name: "Safeguard delivery line", note: "The lethal external line identified on the recovered drive enters through Judicial.", tag: "ON SCREEN" },
-      { name: "Concealed service wall", note: "Juliette's group traces the line behind the Judicial fabric and plans a controlled breach.", tag: "ON SCREEN" },
-      { name: "Isolation / capping point", note: "A proposed intervention point; striking the line itself could release the agent locally.", tag: "ON SCREEN" },
+      { name: "Oxygen-tank decoy", note: "Camille substitutes oxygen tanks to misdirect the system while the rebels reach the real inlet.", tag: "ON SCREEN" },
+      { name: "Clamped isolation point", note: "The rebels mechanically clamp the Safeguard line in the Season 3 finale without rupturing it.", tag: "ON SCREEN" },
     ],
     people: ["Mary Meadows", "Robert Sims", "Amundsen", "Paul Billings"],
     telemetry: [{ label: "SAFEGUARD", value: "DELIVERY" }, { label: "LINE", value: "EXTERNAL" }, { label: "ACCESS", value: "SEALED" }],
@@ -275,9 +282,9 @@ const ZONES: Zone[] = [
     id: "it",
     name: "I.T.",
     kicker: "Systems control",
-    levels: "Level 18",
-    level: 18,
-    code: "L-018",
+    levels: "Level 19 · fan frame index / series location",
+    level: 19,
+    code: "L-019",
     group: "internal",
     canon: "SERIES",
     scene: "it",
@@ -537,17 +544,17 @@ const ZONES: Zone[] = [
       "Beyond the water, a concrete tunnel terminates at a circular intelligent door. It recognized Lukas Kyle and named Quinn, Meadows and George as prior visitors.",
     details: [
       { name: "Circular intelligent door", note: "A sealed metal face that activates when a visitor approaches.", tag: "ON SCREEN" },
-      { name: "Algorithm voice interface", note: "The system identifies Lukas and issues the Safeguard warning.", tag: "ON SCREEN" },
+      { name: "Silo 1 voice link", note: "The finale identifies the voice as Dr. Victor Crnkovich, a human operator inside Silo 1.", tag: "ON SCREEN" },
       { name: "Segmented tunnel shell", note: "Concrete rings, low service lights and a straight controlled approach.", tag: "ON SCREEN" },
-      { name: "Safeguard warning point", note: "The Algorithm threatens activation here; the poison does not physically enter the silo at this door.", tag: "ON SCREEN" },
+      { name: "Safeguard warning point", note: "The Silo 1 operator threatens activation here; the poison does not physically enter the silo at this door.", tag: "ON SCREEN" },
       { name: "Power / data conduits", note: "Independent cables keep the door and voice alive below the silo.", tag: "INFERRED" },
       { name: "Visitor trace", note: "Quinn, Meadows, George and Lukas reached the threshold at different times.", tag: "ON SCREEN" },
       { name: "Unknown space beyond", note: "The series has not yet confirmed the door's destination or whether it is a transit route.", tag: "ON SCREEN" },
     ],
-    people: ["Lukas Kyle", "Salvador Quinn", "Mary Meadows", "George Wilkins"],
-    telemetry: [{ label: "VOICE", value: "ALGORITHM" }, { label: "ROLE", value: "WARNING NODE" }, { label: "BEYOND", value: "UNKNOWN" }],
-    era: "SEASON 2 / THRESHOLD",
-    evidence: "The tunnel, intelligent door and Safeguard warning are on-screen canon. No poison inlet is shown here, and the destination beyond the door remains unresolved.",
+    people: ["Lukas Kyle", "Juliette Nichols", "Dr. Victor Crnkovich", "Salvador Quinn", "Mary Meadows", "George Wilkins"],
+    telemetry: [{ label: "VOICE", value: "HUMAN" }, { label: "ORIGIN", value: "SILO 1" }, { label: "BEYOND", value: "UNKNOWN" }],
+    era: "SEASONS 2—3 / THRESHOLD",
+    evidence: "The tunnel, door and live link to Silo 1 are on-screen canon. Season 3 reveals a human operator behind the voice, but not the destination or physical route beyond the door.",
     status: "BLACK LEVEL",
   },
   {
@@ -581,29 +588,33 @@ const ZONES: Zone[] = [
     id: "network",
     name: "SILO NETWORK",
     kicker: "Operation Fifty",
-    levels: "51 structures in series continuity",
+    levels: "50 structures · Silo 1 + forty-nine outer silos",
     level: 166,
-    code: "NET-51",
+    code: "NET-50",
     group: "network",
     canon: "RECONSTRUCTION",
     scene: "network",
     color: "#d0b070",
     description:
-      "The show confirms fifty other silos beyond 18, but not an open transit grid. Utility links to I.T. and Judicial are distinct from the human-scale tunnel below the digger.",
+      "Season 3 confirms a fifty-silo program: Silo 1 at the center and forty-nine outer silos. Command, power, Safeguard and radio links are separate systems; no open human transit grid has been confirmed on screen.",
     details: [
-      { name: "51-silo field", note: "Silo 18 plus the fifty other structures confirmed in series dialogue.", tag: "ON SCREEN" },
+      { name: "50-silo field", note: "Silo 1 plus forty-nine outer structures, built by ten diggers capable of five silos each.", tag: "ON SCREEN" },
+      { name: "Seven groups of seven", note: "Bernard describes seven operational groups around Silo 1; the exact numbered membership is not published.", tag: "CHARACTER THEORY" },
+      { name: "8 / 8 / 7 / 7 / 7 / 7 / 5 visual groups", note: "A fan count of the trailer and on-screen geography; it conflicts with the functional 7×7 explanation and is shown separately.", tag: "FAN RECON" },
       { name: "Silo 18 → 17 route", note: "A concealed digger route completed in the book continuity.", tag: "BOOK CANON" },
-      { name: "Silo 1 control", note: "The book continuity's command silo and monitoring center.", tag: "BOOK CANON" },
+      { name: "Silo 1 command", note: "Season 3 confirms the central control silo and human operators including Dr. Victor Crnkovich.", tag: "ON SCREEN" },
       { name: "Seed alignment", note: "Stored machines are oriented toward the long-term survival cache.", tag: "BOOK CANON" },
       { name: "Surface exclusion field", note: "The circular rims remain separated above ground.", tag: "ON SCREEN" },
       { name: "Universal transit grid", note: "Shown only as a hypothesis; no open all-silo metro is confirmed.", tag: "INFERRED" },
       { name: "I.T. external power line", note: "A dedicated utility feed runs from Silo 1 infrastructure to I.T.", tag: "ON SCREEN" },
       { name: "Judicial Safeguard line", note: "A separate external line delivers the Safeguard agent through Judicial.", tag: "ON SCREEN" },
+      { name: "Bottom-door voice/data link", note: "Juliette's group communicates directly with Silo 1 from the intelligent door below the digger.", tag: "ON SCREEN" },
+      { name: "Silo 17 drone strike", note: "Silo 1 deploys drones against the people emerging from Silo 17 in the Season 3 finale.", tag: "ON SCREEN" },
     ],
-    people: ["Silo 18", "Silo 17", "Silo 1", "Seed"],
-    telemetry: [{ label: "FIELD", value: "51" }, { label: "UTILITY", value: "2 LINES" }, { label: "TRANSIT", value: "UNCONFIRMED" }],
-    era: "SERIES + BOOK SYNTHESIS",
-    evidence: "The 51-silo count and two external utility lines are series canon. The 18-to-17 excavation and Seed destination are book canon; a pre-opened universal transit network is not confirmed.",
+    people: ["Silo 1 command", "Silo 17", "Silo 18 resistance", "Dr. Victor Crnkovich", "Seed (books)"],
+    telemetry: [{ label: "FIELD", value: "50" }, { label: "GROUPS", value: "7 × 7 + 1" }, { label: "TRANSIT", value: "UNCONFIRMED" }],
+    era: "SEASON 3 FINALE + BOOK/FAN LAYERS",
+    evidence: "The 50-silo program, central Silo 1 command, Judicial inlet, bottom-door communication and Silo 17 drone event are on-screen. Hub routing is Bernard's theory; 18↔17 and Seed routes are book canon; the visual cluster count is a fan reconstruction.",
     status: "SYNTHESIS",
   },
 ];
@@ -671,6 +682,48 @@ const JUDICIAL_PRODUCTION_SOURCE: SourceReference = {
   url: JUDICIAL_SECLUSION_URL,
 };
 
+const FINALE_SOURCE: SourceReference = {
+  label: "Season 3 finale — ending explained",
+  coverage: "S3E10 · Silo 1 operator, Silo 17 drones, strike plan",
+  kind: "SERIES",
+  url: SEASON_THREE_FINALE_URL,
+};
+
+const EPISODE_EIGHT_SOURCE: SourceReference = {
+  label: "Season 3 Episode 8 — fifty-silo reveal",
+  coverage: "S3E8 · 50 structures and construction program",
+  kind: "SERIES",
+  url: SEASON_THREE_EPISODE_EIGHT_URL,
+};
+
+const FAN_CLUSTER_SOURCE: SourceReference = {
+  label: "Fan cluster count & 7×7 discussion",
+  coverage: "Visual 8/8/7/7/7/7/5 count versus Bernard's model",
+  kind: "FAN",
+  url: FAN_CLUSTER_MAP_URL,
+};
+
+const FAN_LEVEL_SOURCE: SourceReference = {
+  label: "Reader map of the silos' levels",
+  coverage: "Wool / Shift / Dust reconstruction with confidence notes",
+  kind: "FAN",
+  url: FAN_LEVEL_MAP_URL,
+};
+
+const FAN_STANDARD_SILO_SOURCE: SourceReference = {
+  label: "Published fan sheet — Silos 2–50",
+  coverage: "Book-continuity vertical register",
+  kind: "FAN",
+  url: FAN_STANDARD_SILO_SHEET_URL,
+};
+
+const FAN_SILO_ONE_SOURCE: SourceReference = {
+  label: "Published fan sheet — Silo 1",
+  coverage: "Book-continuity command-silo register",
+  kind: "FAN",
+  url: FAN_SILO_ONE_SHEET_URL,
+};
+
 const ZONE_REFERENCES: Record<string, SourceReference[]> = {
   surface: [EPISODE_SOURCE, SERIES_SOURCE],
   "cleaning-facility": [EPISODE_SOURCE, SERIES_SOURCE],
@@ -686,9 +739,9 @@ const ZONE_REFERENCES: Record<string, SourceReference[]> = {
   mechanical: [EPISODE_SOURCE, GENERATOR_PRODUCTION_SOURCE, SILO_VFX_SOURCE],
   digger: [EPISODE_SOURCE, SERIES_SOURCE],
   gap: [EPISODE_SOURCE, SERIES_SOURCE],
-  tunnel: [EPISODE_SOURCE, SEASON_THREE_SOURCE],
+  tunnel: [EPISODE_SOURCE, FINALE_SOURCE, SEASON_THREE_SOURCE],
   mines: [SERIES_SOURCE, BOOK_SOURCE],
-  network: [EPISODE_SOURCE, BOOK_SOURCE, SEASON_THREE_SOURCE],
+  network: [EPISODE_SOURCE, EPISODE_EIGHT_SOURCE, FINALE_SOURCE, FAN_CLUSTER_SOURCE, FAN_LEVEL_SOURCE, FAN_STANDARD_SILO_SOURCE, FAN_SILO_ONE_SOURCE, BOOK_SOURCE],
 };
 
 const JOURNEYS: Journey[] = [
@@ -707,7 +760,7 @@ const JOURNEYS: Journey[] = [
   {
     id: "george-lukas",
     name: "GEORGE → LUKAS",
-    subtitle: "The hard drive, the Gap and the Algorithm door",
+    subtitle: "The hard drive, the Gap and the Silo 1 door",
     zones: ["it", "digger", "gap", "tunnel"],
   },
   {
@@ -715,6 +768,12 @@ const JOURNEYS: Journey[] = [
     name: "HIDDEN SYSTEMS",
     subtitle: "Safeguard, I.T. power and silo utilities",
     zones: ["judicial", "it", "life-support", "mechanical", "network"],
+  },
+  {
+    id: "strike-plan",
+    name: "THE STRIKE PLAN",
+    subtitle: "Clamp the Safeguard, reach the door, confront Silo 1",
+    zones: ["judicial", "digger", "gap", "tunnel", "network"],
   },
 ];
 
@@ -2520,42 +2579,78 @@ export default function SiloExperience() {
       detailRoot.add(group);
     });
 
-    // Network mode: series count (18 + fifty others) with book routes marked separately.
+    // Network mode: Silo 1 plus seven diagrammatic groups of seven outer silos.
+    // Exact numbered cluster membership has not been published by the series.
     const networkRoot = new THREE.Group();
     networkRoot.visible = false;
     scene.add(networkRoot);
-    const networkFloor = new THREE.Mesh(new THREE.PlaneGeometry(34, 25, 16, 12), new THREE.MeshBasicMaterial({ color: 0x282923, wireframe: true, transparent: true, opacity: 0.22 }));
+    const networkFloor = new THREE.Mesh(new THREE.PlaneGeometry(38, 31, 18, 14), new THREE.MeshBasicMaterial({ color: 0x282923, wireframe: true, transparent: true, opacity: 0.2 }));
     networkFloor.rotation.x = -Math.PI / 2;
     networkFloor.position.y = -1.7;
     networkRoot.add(networkFloor);
-    const siloPositions: THREE.Vector3[] = [];
-    for (let i = 0; i < 51; i += 1) {
-      const row = Math.floor(i / 9);
-      const col = i % 9;
-      const position = new THREE.Vector3((col - 4) * 3.05, 0, (row - 2.5) * 3.45);
-      siloPositions.push(position);
-      const is18 = i === 17;
-      const is17 = i === 16;
-      const is1 = i === 0;
+    const siloPositions: THREE.Vector3[] = Array.from({ length: 51 }, () => new THREE.Vector3());
+    siloPositions[1].set(0, 0, 0);
+    let siloId = 2;
+    for (let cluster = 0; cluster < 7; cluster += 1) {
+      const clusterAngle = -Math.PI / 2 + (cluster / 7) * TAU;
+      const clusterCenter = new THREE.Vector3(Math.cos(clusterAngle) * 10.4, 0, Math.sin(clusterAngle) * 10.4);
+      const hubRoute = new THREE.Line(
+        new THREE.BufferGeometry().setFromPoints([siloPositions[1].clone().setY(-1.35), clusterCenter.clone().setY(-1.35)]),
+        new THREE.LineDashedMaterial({ color: 0x8d5948, dashSize: 0.35, gapSize: 0.24, transparent: true, opacity: 0.42 }),
+      );
+      hubRoute.computeLineDistances();
+      networkRoot.add(hubRoute);
+      const clusterRing = new THREE.Mesh(
+        new THREE.TorusGeometry(2.6, 0.025, 5, 48),
+        new THREE.MeshBasicMaterial({ color: 0x5d625b, transparent: true, opacity: 0.32 }),
+      );
+      clusterRing.rotation.x = Math.PI / 2;
+      clusterRing.position.copy(clusterCenter).setY(-1.25);
+      networkRoot.add(clusterRing);
+      for (let member = 0; member < 7; member += 1) {
+        const memberAngle = clusterAngle + Math.PI + (member / 7) * TAU;
+        siloPositions[siloId].set(
+          clusterCenter.x + Math.cos(memberAngle) * 2.05,
+          0,
+          clusterCenter.z + Math.sin(memberAngle) * 2.05,
+        );
+        siloId += 1;
+      }
+    }
+    for (let id = 1; id <= 50; id += 1) {
+      const position = siloPositions[id];
+      const is18 = id === 18;
+      const is17 = id === 17;
+      const is1 = id === 1;
       const color = is18 ? 0xd8a65f : is17 ? 0x6ea6a9 : is1 ? 0xb6b9ad : 0x484b46;
       const node = new THREE.Group();
-      const cylinder = new THREE.Mesh(new THREE.CylinderGeometry(0.58, 0.72, is18 ? 3.4 : 2.8, 20), new THREE.MeshStandardMaterial({ color, roughness: 0.68, metalness: 0.35, emissive: color, emissiveIntensity: is18 || is17 ? 0.28 : 0.02 }));
+      const nodeHeight = is1 ? 4.1 : is18 ? 3.4 : 2.8;
+      const nodeRadius = is1 ? 0.82 : 0.52;
+      const cylinder = new THREE.Mesh(new THREE.CylinderGeometry(nodeRadius * 0.82, nodeRadius, nodeHeight, 20), new THREE.MeshStandardMaterial({ color, roughness: 0.68, metalness: 0.35, emissive: color, emissiveIntensity: is1 || is18 || is17 ? 0.28 : 0.02 }));
       node.add(cylinder);
-      const ring = new THREE.Mesh(new THREE.TorusGeometry(0.74, 0.06, 6, 24), new THREE.MeshBasicMaterial({ color }));
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(nodeRadius * 1.12, 0.05, 6, 24), new THREE.MeshBasicMaterial({ color }));
       ring.rotation.x = Math.PI / 2;
-      ring.position.y = (is18 ? 3.4 : 2.8) / 2;
+      ring.position.y = nodeHeight / 2;
       node.add(ring);
       node.position.copy(position);
       networkRoot.add(node);
     }
-    const routeMaterial = new THREE.LineBasicMaterial({ color: 0xd69a5d, transparent: true, opacity: 0.9 });
-    const confirmedRoute = new THREE.BufferGeometry().setFromPoints([siloPositions[17].clone().setY(-1.2), siloPositions[16].clone().setY(-1.2)]);
-    networkRoot.add(new THREE.Line(confirmedRoute, routeMaterial));
-    const seedPosition = new THREE.Vector3(16, 0, 0);
+    const bookRoute = new THREE.Line(
+      new THREE.BufferGeometry().setFromPoints([siloPositions[18].clone().setY(-1.18), siloPositions[17].clone().setY(-1.18)]),
+      new THREE.LineDashedMaterial({ color: 0xd69a5d, dashSize: 0.22, gapSize: 0.15, transparent: true, opacity: 0.9 }),
+    );
+    bookRoute.computeLineDistances();
+    networkRoot.add(bookRoute);
+    const droneRoute = new THREE.Line(
+      new THREE.BufferGeometry().setFromPoints([siloPositions[1].clone().setY(1.9), siloPositions[17].clone().setY(1.9)]),
+      new THREE.LineBasicMaterial({ color: 0xc85e45, transparent: true, opacity: 0.72 }),
+    );
+    networkRoot.add(droneRoute);
+    const seedPosition = new THREE.Vector3(17, 0, 0);
     const seed = new THREE.Mesh(new THREE.OctahedronGeometry(1.15, 1), new THREE.MeshStandardMaterial({ color: 0x94a873, emissive: 0x31451f, emissiveIntensity: 0.65, roughness: 0.58 }));
     seed.position.copy(seedPosition);
     networkRoot.add(seed);
-    const seedRoute = new THREE.BufferGeometry().setFromPoints([siloPositions[17].clone().setY(-1.25), seedPosition.clone().setY(-1.25)]);
+    const seedRoute = new THREE.BufferGeometry().setFromPoints([siloPositions[18].clone().setY(-1.25), seedPosition.clone().setY(-1.25)]);
     const seedLine = new THREE.Line(
       seedRoute,
       new THREE.LineDashedMaterial({ color: 0x91a66e, dashSize: 0.45, gapSize: 0.28, transparent: true, opacity: 0.7 }),
@@ -2956,7 +3051,7 @@ export default function SiloExperience() {
         <div className="canon-key">
           <span><i className="canon-series" /> SERIES</span><span><i className="canon-books" /> BOOKS</span><span><i className="canon-reconstruction" /> RECONSTRUCTION</span>
         </div>
-        <div className="depth-readout"><span>{sectorTab === "network" ? "KNOWN FIELD" : "EST. VERTICAL REACH"}</span><strong>{sectorTab === "network" ? "51" : ">1,440"}<small>{sectorTab === "network" ? " silos" : " m"}</small></strong><div className="depth-scale"><i /></div><small>{sectorTab === "network" ? "18 / 17 / 1 / SEED" : "BEDROCK / CONTROLLED VOID"}</small></div>
+        <div className="depth-readout"><span>{sectorTab === "network" ? "KNOWN FIELD" : "EST. VERTICAL REACH"}</span><strong>{sectorTab === "network" ? "50" : ">1,440"}<small>{sectorTab === "network" ? " silos" : " m"}</small></strong><div className="depth-scale"><i /></div><small>{sectorTab === "network" ? "1 CENTER / 49 OUTER" : "BEDROCK / CONTROLLED VOID"}</small></div>
       </aside>
 
       <section ref={viewerRef} className="viewer-shell" aria-label="Silo 18 3D viewer">
@@ -2998,17 +3093,9 @@ export default function SiloExperience() {
             <div className="fallback-section__caption"><span>3D SECTION</span><b>{selected.name}</b><small>{selected.code} / {selected.canon}</small></div>
           </div>
         )}
-        {webglUnavailable && viewMode === "network" && (
-          <div className="fallback-network" aria-label="Conceptual network of 51 silos">
-            <div className="fallback-network__grid">
-              {Array.from({ length: 51 }, (_, index) => <i key={index} className={index === 17 ? "silo-18" : index === 16 ? "silo-17" : index === 0 ? "silo-1" : ""}><span>{index + 1}</span></i>)}
-            </div>
-            <div className="fallback-network__route" />
-            <div className="fallback-network__seed">SEED</div>
-          </div>
-        )}
         <div className="stage-vignette" /><div className="stage-grid" />
-        <div className="model-label"><span>{viewMode === "overview" ? "ASSET" : viewMode === "section" ? "SECTION STUDY" : "OPERATION FIELD"}</span><b>{viewMode === "overview" ? "SILO 18 / EXTENDED CUTAWAY" : viewMode === "section" ? `${selected.code} / ${selected.name}` : "SILO GRID / SYNTHESIS"}</b><small>{viewMode === "overview" ? "144 LEVELS · SUB-FOUNDATION · SEALED" : viewMode === "section" ? `${selected.canon} EVIDENCE · INTERACTIVE DIORAMA` : "51 STRUCTURES · 18→17 · SEED ROUTE"}</small></div>
+        {viewMode === "network" && <SiloAtlas language={language} />}
+        {viewMode !== "network" && <div className="model-label"><span>{viewMode === "overview" ? "ASSET" : "SECTION STUDY"}</span><b>{viewMode === "overview" ? "SILO 18 / EXTENDED CUTAWAY" : `${selected.code} / ${selected.name}`}</b><small>{viewMode === "overview" ? "144 LEVELS · SUB-FOUNDATION · SEALED" : `${selected.canon} EVIDENCE · INTERACTIVE DIORAMA`}</small></div>}
         <div className="compass" aria-hidden="true"><span>N</span><i /><b>18</b></div>
         {!webglUnavailable && viewMode === "overview" && ZONES.filter((zone) => zone.group !== "network").map((zone) => (
           <button key={zone.id} ref={(node) => { hotspotRefs.current[zone.id] = node; }} className={`hotspot ${selected.id === zone.id ? "hotspot--active" : ""}`} style={{ "--zone": zone.color } as React.CSSProperties} onClick={() => chooseZone(zone)} aria-label={`Inspect ${zone.name}`}>
@@ -3101,7 +3188,7 @@ export default function SiloExperience() {
         </div>}
 
         {detailTab === "sources" && <div id="panel-sources" className="intel-tabpanel" role="tabpanel" aria-labelledby="tab-sources">
-          <div className="coverage-card"><span>ARCHIVE COVERAGE</span><b>{SERIES_COVERAGE}</b><small>Last reviewed {ARCHIVE_UPDATED}. Season 3 is ongoing; unreleased material is not treated as canon here.</small></div>
+          <div className="coverage-card"><span>ARCHIVE COVERAGE</span><b>{SERIES_COVERAGE}</b><small>Last reviewed {ARCHIVE_UPDATED}. Season 3 is complete; finale revelations are included and book/fan layers remain separately labeled.</small></div>
           <div className="source-list">
             {(ZONE_REFERENCES[selected.id] ?? [SERIES_SOURCE]).map((source) => <a key={`${selected.id}-${source.label}`} href={source.url} target="_blank" rel="noreferrer"><span className={`source-kind source-kind--${source.kind.toLowerCase()}`}>{source.kind}</span><div><b>{source.label}</b><small>{source.coverage}</small></div><ExternalLink size={15} /></a>)}
           </div>

@@ -128,7 +128,9 @@ npm test
 npm run build:vercel
 ```
 
-The default `npm run build` also produces and validates the Cloudflare/Vinext artifact used by the connected Sites deployment.
+The default `dev`, `build` and `start` commands use Next.js on all platforms. The optional `npm run build:sites` command produces and validates the legacy Cloudflare/Vinext artifact and requires Bash.
+
+Run `npm run check:secrets` before pushing. It checks tracked files for common credential patterns and reports only file names, never matched values. Keep service credentials in deployment environment variables; this client-side archive does not require an API key.
 
 ## Tech stack
 

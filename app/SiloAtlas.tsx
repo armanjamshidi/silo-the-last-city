@@ -208,6 +208,12 @@ function FieldMap({ language }: { language: "en" | "fa" }) {
   return (
     <div className="atlas-field">
       <div className="atlas-subcontrols">
+        <label className="atlas-picker">
+          <span>{language === "fa" ? "انتخاب سیلو" : "Select silo"}</span>
+          <select value={selectedSilo} onChange={(event) => setSelectedSilo(Number(event.target.value))}>
+            {Array.from({ length: 50 }, (_, index) => index + 1).map((id) => <option key={id} value={id}>{language === "fa" ? `سیلوی ${id}` : `Silo ${id}`}</option>)}
+          </select>
+        </label>
         <div className="atlas-segment" role="group" aria-label="Field layout">
           <button className={layout === "operations" ? "active" : ""} onClick={() => setLayout("operations")}>{COPY[language].operations}</button>
           <button className={layout === "visual" ? "active" : ""} onClick={() => setLayout("visual")}>{COPY[language].visual}</button>
@@ -221,7 +227,7 @@ function FieldMap({ language }: { language: "en" | "fa" }) {
       </div>
 
       <div className="atlas-field__body">
-        <svg className={`field-svg field-svg--${relation}`} viewBox="0 0 760 500" role="img" aria-label="Map of Silo 1 and forty-nine outer silos">
+        <svg className={`field-svg field-svg--${relation}`} viewBox="0 0 760 500" role="group" aria-label="Map of Silo 1 and forty-nine outer silos">
           <defs>
             <radialGradient id="siloNode" cx="35%" cy="30%">
               <stop offset="0" stopColor="#6c716a" />
@@ -242,7 +248,7 @@ function FieldMap({ language }: { language: "en" | "fa" }) {
           ))}
           {relation === "events" && silo17 && <path className="field-link field-link--drone" markerEnd="url(#fieldArrowDanger)" d={`M ${FIELD_CENTER.x} ${FIELD_CENTER.y} Q 460 135 ${silo17.x} ${silo17.y}`} />}
           {relation === "books" && silo17 && silo18 && <line className="field-link field-link--book" x1={silo17.x} y1={silo17.y} x2={silo18.x} y2={silo18.y} />}
-          <g className={`field-node field-node--1 ${selectedSilo === 1 ? "selected" : ""}`} role="button" tabIndex={0} onClick={() => setSelectedSilo(1)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") setSelectedSilo(1); }}>
+          <g className={`field-node field-node--1 ${selectedSilo === 1 ? "selected" : ""}`} role="button" aria-label="Silo 1" aria-pressed={selectedSilo === 1} tabIndex={0} onClick={() => setSelectedSilo(1)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setSelectedSilo(1); } }}>
             <circle cx={FIELD_CENTER.x} cy={FIELD_CENTER.y} r="27" />
             <text x={FIELD_CENTER.x} y={FIELD_CENTER.y + 4}>01</text>
             <text className="field-node__role" x={FIELD_CENTER.x} y={FIELD_CENTER.y + 42}>COMMAND</text>
@@ -250,7 +256,7 @@ function FieldMap({ language }: { language: "en" | "fa" }) {
           {nodes.map((node) => {
             const status = node.id === 17 ? "failed" : node.id === 18 ? "resistance" : "unknown";
             return (
-              <g key={node.id} className={`field-node field-node--${status} ${selectedSilo === node.id ? "selected" : ""}`} role="button" tabIndex={0} onClick={() => setSelectedSilo(node.id)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") setSelectedSilo(node.id); }} aria-label={`Silo ${node.id}`}>
+              <g key={node.id} className={`field-node field-node--${status} ${selectedSilo === node.id ? "selected" : ""}`} role="button" aria-pressed={selectedSilo === node.id} tabIndex={0} onClick={() => setSelectedSilo(node.id)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setSelectedSilo(node.id); } }} aria-label={`Silo ${node.id}`}>
                 <circle cx={node.x} cy={node.y} r={node.id === 17 || node.id === 18 ? 13 : 10} />
                 <text x={node.x} y={node.y + 3}>{String(node.id).padStart(2, "0")}</text>
               </g>
@@ -367,7 +373,7 @@ export default function SiloAtlas({ language }: { language: "en" | "fa" }) {
   const [view, setView] = useState<AtlasView>("field");
   const copy = COPY[language];
   return (
-    <section className="silo-atlas" aria-label="Silo network and level atlas">
+    <section className="silo-atlas" dir={language === "fa" ? "rtl" : "ltr"} aria-label="Silo network and level atlas">
       <header className="silo-atlas__header">
         <div><span>{copy.kicker}</span><h2>{copy.title}</h2><small>{copy.spoiler}</small></div>
         <div className="silo-atlas__tabs" role="tablist" aria-label="Atlas view">

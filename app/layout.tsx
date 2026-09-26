@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import "./usability.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://silo-the-last-city.vercel.app"),

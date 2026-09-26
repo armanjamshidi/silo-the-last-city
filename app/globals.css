@@ -363,7 +363,7 @@ html[data-theme="light"], html[data-theme="light"] body {
   .section-schematic { display: none; }
 }
 
-@media (max-width: 780px) {
+@media (max-width: 1024px) {
   .silo-app { grid-template-columns: 1fr; grid-template-rows: 62px minmax(0, 1fr) 33px; }
   .topbar { grid-template-columns: 1fr auto; }
   .brand-lockup { border-right: 0; }
@@ -402,7 +402,7 @@ html[data-theme="light"], html[data-theme="light"] body {
   .fallback-network { width: 88vw; }
 }
 
-@media (max-height: 700px) and (min-width: 781px) {
+@media (max-height: 700px) and (min-width: 1025px) {
   .level-button { padding-top: 7px; padding-bottom: 7px; }
   .zone-copy { margin-top: 14px; font-size: 12px; }
   .intel-rule { margin: 15px 0 12px; }
@@ -591,7 +591,7 @@ input:focus-visible,
   .intel-panel { padding-inline: 19px; }
 }
 
-@media (max-width: 780px) {
+@media (max-width: 1024px) {
   .silo-app { grid-template-columns: 1fr; }
   .topbar { grid-template-columns: 1fr auto; }
   .topbar__right { padding-inline: 8px; }
@@ -762,7 +762,7 @@ input:focus-visible,
   .silo-app { --archive-column: 190px; --details-column: 300px; }
 }
 
-@media (max-width: 780px) {
+@media (max-width: 1024px) {
   .silo-app,
   .silo-app.silo-app--left-collapsed,
   .silo-app.silo-app--right-collapsed {
@@ -984,7 +984,7 @@ input:focus-visible,
   .connection-ledger article p { display: none; }
 }
 
-@media (max-width: 780px) {
+@media (max-width: 1024px) {
   .silo-atlas { inset: 165px 8px 64px; border-radius: 9px; }
   .silo-app.silo-app--focus .silo-atlas { inset: 64px 8px 62px; }
   .silo-atlas__header { align-items: stretch; min-height: 94px; flex-direction: column; gap: 7px; padding: 9px; }

@@ -1,0 +1,135 @@
+/* Readable controls and a dedicated navigation row on compact screens. */
+.archive-error { max-width: 420px; padding: 24px; text-align: center; }
+.archive-error p { margin-block: 16px 24px; color: var(--muted); }
+.silo-app { --muted: #b6b0a4; --dim: #a39c8f; }
+.silo-app[data-theme="light"] { --muted: #55594e; --dim: #606052; }
+.topbar { grid-row: 1; min-width: 0; }
+.topbar > *, .level-index > * { min-width: 0; }
+.level-index__head, .sector-tabs, .archive-search, .canon-key, .depth-readout { flex-shrink: 0; }
+.level-button { flex-shrink: 0; min-height: 70px; padding-block: 12px; }
+.level-button b { font-size: 12px; letter-spacing: .05em; line-height: 1.4; }
+.level-button small { font-size: 11px; line-height: 1.45; }
+.sector-tabs button, .intel-tabs button, .view-switch button { font-size: 11px; letter-spacing: .035em; min-height: 44px; }
+.archive-search input { font-size: 13px; }
+.archive-search:focus-within { outline: 2px solid #c9a66b; outline-offset: 2px; }
+.icon-button { width: 40px; height: 40px; }
+.icon-button--wide { width: auto; }
+.icon-button small { font-size: 9px; }
+.intel-panel { overscroll-behavior: contain; }
+.zone-copy { font-family: inherit; font-size: 15px; line-height: 1.8; }
+.zone-levels, .installation-list li small, .intel-note p, .method-note p { font-size: 12px; line-height: 1.65; }
+.section-actions button { font-size: 11px; min-height: 44px; }
+.people-strip span, .source-list a small, .system-card span { font-size: 11px; }
+.view-switch { max-width: calc(100% - 24px); white-space: nowrap; }
+.view-switch button { flex: 1; justify-content: center; }
+.model-label { top: 82px; max-width: calc(100% - 40px); pointer-events: none; }
+.model-label b { line-height: 1.5; }
+.compass { display: none; }
+.viewer-toolbar { max-width: calc(100% - 24px); overflow-x: auto; }
+.viewer-toolbar button { flex: 0 0 38px; height: 40px; }
+button:disabled { opacity: .35; cursor: not-allowed; }
+.three-stage { touch-action: none; }
+.renderer-notice, .share-notice { position: absolute; z-index: 10; top: 120px; inset-inline: 16px; margin: 0; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; color: var(--muted); background: var(--panel); font-size: 12px; text-align: center; pointer-events: none; }
+.share-notice { top: auto; bottom: 130px; }
+.hotspot:focus-visible span { opacity: 1; }
+.hotspot span { font-size: 10px; }
+.silo-atlas { top: 78px; bottom: 76px; }
+.silo-atlas__viewport { overflow: auto; overscroll-behavior: contain; }
+.silo-atlas__header { flex-wrap: wrap; gap: 10px; }
+.silo-atlas__tabs { flex-wrap: wrap; }
+.silo-atlas__tabs button, .atlas-subcontrols button, .level-atlas__tabs button { font-size: 11px; min-height: 40px; }
+.atlas-subcontrols { flex-wrap: wrap; }
+.atlas-picker { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; }
+.atlas-picker select { min-height: 40px; padding: 6px 10px; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; font: inherit; }
+.silo-app[data-language="fa"] .sector-tabs button,
+.silo-app[data-language="fa"] .intel-tabs button,
+.silo-app[data-language="fa"] .view-switch button,
+.silo-app[data-language="fa"] .silo-atlas button { font-family: Tahoma, "Segoe UI", sans-serif; font-size: 13px; letter-spacing: 0; }
+.silo-app[data-language="fa"] .silo-atlas h2,
+.silo-app[data-language="fa"] .silo-atlas h3,
+.silo-app[data-language="fa"] .silo-atlas p { font-family: Tahoma, "Segoe UI", sans-serif; letter-spacing: 0; }
+.atlas-relations { flex-wrap: wrap; }
+.atlas-field { height: auto; min-height: 100%; }
+.atlas-field__body { grid-template-columns: minmax(0,1fr); }
+.field-svg { min-height: 320px; }
+.atlas-selection p, .atlas-disclaimer, .floor-anchor small, .connection-ledger article p { font-size: 12px; line-height: 1.65; }
+.floor-anchor b, .connection-ledger article b, .level-atlas__heading p { font-size: 12px; }
+.atlas-selection > span, .silo-atlas__header small, .silo-atlas__footer a { font-size: 10px; }
+.silo-atlas__footer nav { flex-wrap: wrap; }
+.silo-app[data-theme="light"] .silo-atlas button { color: #55584f; }
+.silo-app[data-theme="light"] .silo-atlas button.active { color: #684819; background: rgba(119,83,31,.12); }
+.silo-app[data-theme="light"] .silo-atlas__header small { color: #864c38; }
+.silo-app[data-theme="light"] .atlas-disclaimer { color: #55584f; }
+.field-node:focus-visible circle { stroke: #ffe0a6; stroke-width: 3px; }
+.viewer-shell[data-view="network"] .journey-dock { display: none; }
+.help-modal { max-height: calc(100dvh - 32px); overflow-y: auto; }
+[dir="rtl"] .level-button { text-align: right; }
+[dir="rtl"] .level-button b, [dir="rtl"] .intel-tabs button { letter-spacing: 0; }
+[dir="rtl"] .zone-copy, [dir="rtl"] .installation-list, [dir="rtl"] .zone-levels { direction: ltr; text-align: left; }
+
+@media (min-width: 1025px) and (max-width: 1280px) {
+  .silo-app { --archive-column: 224px; --details-column: 310px; }
+  .topbar { grid-template-columns: 224px minmax(0,1fr) auto; }
+  .system-status, .archive-title em { display: none; }
+}
+
+@media (max-width: 1024px) {
+  .silo-app { grid-template-rows: 62px 166px minmax(0,1fr) 26px; }
+  .topbar { grid-template-columns: minmax(0,1fr) auto; }
+  .topbar__right { gap: 4px; }
+  .topbar__right .icon-button--wide { display: flex; min-width: 40px; width: 40px; justify-content: center; padding: 0; }
+  .icon-button--wide span { display: none; }
+  .level-index, .silo-app.silo-app--left-collapsed .level-index {
+    position: relative; grid-column: 1; grid-row: 2; top: auto; left: auto;
+    width: auto; height: auto; margin: 8px 12px; border-radius: 10px;
+    display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 44px 1fr;
+    gap: 6px; padding: 6px; background: var(--panel);
+  }
+  .sector-tabs { width: auto; margin: 0; }
+  .sector-tabs button { font-size: 10px; min-height: 40px; }
+  .archive-search { position: static; min-height: 40px; margin: 0; padding-inline: 6px; }
+  .archive-search input { font-size: 16px; }
+  .level-list { grid-column: 1 / -1; height: auto; padding: 0 0 4px; overflow-y: hidden; gap: 6px; }
+  .level-button { flex: 0 0 186px; width: 186px; height: auto; min-height: 80px; padding: 8px; }
+  .level-button b { font-size: 11px; white-space: normal; }
+  .level-button small { font-size: 10px; white-space: normal; }
+  .level-button__number { font-size: 10px; }
+  .viewer-shell { grid-column: 1; grid-row: 3; }
+  .view-switch { top: 8px; width: calc(100% - 24px); max-width: 430px; }
+  .view-switch button { width: auto; padding: 8px; min-height: 44px; font-size: 10px; }
+  .model-label { top: 68px; left: 16px; }
+  .model-label small, .model-label > span { display: none; }
+  .renderer-notice { top: 95px; font-size: 11px; }
+  .viewer-toolbar { left: 12px; bottom: 10px; }
+  .journey-dock { bottom: 66px; }
+  .journey-dock__toggle { min-height: 36px; }
+  .journey-dock__toggle span { font-size: 10px; }
+  .journey-dock select { font-size: 16px; }
+  .statusbar { grid-column: 1; grid-row: 4; }
+  .statusbar .statusbar__right { display: none; }
+  .statusbar span { white-space: nowrap; }
+  .intel-panel { max-height: 80dvh; padding-bottom: max(22px,env(safe-area-inset-bottom)); }
+  .intel-panel__close { width: 44px; height: 44px; background: var(--panel); z-index: 3; }
+  .intel-tabs { top: 0; }
+  .intel-tabs button { font-size: 11px; }
+  .silo-atlas { inset: 62px 8px 64px; }
+  .silo-atlas__header { min-height: auto; }
+  .silo-atlas__header small { max-width: none; font-size: 9px; }
+  .silo-atlas__tabs button { font-size: 10px; }
+  .atlas-subcontrols button { font-size: 10px; }
+  .silo-atlas__footer { display: block; max-height: 65px; overflow: auto; }
+  .atlas-events { display: none; }
+  .silo-app.silo-app--focus { grid-template-rows: minmax(0,1fr); }
+  .silo-app.silo-app--focus .viewer-shell { grid-row: 1; }
+  .fallback-silo { width: min(50vw,230px); height: 64%; margin-top: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
+}
+
+.silo-app.silo-app--focus .level-index { display: none; }
+@media (max-width: 1024px) and (max-height: 650px) {
+  .model-label { display: none; }
+  .renderer-notice { top: 62px; }
+}

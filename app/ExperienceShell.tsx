@@ -1,8 +1,27 @@
 "use client";
 
-import { lazy, Suspense } from "react";
+import { Component, lazy, Suspense, type ReactNode } from "react";
 
 const SiloExperience = lazy(() => import("./SiloExperience"));
+
+class ArchiveBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+
+  static getDerivedStateFromError() { return { failed: true }; }
+
+  render() {
+    if (this.state.failed) {
+      return <main className="archive-loading" role="alert">
+        <div className="archive-error">
+          <h1>The archive could not open</h1>
+          <p>Check your connection and reload to try again.</p>
+          <button className="primary-button" onClick={() => window.location.reload()}>Reload archive</button>
+        </div>
+      </main>;
+    }
+    return this.props.children;
+  }
+}
 
 function ArchiveLoading() {
   return (
@@ -20,5 +39,5 @@ function ArchiveLoading() {
 }
 
 export default function ExperienceShell() {
-  return <Suspense fallback={<ArchiveLoading />}><SiloExperience /></Suspense>;
+  return <ArchiveBoundary><Suspense fallback={<ArchiveLoading />}><SiloExperience /></Suspense></ArchiveBoundary>;
 }

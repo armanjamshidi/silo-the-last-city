@@ -37,6 +37,7 @@ yarn-error.log*
 /.openai/
 
 # typescript
+*.tsbuildinfo
 next-env.d.ts
 /dist/
 /.wrangler/

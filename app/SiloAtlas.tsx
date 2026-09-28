@@ -296,6 +296,7 @@ function ConnectionMap({ language }: { language: "en" | "fa" }) {
   const fa = language === "fa";
   return (
     <div className="connection-atlas">
+      <div className="connection-diagram" role="region" tabIndex={0} aria-label={fa ? "نمودار ارتباط سیلوها؛ برای دیدن همهٔ مسیرها افقی پیمایش کنید" : "Silo connection diagram; scroll horizontally to inspect all routes"}>
       <svg className="connection-svg" viewBox="0 0 780 460" role="img" aria-label="Control, power, Safeguard, radio, drone and book-route connections">
         <defs>
           <marker id="arrowControl" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#76a9aa" /></marker>
@@ -343,6 +344,7 @@ function ConnectionMap({ language }: { language: "en" | "fa" }) {
         <path className="connection-line connection-line--book" d="M546 320 C500 337 497 352 546 373" />
         <text className="connection-label connection-label--book" x="430" y="348">18↔17 EXCAVATION · BOOK ONLY</text>
       </svg>
+      </div>
       <div className="connection-ledger">
         <article><Radio size={16} /><div><b>{fa ? "کنترل و پایش" : "CONTROL & MONITORING"}</b><p>{fa ? "وجود فرماندهی سیلوی ۱ و ارتباط آن با سیلوها قطعی است؛ مسیر کابل‌ها هنوز کامل دیده نشده." : "Silo 1 command and inter-silo monitoring are confirmed; the complete cable route is not yet visible."}</p></div><em>ON SCREEN</em></article>
         <article><Zap size={16} /><div><b>{fa ? "برق مستقل I.T." : "INDEPENDENT I.T. POWER"}</b><p>{fa ? "فید بیرونی I.T. از شبکهٔ عمومی سیلو جداست." : "The external I.T. feeder is separate from the silo’s public grid."}</p></div><em>ON SCREEN</em></article>

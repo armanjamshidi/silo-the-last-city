@@ -58,6 +58,23 @@ button:disabled { opacity: .35; cursor: not-allowed; }
 .field-svg { min-height: 320px; }
 .atlas-selection p, .atlas-disclaimer, .floor-anchor small, .connection-ledger article p { font-size: 12px; line-height: 1.65; }
 .floor-anchor b, .connection-ledger article b, .level-atlas__heading p { font-size: 12px; }
+.connection-atlas { display: grid; align-content: start; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+.connection-diagram { min-width: 0; overflow-x: auto; overscroll-behavior-inline: contain; scrollbar-width: thin; }
+.connection-diagram:focus-visible { outline: 2px solid #c9a66b; outline-offset: -2px; }
+.connection-svg { display: block; width: 100%; min-width: 980px; max-width: 1100px; height: auto; min-height: 0; }
+.connection-zone__title { font-size: 18px; }
+.connection-zone__sub, .connection-node__text { font-size: 10px; }
+.connection-zone__sub { fill: #b5b6ac; }
+.connection-node__text--small { font-size: 9px; }
+.connection-label { font-size: 9.5px; }
+.connection-ledger { align-self: start; grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 0; }
+.connection-ledger article { min-width: 0; }
+.connection-ledger article p { display: block; }
+.connection-ledger article em { color: var(--muted); font-size: 10px; }
+.silo-app[data-theme="light"] .connection-zone__sub { fill: #53574d; }
+.silo-app[data-theme="light"] .connection-label--control { fill: #2c6264; }
+.silo-app[data-theme="light"] .connection-label--power, .silo-app[data-theme="light"] .connection-label--book { fill: #795321; }
+.silo-app[data-theme="light"] .connection-label--safeguard, .silo-app[data-theme="light"] .connection-label--danger { fill: #8d3f31; }
 .atlas-selection > span, .silo-atlas__header small, .silo-atlas__footer a { font-size: 10px; }
 .silo-atlas__footer nav { flex-wrap: wrap; }
 .silo-atlas__header span { font-size: 10px; }
@@ -143,6 +160,10 @@ button:disabled { opacity: .35; cursor: not-allowed; }
 
 @media (max-width: 430px) {
   .silo-atlas__header small { font-size: 10px; }
+}
+
+@media (max-width: 600px) {
+  .connection-ledger { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {

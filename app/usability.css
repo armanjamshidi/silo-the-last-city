@@ -69,8 +69,9 @@ button:disabled { opacity: .35; cursor: not-allowed; }
 .connection-label { font-size: 9.5px; }
 .connection-ledger { align-self: start; grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 0; }
 .connection-ledger article { min-width: 0; }
-.connection-ledger article p { display: block; }
+.connection-ledger article p { display: block; color: var(--muted); }
 .connection-ledger article em { color: var(--muted); font-size: 10px; }
+.silo-app[data-theme="light"] .connection-ledger article b { color: #41443d; }
 .silo-app[data-theme="light"] .connection-zone__sub { fill: #53574d; }
 .silo-app[data-theme="light"] .connection-label--control { fill: #2c6264; }
 .silo-app[data-theme="light"] .connection-label--power, .silo-app[data-theme="light"] .connection-label--book { fill: #795321; }

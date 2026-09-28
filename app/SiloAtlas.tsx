@@ -342,7 +342,7 @@ function ConnectionMap({ language }: { language: "en" | "fa" }) {
         <path className="connection-line connection-line--drone" d="M169 283 C298 430 405 402 512 399" markerEnd="url(#arrowDanger)" />
         <text className="connection-label connection-label--danger" x="317" y="427">UAV STRIKE · S3E10</text>
         <path className="connection-line connection-line--book" d="M546 320 C500 337 497 352 546 373" />
-        <text className="connection-label connection-label--book" x="430" y="348">18↔17 EXCAVATION · BOOK ONLY</text>
+        <text className="connection-label connection-label--book" x="380" y="371">18↔17 EXCAVATION · BOOK ONLY</text>
       </svg>
       </div>
       <div className="connection-ledger">

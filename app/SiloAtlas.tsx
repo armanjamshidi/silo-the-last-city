@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type KeyboardEvent } from "react";
 import { Activity, BookOpen, Network, Radio, Route, ShieldAlert, Zap } from "lucide-react";
 
 type AtlasView = "field" | "connections" | "levels";
@@ -41,7 +41,7 @@ const FLOOR_PLANS: FloorPlan[] = [
     id: "tv18",
     label: "TV · 18",
     title: "SILO 18 / SERIES INDEX",
-    subtitle: "Screen anchors plus clearly marked reconstruction bands; 144 occupied levels.",
+    subtitle: "Screen anchors plus clearly marked reconstruction bands; 144 primary levels.",
     maxLevel: 154,
     anchors: [
       { level: 1, label: "Civic crown", note: "Cafeteria, sensor gallery, sheriff and cleaning route.", certainty: "SCREEN" },
@@ -50,8 +50,8 @@ const FLOOR_PLANS: FloorPlan[] = [
       { level: 47, end: 69, label: "The Mids", note: "Residential, education, clinics and markets; broad archive band.", certainty: "RECON" },
       { level: 70, end: 81, label: "Farms", note: "Stacked food-production band; exact boundaries remain partial.", certainty: "RECON" },
       { level: 90, end: 120, label: "Supply", note: "Storage, recycling and fabrication band.", certainty: "RECON" },
-      { level: 130, end: 144, label: "Mechanical", note: "Generator, workshops, control and lower residential spaces.", certainty: "SCREEN" },
-      { level: 148, end: 154, label: "Undercroft", note: "Digger, flooded Gap, intelligent door and uncertain mines.", certainty: "SCREEN" },
+      { level: 130, end: 144, label: "Mechanical", note: "The generator and workshops are on screen; this band is an approximate placement.", certainty: "RECON" },
+      { level: 148, end: 154, label: "Undercroft", note: "The digger, flooded Gap and door are on screen; these below-144 numbers are illustrative.", certainty: "RECON" },
     ],
   },
   {
@@ -62,9 +62,9 @@ const FLOOR_PLANS: FloorPlan[] = [
     maxLevel: 154,
     anchors: [
       { level: 1, label: "Surface / airlock", note: "Original revolt route and the later Season 3 drone-kill zone.", certainty: "SCREEN" },
-      { level: 18, label: "I.T. approach", note: "Destroyed bridge and the sealed Vault occupied by Solo.", certainty: "SCREEN" },
+      { level: 18, label: "I.T. approach", note: "Destroyed bridge and Solo's sealed Vault are on screen; this floor number is illustrative.", certainty: "RECON" },
       { level: 20, end: 69, label: "Upper survivor zone", note: "Habitable pockets and improvised routes above the waterline.", certainty: "RECON" },
-      { level: 70, end: 144, label: "Flooded lower silo", note: "Long-submerged levels reached with improvised diving equipment.", certainty: "SCREEN" },
+      { level: 70, end: 144, label: "Flooded lower silo", note: "The flooding is on screen; the numbered boundary is illustrative.", certainty: "RECON" },
       { level: 148, end: 154, label: "Sub-foundation", note: "Possible construction corridors remain unverified in series continuity.", certainty: "RECON" },
     ],
   },
@@ -204,6 +204,20 @@ function FieldMap({ language }: { language: "en" | "fa" }) {
   }), []);
   const silo17 = nodes.find((node) => node.id === 17);
   const silo18 = nodes.find((node) => node.id === 18);
+  const onNodeKeyDown = (event: KeyboardEvent<SVGGElement>, id: number) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      setSelectedSilo(id);
+      return;
+    }
+    const next = event.key === "Home" ? 1 : event.key === "End" ? 50
+      : event.key === "ArrowRight" || event.key === "ArrowDown" ? id % 50 + 1
+        : event.key === "ArrowLeft" || event.key === "ArrowUp" ? (id + 48) % 50 + 1 : null;
+    if (next === null) return;
+    event.preventDefault();
+    setSelectedSilo(next);
+    event.currentTarget.ownerSVGElement?.querySelector<SVGGElement>(`#field-node-${next}`)?.focus();
+  };
 
   return (
     <div className="atlas-field">
@@ -227,7 +241,7 @@ function FieldMap({ language }: { language: "en" | "fa" }) {
       </div>
 
       <div className="atlas-field__body">
-        <svg className={`field-svg field-svg--${relation}`} viewBox="0 0 760 500" role="group" aria-label="Map of Silo 1 and forty-nine outer silos">
+        <svg className={`field-svg field-svg--${relation}`} viewBox="0 0 760 500" role="group" aria-label="Map of Silo 1 and forty-nine outer silos. Use arrow keys to move between silos, or use the Select silo menu.">
           <defs>
             <radialGradient id="siloNode" cx="35%" cy="30%">
               <stop offset="0" stopColor="#6c716a" />
@@ -248,7 +262,7 @@ function FieldMap({ language }: { language: "en" | "fa" }) {
           ))}
           {relation === "events" && silo17 && <path className="field-link field-link--drone" markerEnd="url(#fieldArrowDanger)" d={`M ${FIELD_CENTER.x} ${FIELD_CENTER.y} Q 460 135 ${silo17.x} ${silo17.y}`} />}
           {relation === "books" && silo17 && silo18 && <line className="field-link field-link--book" x1={silo17.x} y1={silo17.y} x2={silo18.x} y2={silo18.y} />}
-          <g className={`field-node field-node--1 ${selectedSilo === 1 ? "selected" : ""}`} role="button" aria-label="Silo 1" aria-pressed={selectedSilo === 1} tabIndex={0} onClick={() => setSelectedSilo(1)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setSelectedSilo(1); } }}>
+          <g id="field-node-1" className={`field-node field-node--1 ${selectedSilo === 1 ? "selected" : ""}`} role="button" aria-label="Silo 1" aria-pressed={selectedSilo === 1} tabIndex={selectedSilo === 1 ? 0 : -1} onClick={() => setSelectedSilo(1)} onKeyDown={(event) => onNodeKeyDown(event, 1)}>
             <circle cx={FIELD_CENTER.x} cy={FIELD_CENTER.y} r="27" />
             <text x={FIELD_CENTER.x} y={FIELD_CENTER.y + 4}>01</text>
             <text className="field-node__role" x={FIELD_CENTER.x} y={FIELD_CENTER.y + 42}>COMMAND</text>
@@ -256,7 +270,7 @@ function FieldMap({ language }: { language: "en" | "fa" }) {
           {nodes.map((node) => {
             const status = node.id === 17 ? "failed" : node.id === 18 ? "resistance" : "unknown";
             return (
-              <g key={node.id} className={`field-node field-node--${status} ${selectedSilo === node.id ? "selected" : ""}`} role="button" aria-pressed={selectedSilo === node.id} tabIndex={0} onClick={() => setSelectedSilo(node.id)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setSelectedSilo(node.id); } }} aria-label={`Silo ${node.id}`}>
+              <g key={node.id} id={`field-node-${node.id}`} className={`field-node field-node--${status} ${selectedSilo === node.id ? "selected" : ""}`} role="button" aria-pressed={selectedSilo === node.id} tabIndex={selectedSilo === node.id ? 0 : -1} onClick={() => setSelectedSilo(node.id)} onKeyDown={(event) => onNodeKeyDown(event, node.id)} aria-label={`Silo ${node.id}`}>
                 <circle cx={node.x} cy={node.y} r={node.id === 17 || node.id === 18 ? 13 : 10} />
                 <text x={node.x} y={node.y + 3}>{String(node.id).padStart(2, "0")}</text>
               </g>
@@ -265,7 +279,7 @@ function FieldMap({ language }: { language: "en" | "fa" }) {
           {relation === "events" && silo17 && <text className="field-event-label" x={silo17.x + 18} y={silo17.y - 15}>S3E10 · DRONES</text>}
           {relation === "books" && silo17 && silo18 && <text className="field-event-label field-event-label--book" x={(silo17.x + silo18.x) / 2 + 12} y={(silo17.y + silo18.y) / 2 - 8}>17↔18 · BOOK</text>}
         </svg>
-        <aside className="atlas-selection">
+        <aside className="atlas-selection" aria-live="polite" aria-atomic="true">
           <span>{COPY[language].select}</span>
           <h3>{selected.title}</h3>
           <b>{selected.status}</b>
@@ -346,9 +360,10 @@ function LevelAtlas({ language }: { language: "en" | "fa" }) {
   return (
     <div className="level-atlas">
       <div className="level-atlas__tabs" role="tablist" aria-label="Silo floor plans">
-        {FLOOR_PLANS.map((item) => <button key={item.id} className={plan.id === item.id ? "active" : ""} onClick={() => setPlanId(item.id)} role="tab" aria-selected={plan.id === item.id}>{item.label}</button>)}
+        {FLOOR_PLANS.map((item) => <button key={item.id} className={plan.id === item.id ? "active" : ""} onClick={() => setPlanId(item.id)} role="tab" id={`floor-tab-${item.id}`} aria-controls="floor-plan-panel" aria-selected={plan.id === item.id} tabIndex={plan.id === item.id ? 0 : -1}>{item.label}</button>)}
       </div>
-      <div className="level-atlas__heading"><div><span>{fa ? "ثبت عمودی" : "VERTICAL REGISTER"}</span><h3>{plan.title}</h3><p>{plan.subtitle}</p></div><strong>{plan.maxLevel <= 70 ? "70" : "144"}<small>{fa ? " طبقهٔ اصلی" : " PRIMARY LEVELS"}</small></strong></div>
+      <div id="floor-plan-panel" role="tabpanel" aria-labelledby={`floor-tab-${plan.id}`}>
+      <div className="level-atlas__heading"><div><span>{fa ? "ثبت عمودی" : "VERTICAL REGISTER"}</span><h3>{plan.title}</h3><p>{plan.subtitle}</p></div><strong>{plan.id === "silo1" ? "70" : plan.id === "book" ? "148" : "144"}<small>{plan.id === "book" ? (fa ? " طبقهٔ نقشهٔ هواداران" : " FAN-MAPPED LEVELS") : (fa ? " طبقهٔ اصلی" : " PRIMARY LEVELS")}</small></strong></div>
       <div className="floor-plan">
         <div className="floor-plan__shaft" aria-hidden="true">
           <span className="floor-plan__top">01</span><span className="floor-plan__bottom">{String(plan.maxLevel).padStart(2, "0")}</span>
@@ -365,6 +380,7 @@ function LevelAtlas({ language }: { language: "en" | "fa" }) {
         </div>
       </div>
       <p className="atlas-disclaimer">{fa ? "شماره‌های کتاب و سریال دو تداوم جدا هستند. درصدهای اطمینانِ نقشهٔ طرفداران به برچسب FAN/RECON تبدیل شده‌اند و به‌عنوان واقعیت سریال نمایش داده نمی‌شوند." : "Book and television levels are separate continuities. Fan-sheet confidence estimates are shown as FAN/RECON and are never promoted to series fact."}</p>
+      </div>
     </div>
   );
 }
@@ -377,12 +393,12 @@ export default function SiloAtlas({ language }: { language: "en" | "fa" }) {
       <header className="silo-atlas__header">
         <div><span>{copy.kicker}</span><h2>{copy.title}</h2><small>{copy.spoiler}</small></div>
         <div className="silo-atlas__tabs" role="tablist" aria-label="Atlas view">
-          <button className={view === "field" ? "active" : ""} onClick={() => setView("field")} role="tab" aria-selected={view === "field"}><Network size={15} />{copy.field}</button>
-          <button className={view === "connections" ? "active" : ""} onClick={() => setView("connections")} role="tab" aria-selected={view === "connections"}><Route size={15} />{copy.connections}</button>
-          <button className={view === "levels" ? "active" : ""} onClick={() => setView("levels")} role="tab" aria-selected={view === "levels"}><BookOpen size={15} />{copy.levels}</button>
+          <button className={view === "field" ? "active" : ""} onClick={() => setView("field")} role="tab" id="atlas-tab-field" aria-controls="atlas-view-panel" aria-selected={view === "field"} tabIndex={view === "field" ? 0 : -1}><Network size={15} />{copy.field}</button>
+          <button className={view === "connections" ? "active" : ""} onClick={() => setView("connections")} role="tab" id="atlas-tab-connections" aria-controls="atlas-view-panel" aria-selected={view === "connections"} tabIndex={view === "connections" ? 0 : -1}><Route size={15} />{copy.connections}</button>
+          <button className={view === "levels" ? "active" : ""} onClick={() => setView("levels")} role="tab" id="atlas-tab-levels" aria-controls="atlas-view-panel" aria-selected={view === "levels"} tabIndex={view === "levels" ? 0 : -1}><BookOpen size={15} />{copy.levels}</button>
         </div>
       </header>
-      <div className="silo-atlas__viewport">
+      <div className="silo-atlas__viewport" id="atlas-view-panel" role="tabpanel" aria-labelledby={`atlas-tab-${view}`}>
         {view === "field" && <FieldMap language={language} />}
         {view === "connections" && <ConnectionMap language={language} />}
         {view === "levels" && <LevelAtlas language={language} />}

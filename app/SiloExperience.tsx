@@ -2896,6 +2896,7 @@ export default function SiloExperience() {
 
     const clock = new THREE.Clock();
     let frame = 0;
+    let lastNetworkFrame = 0;
     let animationFrame = 0;
     let rendererHealthy = false;
     let pageVisible = !document.hidden;
@@ -2905,19 +2906,30 @@ export default function SiloExperience() {
       if (pageVisible) clock.getDelta();
     };
     document.addEventListener("visibilitychange", onVisibilityChange);
-    const animate = () => {
+    const animate = (now: number) => {
       if (!pageVisible) {
         animationFrame = requestAnimationFrame(animate);
         return;
       }
+      // The DOM atlas covers the 3D network. Keep its backdrop responsive
+      // without spending a full 60 GPU frames per second behind the map.
+      if (activeViewRef.current.mode === "network") {
+        if (now - lastNetworkFrame < 100) {
+          animationFrame = requestAnimationFrame(animate);
+          return;
+        }
+        lastNetworkFrame = now;
+      }
       const delta = Math.min(clock.getDelta(), 0.05);
       if (autoRotateRef.current && !dragging) cameraState.targetYaw += delta * 0.055;
-      cameraState.yaw = THREE.MathUtils.lerp(cameraState.yaw, cameraState.targetYaw, 0.055);
-      cameraState.pitch = THREE.MathUtils.lerp(cameraState.pitch, cameraState.targetPitch, 0.055);
-      cameraState.distance = THREE.MathUtils.lerp(cameraState.distance, cameraState.targetDistance, 0.045);
-      target.x = THREE.MathUtils.lerp(target.x, cameraState.targetX, 0.045);
-      target.y = THREE.MathUtils.lerp(target.y, cameraState.targetY, 0.045);
-      target.z = THREE.MathUtils.lerp(target.z, cameraState.targetZ, 0.045);
+      const cameraBlend = reducedMotion.matches ? 1 : 0.055;
+      const distanceBlend = reducedMotion.matches ? 1 : 0.045;
+      cameraState.yaw = THREE.MathUtils.lerp(cameraState.yaw, cameraState.targetYaw, cameraBlend);
+      cameraState.pitch = THREE.MathUtils.lerp(cameraState.pitch, cameraState.targetPitch, cameraBlend);
+      cameraState.distance = THREE.MathUtils.lerp(cameraState.distance, cameraState.targetDistance, distanceBlend);
+      target.x = THREE.MathUtils.lerp(target.x, cameraState.targetX, distanceBlend);
+      target.y = THREE.MathUtils.lerp(target.y, cameraState.targetY, distanceBlend);
+      target.z = THREE.MathUtils.lerp(target.z, cameraState.targetZ, distanceBlend);
       camera.position.set(
         target.x + Math.sin(cameraState.yaw) * Math.cos(cameraState.pitch) * cameraState.distance,
         target.y + Math.sin(cameraState.pitch) * cameraState.distance,
@@ -3129,7 +3141,7 @@ export default function SiloExperience() {
       </aside>
 
       <section data-view={viewMode} data-renderer={webglUnavailable ? "fallback" : "webgl"} ref={viewerRef} className="viewer-shell" inert={help} aria-label="Silo 18 3D viewer">
-        <div ref={mountRef} className="three-stage" />
+        <div ref={mountRef} className="three-stage" inert={viewMode === "network"} aria-hidden={viewMode === "network"} />
         {webglUnavailable && viewMode !== "network" && <p className="renderer-notice" role="status">{language === "fa" ? "نمای ساده · برای کاوش، یک بخش را انتخاب کنید" : "Simplified view · select a section to explore"}</p>}
         {shareMessage && <p className="share-notice" role="status">{shareMessage}</p>}
         {webglUnavailable && viewMode === "overview" && (

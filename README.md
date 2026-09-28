@@ -30,9 +30,9 @@
 
 Silo 18 is usually experienced one stairwell, room, or secret at a time. This project brings those fragments together as an explorable architectural hypothesis: part 3D cutaway, part evidence ledger, and part lore map.
 
-It does **not** present fan-made geometry as official fact. Every space is labeled as **Series**, **Book Canon**, or **Reconstruction**, and uncertain level numbers remain explicitly undisclosed.
+It does **not** present fan-made geometry as official fact. Every space is labeled as **Series**, **Book Canon**, or **Reconstruction**, and estimated level numbers are marked as illustrative.
 
-The current research ledger is reviewed through the **Season 3 finale (12 September 2026)**. Finale revelations are included; television, book and fan-map continuities remain separate.
+The current research ledger was last reviewed on **12 September 2026** and includes the Season 3 finale, released on 4 September 2026. Television, book and fan-map continuities remain separate.
 
 <div align="center">
   <h3>→ <a href="https://silo-the-last-city.vercel.app/">Enter Silo 18</a> ←</h3>

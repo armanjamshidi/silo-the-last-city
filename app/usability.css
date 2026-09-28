@@ -4,7 +4,9 @@
 .silo-app { --muted: #b6b0a4; --dim: #a39c8f; }
 .silo-app[data-theme="light"] { --muted: #55594e; --dim: #606052; }
 .eyebrow, .archive-title b, .system-status, .level-index__head, .depth-readout > span, .depth-readout > small, .canon-key { font-size: 10px; }
-.statusbar { font-size: 10px; }
+.statusbar, .silo-app[data-theme="light"] .statusbar { font-size: 10px; color: var(--muted); }
+.statusbar__right, .silo-app[data-theme="light"] .statusbar__right { color: var(--muted); }
+.silo-app[data-theme="light"] .eyebrow { color: #765a39; }
 .topbar { grid-row: 1; min-width: 0; }
 .topbar > *, .level-index > * { min-width: 0; }
 .level-index__head, .sector-tabs, .archive-search, .canon-key, .depth-readout { flex-shrink: 0; }

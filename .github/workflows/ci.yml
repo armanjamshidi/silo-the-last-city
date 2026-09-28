@@ -20,5 +20,7 @@ jobs:
       - run: npm ci
       - run: npm run check:secrets
       - run: npm run lint
+      - run: npm run typecheck
       - run: npm test
       - run: npm run build:vercel
+      - run: npm run test:smoke

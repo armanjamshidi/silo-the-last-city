@@ -32,13 +32,8 @@
   ],
   "exclude": [
     "node_modules",
-    "build",
-    "db",
-    "examples",
     "scripts",
     "tests",
-    "worker",
-    "dist",
-    ".wrangler"
+    "dist"
   ]
 }

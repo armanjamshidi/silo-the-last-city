@@ -1188,13 +1188,16 @@ export default function SiloExperience() {
     const scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2(0x070806, 0.0155);
     const camera = new THREE.PerspectiveCamera(36, 1, 0.1, 300);
+    // Lower raster resolution and frame rate for touch and low-core devices.
+    // The archive remains navigable at full precision through the text panels.
+    const lowPowerDevice = window.matchMedia("(pointer: coarse)").matches || (navigator.hardwareConcurrency ?? 8) <= 4;
     let renderer: THREE.WebGLRenderer;
     try {
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     } catch {
       return;
     }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, lowPowerDevice ? 1.25 : 1.75));
     renderer.setSize(mount.clientWidth, mount.clientHeight);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -2896,7 +2899,7 @@ export default function SiloExperience() {
 
     const clock = new THREE.Clock();
     let frame = 0;
-    let lastNetworkFrame = 0;
+    let lastRenderedFrame = 0;
     let animationFrame = 0;
     let rendererHealthy = false;
     let pageVisible = !document.hidden;
@@ -2911,15 +2914,13 @@ export default function SiloExperience() {
         animationFrame = requestAnimationFrame(animate);
         return;
       }
-      // The DOM atlas covers the 3D network. Keep its backdrop responsive
-      // without spending a full 60 GPU frames per second behind the map.
-      if (activeViewRef.current.mode === "network") {
-        if (now - lastNetworkFrame < 100) {
-          animationFrame = requestAnimationFrame(animate);
-          return;
-        }
-        lastNetworkFrame = now;
+      // The atlas covers the backdrop; touch and low-core devices draw at 30fps.
+      const frameBudget = activeViewRef.current.mode === "network" ? 100 : (lowPowerDevice || reducedMotion.matches ? 33 : 0);
+      if (now - lastRenderedFrame < frameBudget) {
+        animationFrame = requestAnimationFrame(animate);
+        return;
       }
+      lastRenderedFrame = now;
       const delta = Math.min(clock.getDelta(), 0.05);
       if (autoRotateRef.current && !dragging) cameraState.targetYaw += delta * 0.055;
       const cameraBlend = reducedMotion.matches ? 1 : 0.055;
@@ -3140,7 +3141,7 @@ export default function SiloExperience() {
         <div className="depth-readout"><span>{sectorTab === "network" ? "KNOWN FIELD" : "EST. VERTICAL REACH"}</span><strong>{sectorTab === "network" ? "50" : ">1,440"}<small>{sectorTab === "network" ? " silos" : " m"}</small></strong><div className="depth-scale"><i /></div><small>{sectorTab === "network" ? "1 CENTER / 49 OUTER" : "BEDROCK / CONTROLLED VOID"}</small></div>
       </aside>
 
-      <section data-view={viewMode} data-renderer={webglUnavailable ? "fallback" : "webgl"} ref={viewerRef} className="viewer-shell" inert={help} aria-label="Silo 18 3D viewer">
+      <section data-view={viewMode} data-renderer={webglUnavailable ? "fallback" : "webgl"} ref={viewerRef} className="viewer-shell" inert={help} aria-label="Silo 18 structural archive viewer">
         <div ref={mountRef} className="three-stage" inert={viewMode === "network"} aria-hidden={viewMode === "network"} />
         {webglUnavailable && viewMode !== "network" && <p className="renderer-notice" role="status">{language === "fa" ? "نمای ساده · برای کاوش، یک بخش را انتخاب کنید" : "Simplified view · select a section to explore"}</p>}
         {shareMessage && <p className="share-notice" role="status">{shareMessage}</p>}
@@ -3178,7 +3179,7 @@ export default function SiloExperience() {
                 {selected.details.slice(0, 4).map((detail, index) => <span key={detail.name}><i>{String(index + 1).padStart(2, "0")}</i>{detail.name}</span>)}
               </div>
             </div>
-            <div className="fallback-section__caption"><span>3D SECTION</span><b>{selected.name}</b><small>{selected.code} / {selected.canon}</small></div>
+            <div className="fallback-section__caption"><span>SECTION STUDY</span><b>{selected.name}</b><small>{selected.code} / {selected.canon}</small></div>
           </div>
         )}
         <div className="stage-vignette" /><div className="stage-grid" />
@@ -3284,7 +3285,7 @@ export default function SiloExperience() {
         </div>}
       </aside>
 
-      <footer className="statusbar"><span><i className="status-dot" /> LIVE MODEL</span><span>DRAG TO ORBIT · SHIFT-DRAG TO PAN</span><span>SCROLL TO ZOOM · FOCUS FOR FULL VIEW</span><span className="statusbar__right">PACT ARCHIVE / ACCESS 02</span></footer>
+      <footer className="statusbar"><span><i className="status-dot" /> {webglUnavailable ? "SIMPLIFIED VIEW" : "LIVE MODEL"}</span><span>{webglUnavailable ? "SELECT A SECTION TO EXPLORE" : "DRAG TO ORBIT · SHIFT-DRAG TO PAN"}</span><span>{webglUnavailable ? "SWITCH TO NETWORK FOR THE 50-SILO ATLAS" : "SCROLL TO ZOOM · FOCUS FOR FULL VIEW"}</span><span className="statusbar__right">PACT ARCHIVE / ACCESS 02</span></footer>
       {help && (
         <div className="modal-backdrop" role="presentation" onMouseDown={() => setHelp(false)}>
           <div ref={helpRef} className="help-modal" role="dialog" aria-modal="true" aria-labelledby="help-title" onMouseDown={(event) => event.stopPropagation()}>

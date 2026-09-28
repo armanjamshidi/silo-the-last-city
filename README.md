@@ -115,7 +115,7 @@ This distinction is central to the project: the archive should make the world ea
 git clone https://github.com/armanjamshidi/silo-the-last-city.git
 cd silo-the-last-city
 npm ci
-npm run dev:vercel
+npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
@@ -124,11 +124,13 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ```bash
 npm run lint
+npm run typecheck
 npm test
-npm run build:vercel
+npm run build
+npm run test:smoke
 ```
 
-The default `dev`, `build` and `start` commands use Next.js on all platforms. The optional `npm run build:sites` command produces and validates the legacy Cloudflare/Vinext artifact and requires Bash.
+The `dev`, `build` and `start` commands use the same native Next.js runtime as the Vercel deployment.
 
 Run `npm run check:secrets` before pushing. It checks tracked files for common credential patterns and reports only file names, never matched values. Keep service credentials in deployment environment variables; this client-side archive does not require an API key.
 
@@ -139,7 +141,7 @@ Run `npm run check:secrets` before pushing. It checks tracked files for common c
 - **Three.js** for the interactive cutaway and room dioramas
 - **Lucide** for interface iconography
 - **CSS** for the responsive archive UI, themes, and no-WebGL fallback
-- **Vercel** and **Cloudflare/Vinext** compatible production targets
+- **Vercel** for the native Next.js deployment
 
 ## Project structure
 
@@ -150,6 +152,7 @@ app/
 ├── archive-url.mjs      # Validated shareable deep-link helpers
 ├── globals.css          # Interface, themes and CSS fallback cutaways
 ├── layout.tsx           # Metadata and document shell
+├── opengraph-image.tsx  # Original share-card artwork
 ├── manifest.ts          # Installable web-app metadata
 ├── robots.ts            # Search crawler policy
 ├── sitemap.ts           # Canonical route index
@@ -158,8 +161,8 @@ app/
 public/
 └── favicon.svg          # Silo 18 archive mark
 
-scripts/                 # Verified build and artifact checks
-tests/                   # Rendered output, archive contracts and URL tests
+scripts/                 # Secret-pattern check
+tests/                   # Archive contracts, URL tests and production smoke test
 .github/                 # CI, issue forms and pull-request template
 ```
 

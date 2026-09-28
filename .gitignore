@@ -33,14 +33,6 @@ yarn-error.log*
 # vercel
 .vercel
 
-# OpenAI Sites project identity (not needed by public mirrors)
-/.openai/
-
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-/dist/
-/.wrangler/
-/.sites-runtime/
-/outputs/
-/work/

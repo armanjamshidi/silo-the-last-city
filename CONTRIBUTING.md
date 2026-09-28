@@ -12,8 +12,10 @@ Contributions are welcome when they improve the model without presenting specula
 
 ```bash
 npm run lint
+npm run typecheck
 npm test
-npm run build:vercel
+npm run build
+npm run test:smoke
 ```
 
 ## Archive standards

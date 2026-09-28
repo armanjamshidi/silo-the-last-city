@@ -3,6 +3,10 @@
 .archive-error p { margin-block: 16px 24px; color: var(--muted); }
 .silo-app { --muted: #b6b0a4; --dim: #a39c8f; }
 .silo-app[data-theme="light"] { --muted: #55594e; --dim: #606052; }
+.eyebrow, .archive-title b, .system-status, .level-index__head, .depth-readout > span, .depth-readout > small, .canon-key { font-size: 10px; }
+.statusbar, .silo-app[data-theme="light"] .statusbar { font-size: 10px; color: var(--muted); }
+.statusbar__right, .silo-app[data-theme="light"] .statusbar__right { color: var(--muted); }
+.silo-app[data-theme="light"] .eyebrow { color: #765a39; }
 .topbar { grid-row: 1; min-width: 0; }
 .topbar > *, .level-index > * { min-width: 0; }
 .level-index__head, .sector-tabs, .archive-search, .canon-key, .depth-readout { flex-shrink: 0; }
@@ -54,12 +58,42 @@ button:disabled { opacity: .35; cursor: not-allowed; }
 .field-svg { min-height: 320px; }
 .atlas-selection p, .atlas-disclaimer, .floor-anchor small, .connection-ledger article p { font-size: 12px; line-height: 1.65; }
 .floor-anchor b, .connection-ledger article b, .level-atlas__heading p { font-size: 12px; }
+.connection-atlas { display: grid; align-content: start; grid-template-columns: minmax(0, 1fr); grid-auto-rows: max-content; gap: 10px; }
+.connection-diagram { min-width: 0; overflow-x: auto; overscroll-behavior-inline: contain; scrollbar-width: thin; }
+.connection-diagram:focus-visible { outline: 2px solid #c9a66b; outline-offset: -2px; }
+.connection-svg { display: block; width: 100%; min-width: 980px; max-width: 1100px; height: auto; min-height: 0; }
+.connection-zone__title { font-size: 18px; }
+.connection-zone__sub, .connection-node__text { font-size: 10px; }
+.connection-zone__sub { fill: #b5b6ac; }
+.connection-node__text--small { font-size: 9px; }
+.connection-label { font-size: 9.5px; }
+.connection-ledger { align-self: start; grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 0; }
+.connection-ledger article { min-width: 0; }
+.connection-ledger article p { display: block; color: var(--muted); }
+.connection-ledger article em { color: var(--muted); font-size: 10px; }
+.silo-app[data-theme="light"] .connection-ledger article b { color: #41443d; }
+.silo-app[data-theme="light"] .connection-zone__sub { fill: #53574d; }
+.silo-app[data-theme="light"] .connection-label--control { fill: #2c6264; }
+.silo-app[data-theme="light"] .connection-label--power, .silo-app[data-theme="light"] .connection-label--book { fill: #795321; }
+.silo-app[data-theme="light"] .connection-label--safeguard, .silo-app[data-theme="light"] .connection-label--danger { fill: #8d3f31; }
 .atlas-selection > span, .silo-atlas__header small, .silo-atlas__footer a { font-size: 10px; }
 .silo-atlas__footer nav { flex-wrap: wrap; }
+.silo-atlas__header span { font-size: 10px; }
+.silo-atlas__header small { font-size: 11px; color: #c8846c; }
+.silo-atlas__tabs button { color: #a9a79f; }
+.silo-atlas__footer { min-height: 48px; }
+.atlas-events span { color: #aaa69c; font-size: 10px; }
+.silo-atlas__footer nav > span { color: #a9a092; font-size: 10px; }
+.silo-atlas__footer a { color: #b5a692; font-size: 11px; }
+.level-atlas { display: flex; flex-direction: column; }
+.level-atlas > [role="tabpanel"] { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; flex: 1; min-height: 0; }
 .silo-app[data-theme="light"] .silo-atlas button { color: #55584f; }
 .silo-app[data-theme="light"] .silo-atlas button.active { color: #684819; background: rgba(119,83,31,.12); }
 .silo-app[data-theme="light"] .silo-atlas__header small { color: #864c38; }
 .silo-app[data-theme="light"] .atlas-disclaimer { color: #55584f; }
+.silo-app[data-theme="light"] .atlas-events span,
+.silo-app[data-theme="light"] .silo-atlas__footer nav > span,
+.silo-app[data-theme="light"] .silo-atlas__footer a { color: #55584f; }
 .field-node:focus-visible circle { stroke: #ffe0a6; stroke-width: 3px; }
 .viewer-shell[data-view="network"] .journey-dock { display: none; }
 .help-modal { max-height: calc(100dvh - 32px); overflow-y: auto; }
@@ -118,10 +152,19 @@ button:disabled { opacity: .35; cursor: not-allowed; }
   .silo-atlas__tabs button { font-size: 10px; }
   .atlas-subcontrols button { font-size: 10px; }
   .silo-atlas__footer { display: block; max-height: 65px; overflow: auto; }
+  .silo-atlas__header small { font-size: 10px; }
   .atlas-events { display: none; }
   .silo-app.silo-app--focus { grid-template-rows: minmax(0,1fr); }
   .silo-app.silo-app--focus .viewer-shell { grid-row: 1; }
   .fallback-silo { width: min(50vw,230px); height: 64%; margin-top: 16px; }
+}
+
+@media (max-width: 430px) {
+  .silo-atlas__header small { font-size: 10px; }
+}
+
+@media (max-width: 600px) {
+  .connection-ledger { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {

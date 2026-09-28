@@ -6,47 +6,33 @@
     "node": ">=22.13.0"
   },
   "scripts": {
-    "install:ci": "bash scripts/install-ci.sh",
     "dev": "next dev",
-    "dev:vercel": "next dev",
     "build": "next build",
-    "build:sites": "bash scripts/build-verified.sh",
     "build:vercel": "next build",
     "start": "next start",
-    "start:vercel": "next start",
     "test": "node --test tests/archive-contract.test.mjs",
-    "validate:artifact": "bash scripts/validate-artifact.sh",
-    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern .sites-runtime",
-    "db:generate": "bash scripts/sites-env.sh -- drizzle-kit generate",
-    "check:secrets": "node scripts/check-secrets.mjs",
-    "test:sites": "npm run build:sites && node --test tests/*.test.mjs"
+    "test:smoke": "node --test tests/production-smoke.test.mjs",
+    "lint": "eslint . --ignore-pattern .next",
+    "typecheck": "tsc --noEmit",
+    "check:secrets": "node scripts/check-secrets.mjs"
   },
   "dependencies": {
     "@types/three": "^0.185.4",
-    "drizzle-orm": "0.45.2",
     "lucide-react": "^0.468.0",
-    "next": "16.2.6",
+    "next": "16.3.6",
     "react": "19.2.6",
     "react-dom": "19.2.6",
     "three": "^0.185.1"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "1.37.1",
     "@tailwindcss/postcss": "4.2.1",
     "@types/node": "22.19.19",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
-    "@vitejs/plugin-react": "6.0.2",
-    "@vitejs/plugin-rsc": "0.5.26",
-    "drizzle-kit": "0.31.10",
     "eslint": "9.39.4",
-    "eslint-config-next": "16.2.6",
-    "react-server-dom-webpack": "19.2.6",
+    "eslint-config-next": "16.3.6",
     "tailwindcss": "4.2.1",
-    "typescript": "5.9.3",
-    "vinext": "0.0.50",
-    "vite": "8.0.13",
-    "wrangler": "4.92.0"
+    "typescript": "5.9.3"
   },
   "type": "module",
   "displayName": "SILO — The Last City"

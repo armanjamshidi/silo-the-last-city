@@ -21,11 +21,13 @@ export const metadata: Metadata = {
     siteName: "SILO — The Last City",
     title: "SILO — The Last City",
     description: "Explore a sourced 3D cutaway of Silo 18 and a Season 3 atlas of all 50 silos, their control systems and competing fan maps.",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Silo 18 structural archive cutaway" }],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "SILO — The Last City",
     description: "A 3D structural archive of Silo 18 and the complete fifty-silo network revealed in Season 3.",
+    images: ["/opengraph-image"],
   },
   robots: { index: true, follow: true },
   other: {
